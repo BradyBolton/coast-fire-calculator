@@ -1,6 +1,9 @@
 // css import
 import "./App.css";
 
+// local imports
+import { generateDataSet } from "./models/calculations";
+
 // library imports
 import React, { useState } from "react";
 
@@ -19,9 +22,8 @@ import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
 
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
 export const options = {
+    animation: false,
     responsive: true,
     plugins: {
         legend: {
@@ -32,28 +34,6 @@ export const options = {
             text: "Chart.js Line Chart",
         },
     },
-};
-
-export const data = {
-    labels,
-    datasets: [
-        {
-            label: "Dataset 1",
-            data: labels.map(() =>
-                200
-            ),
-            borderColor: "rgb(255, 99, 132)",
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-        },
-        {
-            label: "Dataset 2",
-            data: labels.map(() =>
-                200
-            ),
-            borderColor: "rgb(53, 162, 235)",
-            backgroundColor: "rgba(53, 162, 235, 0.5)",
-        },
-    ],
 };
 
 function App(props: any) {
@@ -74,6 +54,18 @@ function App(props: any) {
     const [retireAgeLock, setRetireAgeLock] = useState(false);
 
     const lockIcon = retireAgeLock ? <FontAwesomeIcon icon={faLock} /> : <FontAwesomeIcon color="red" icon={faLockOpen} />;
+
+    const data = {
+        datasets: [
+            {
+                label: "Dataset 1",
+                data: generateDataSet(2000000, currentAge, retireAge, rate, 3000).data,
+                borderColor: "rgb(255, 99, 132)",
+                backgroundColor: "rgba(255, 99, 132, 0.5)",
+            },
+        ],
+    };
+
 
     // show a stacked area chart of pricipal, contributions, and interest
     return (

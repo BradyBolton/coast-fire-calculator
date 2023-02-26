@@ -1,7 +1,5 @@
 // simple compound interest formula
 
-import { start } from "repl"
-
 // reference: https://www.thecalculatorsite.com/finance/calculators/compound-interest-formula
 const futureValue = (p: number, r: number, n: number, t: number): number => {
     return p * Math.pow(1 + (r / n), n * t)
