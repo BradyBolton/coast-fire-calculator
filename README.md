@@ -35,3 +35,15 @@ Run basic tests for the coast fire calculations:
 ```
 npm run test
 ```
+
+## Roughly how it works
+
+* Slap a bunch of bootstrap for sliders and toggles
+* Indicate interest vs. principal and division between coast FIRE accumulation and non-accumulation phase with `chart.js`
+* Iteratively dial onto the coast FIRE number (because I didn't do the real math)
+
+## Goals
+
+Right now the calculator only *gives* you a coast FIRE number and date based on your desired retirement age and current rate of contribution. I.e. "how long do you have to keep things up until you hit coast FIRE?" It gives you a basic plan on how to get there.
+
+There should be another calculator to spit out expected future value for a user-given coast FIRE plan (e.g. Bob contributes $1500/mo for 8 years, and then contributes $400 at a part-time job for the next 12 years, how much will Bob have). This calculator would be more useful for trouble-shooting, but is more work on the UI side.
