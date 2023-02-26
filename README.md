@@ -8,7 +8,7 @@ Quick CRA that attempts to calculate a coast FIRE number and date based on:
 * APR
 * monthly contributions
 
-This is especially usefull for young high-income earners. An ideal scenario would be:
+This is especially useful for young high-income earners. An ideal scenario would be:
 
 * Maximize savings while young for only 5-10 years
     * Max out tax-advantaged savings and accumulate funds in taxable brokerage
