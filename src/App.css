@@ -1,0 +1,53 @@
+.App {
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+fieldset {
+  margin: 2rem;
+  padding: 2rem;
+}
+
+.rangeInput {
+  width: 100%;
+}
+
+datalist {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 0.75rem;
+}
+
+em {
+  font-style: normal;
+  font-weight: bold;
+  color: crimson;
+}
+
+input[type=number] {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: crimson;
+}
+
+#graph {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  padding: 2rem 20%;
+}
+
+button.paramLockToggle {
+  background-color: ghostwhite;
+  border: line;
+  cursor: pointer;
+  margin: 0.2rem;
+  padding: 0.5rem;
+  border-radius: 20%;
+}
+
+button.paramLockToggle:hover {
+  background-color: lightgoldenrodyellow;
+}
