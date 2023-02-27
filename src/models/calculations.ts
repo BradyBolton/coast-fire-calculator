@@ -24,6 +24,7 @@ interface CoastFireResult {
 }
 
 // numerically resolve the coast fire amount and date (I can't be bothered to figure out the symbolic math)
+// note: convergence won't work if coast fire is technically impossible
 const convergeCoastFire = (iterations: number,
     fireNumber: number, currentAge: number, retirementAge: number,
     pmt: number, min: number, max: number, rate: number,
@@ -71,7 +72,8 @@ const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAg
     const pmt = pmtMonthlyToDaily(monthlyContribution)
 
     // TODO: remove hardcoded compounding period?
-    for (let i = 1; i < retirementAge + 1; i++) {
+    const yearsTilRetirement = retirementAge - currentAge
+    for (let i = 1; i < (yearsTilRetirement + 1); i++) {
         const coastAmount = futureValueSeries(pmt, rate, 365, i)
         const numCoastYears = retirementAge - i - currentAge
         const finalAmount = futureValue(coastAmount, rate, 365, numCoastYears)
@@ -82,6 +84,7 @@ const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAg
         }
     }
 
+    // as numCoastYears approaches to 0, we approach a FIRE plan (no coasting)
     return {
         isPossible: false,
         coastFireNumber: undefined,
@@ -92,7 +95,7 @@ const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAg
 
 interface CoastFireDatum {
     x: string, // '2016-12-25'
-    y: number  // value
+    y: number  // value (usd)
 }
 
 interface CoastFireData {

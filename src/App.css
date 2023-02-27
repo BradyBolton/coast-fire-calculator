@@ -51,3 +51,8 @@ button.paramLockToggle {
 button.paramLockToggle:hover {
   background-color: lightgoldenrodyellow;
 }
+
+div#error {
+  color: crimson;
+  font-weight: bold;
+}

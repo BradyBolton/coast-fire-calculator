@@ -52,20 +52,24 @@ function App(props: any) {
     const [currentAge, setCurrentAge] = useState(35);
     const [retireAge, setRetireAge] = useState(50);
     const [retireAgeLock, setRetireAgeLock] = useState(false);
+    const [pmtMonthly, setPmtMonthly] = useState(1000);
 
     const lockIcon = retireAgeLock ? <FontAwesomeIcon icon={faLock} /> : <FontAwesomeIcon color="red" icon={faLockOpen} />;
 
+    const projection = generateDataSet(2000000, currentAge, retireAge, rate, pmtMonthly).data
     const data = {
         datasets: [
             {
-                label: "Dataset 1",
-                data: generateDataSet(2000000, currentAge, retireAge, rate, 3000).data,
+                label: "Accumulation Phase",
+                data: projection,
                 borderColor: "rgb(255, 99, 132)",
                 backgroundColor: "rgba(255, 99, 132, 0.5)",
             },
         ],
     };
 
+    // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
+    const errorMessage = <div id="error">{projection.length === 0 ? 'FIRE is not possible with given parameters' : ''}</div>
 
     // show a stacked area chart of pricipal, contributions, and interest
     return (
@@ -127,7 +131,22 @@ function App(props: any) {
                         <option value="0.20" label="20%"></option>
                     </datalist>
                 </div>
+
+                <div>
+                    <label className="paramLabel" htmlFor="pmtMonthly">Contributions (monthly): <em>${pmtMonthly.toFixed(2)}</em></label>
+                    <input
+                        id="pmtMonthlyInput" className="rangeInput" name="pmtMonthly" type="range"
+                        value={pmtMonthly}
+                        min="0" max="15000" step="any"
+                        onInput={(e) => {
+                            const et = e.target as HTMLInputElement;
+                            setPmtMonthly(parseFloat(et.value))
+                        }}
+                    />
+                </div>
             </fieldset>
+
+            {errorMessage}
 
             <div id="graph">
                 <Line data={data} />
