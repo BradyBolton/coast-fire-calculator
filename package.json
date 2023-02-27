@@ -16,6 +16,7 @@
         "@types/react-dom": "^18.0.11",
         "chart.js": "^4.2.1",
         "chartjs-adapter-moment": "^1.0.1",
+        "gh-pages": "^5.0.0",
         "moment": "^2.29.4",
         "react": "^18.2.0",
         "react-chartjs-2": "^5.2.0",
@@ -28,7 +29,9 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache"
+        "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "eslintConfig": {
         "extends": [
