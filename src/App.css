@@ -10,6 +10,21 @@ html {
   align-items: center;
 }
 
+a#github-redirect {
+  color: black;
+  position: fixed;
+  top: 3%;
+  right: 2%;
+  font-size: 20px;
+  transition: 0.2s;
+}
+
+a#github-redirect:hover {
+  color: crimson;
+  font-size: 22px;
+  transition: 0.2s;
+}
+
 fieldset {
   margin: 0 20% 1rem 20%;
   padding: 0 3rem 1rem 3rem;

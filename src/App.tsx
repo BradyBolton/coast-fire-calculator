@@ -19,6 +19,11 @@ import {
     Legend,
 } from "chart.js";
 
+// import components
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+
 ChartJS.register(
     TimeScale,
     LinearScale,
@@ -67,9 +72,17 @@ function App(props: any) {
         </div >
     }
 
+    const faPropIcon = faGithub as IconProp;
+
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <div className="App">
+
+            <a id="github-redirect" href="https://github.com/BradyBolton/coast-fire-calculator">
+                <FontAwesomeIcon icon={faPropIcon} size="2xl" />
+            </a>
+
+
             <h1>Coast FIRE Calculator</h1>
 
             <fieldset>
