@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/coast-fire-calendar/static/css/main.07764c79.css",
-    "main.js": "/coast-fire-calendar/static/js/main.0b8481c6.js",
-    "index.html": "/coast-fire-calendar/index.html",
-    "main.07764c79.css.map": "/coast-fire-calendar/static/css/main.07764c79.css.map",
-    "main.0b8481c6.js.map": "/coast-fire-calendar/static/js/main.0b8481c6.js.map"
+    "main.css": "/coast-fire-calculator/static/css/main.07764c79.css",
+    "main.js": "/coast-fire-calculator/static/js/main.0b8481c6.js",
+    "index.html": "/coast-fire-calculator/index.html",
+    "main.07764c79.css.map": "/coast-fire-calculator/static/css/main.07764c79.css.map",
+    "main.0b8481c6.js.map": "/coast-fire-calculator/static/js/main.0b8481c6.js.map"
   },
   "entrypoints": [
     "static/css/main.07764c79.css",
