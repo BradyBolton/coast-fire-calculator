@@ -1,4 +1,4 @@
-import { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSet } from './calculations';
+import { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSets } from './calculations';
 
 const epsilon = 0.01
 
@@ -52,7 +52,7 @@ it('calculate coast fire date unsuccessfully', () => {
 });
 
 it('calculate record of 8 consecutive days', () => {
-    const today = new Date()
+    const today = new Date(2023, 1, 26)
     const a = new Date(today.getFullYear(), today.getMonth(), today.getDate())
     const b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 7);
 
@@ -68,27 +68,52 @@ it('calculate record of 8 consecutive days', () => {
     }
 
     const result = getDatesFormatted(a, b, 1)
+
     expect(result).toEqual(expected);
 })
 
 it('calculate datapoints of accumulation phase', () => {
-    const data = generateDataSet(2000000, 23, 50, 0.07, 3000)
-    const expected = {
-        data: [
-            { x: '2023-02-26', y: 0 },
-            { x: '2024-06-01', y: 47534.254094779266 },
-            { x: '2025-09-05', y: 99461.99074134445 },
-            { x: '2026-12-10', y: 156189.28949854075 },
-            { x: '2028-03-15', y: 218159.7629314719 },
-            { x: '2029-06-19', y: 285858.0257015538 },
-            { x: '2030-09-23', y: 359813.48429664073 },
-            { x: '2031-12-28', y: 440604.47703725065 },
-            { x: '2033-04-02', y: 528862.796734114 },
-            { x: '2034-07-07', y: 625278.6313646277 },
-            { x: '2035-10-11', y: 730605.9614047556 }
-        ]
-    }
+    const result = generateDataSets(2000000, 23, 50, 0.07, 3000)
 
-    expect(data).toEqual(expected)
+    // just validate the values, not the timestamps (we would be able to test
+    // both the 'x' and 'y' values if we used dependency injection)
+    const expectedPreCoastValues = [
+        0,
+        47534.254094779266,
+        99461.99074134445,
+        156189.28949854075,
+        218159.7629314719,
+        285858.0257015538,
+        359813.48429664073,
+        440604.47703725065,
+        528862.796734114,
+        625278.6313646277,
+        730605.9614047556,
+        732756.3276123962 // <- actual coast number
+    ]
+    const expectedPostCoastValues = [
+        732756.3276123962, // <- post coast begins at coast fire date
+        732861.5518112757,
+        810173.6102652627,
+        895641.5807978954,
+        990125.8583225263,
+        1094577.6037391664,
+        1210048.3191472243,
+        1337700.433180012,
+        1478819.0030222044,
+        1634824.6509129282,
+        1807287.865364581,
+        1997944.8110658743, // <- fire date
+    ]
+
+    const preCoastValues = result.preCoastData.map((x) => {
+        return x.y
+    })
+    const postCoastValues = result.postCoastData.map((x) => {
+        return x.y
+    })
+
+    expect(preCoastValues).toEqual(expectedPreCoastValues)
+    expect(postCoastValues).toEqual(expectedPostCoastValues)
 })
 

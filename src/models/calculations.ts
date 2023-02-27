@@ -20,6 +20,7 @@ interface CoastFireResult {
     isPossible: boolean;
     coastFireNumber: number | undefined;
     coastFireAge: number | undefined;
+    coastFireDate: Date | undefined;
     finalAmount: number | undefined;
 }
 
@@ -30,11 +31,14 @@ const convergeCoastFire = (iterations: number,
     pmt: number, min: number, max: number, rate: number,
     coastFireResult: CoastFireResult | undefined): CoastFireResult => {
 
+    const today = new Date()
+
     // default response indicating failure to compute coast fire number and year
     let result: CoastFireResult = coastFireResult !== undefined ? coastFireResult : {
         isPossible: false,
         coastFireNumber: undefined,
         coastFireAge: undefined,
+        coastFireDate: undefined,
         finalAmount: undefined,
     }
 
@@ -58,6 +62,7 @@ const convergeCoastFire = (iterations: number,
                 isPossible: true,
                 coastFireNumber: coastAmount,
                 coastFireAge: numActiveYears + currentAge,
+                coastFireDate: convertYearsElapsedToDate(today, numActiveYears),
                 finalAmount: finalAmount
             }
             return convergeCoastFire(iterations - 1, fireNumber, currentAge, retirementAge, pmt, newMin, newMax, rate, newResult)
@@ -65,6 +70,11 @@ const convergeCoastFire = (iterations: number,
     }
 
     return result
+}
+
+const convertYearsElapsedToDate = (startDate: Date, yearsElapsed: number): Date => {
+    const elapsedDays = Math.ceil(yearsElapsed * 365);
+    return new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + elapsedDays);
 }
 
 // calculate the coast fire amount and age necessary to retire at a given age with a given retirement goal at some rate of return
@@ -90,6 +100,7 @@ const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAg
         coastFireNumber: undefined,
         coastFireAge: undefined,
         finalAmount: undefined,
+        coastFireDate: undefined
     }
 }
 
@@ -99,7 +110,8 @@ interface CoastFireDatum {
 }
 
 interface CoastFireData {
-    data: CoastFireDatum[]
+    preCoastData: CoastFireDatum[] // today -> coast fire date, inclusive
+    postCoastData: CoastFireDatum[] // coast fire date -> retire date, inclusive
 }
 
 const getDates = (startDate: Date, stopDate: Date, stepDays: number) => {
@@ -122,6 +134,7 @@ const getDatesFormatted = (startDate: Date, stopDate: Date, stepDays: number): R
     let dates = getDates(startDate, stopDate, stepDays)
 
     var result = dates.reduce(function (map: Record<string, Date>, obj: Date) {
+        // const formattedDate: string = obj.toISOString()
         const formattedDate: string = formatDate(obj)
         map[formattedDate] = obj
         return map;
@@ -152,38 +165,64 @@ Return the value for the outer data field used to paint the line chart
   }
   ...
 */
-const generateDataSet = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number): CoastFireData => {
+const generateDataSets = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number): CoastFireData => {
     const result = calculateCoastFire(fireNumber, currentAge, retirementAge, rate, monthlyContribution)
     let data: CoastFireData = {
-        data: []
+        preCoastData: [],
+        postCoastData: []
     }
     if (result.isPossible) {
         // be careful: only use days for date calculations when using calculation results
         const today = new Date()
 
-        // get chart maximum date as Date object (multiplied by 1.1 for a padding past retirement age)
-        const daysTotal = ((retirementAge - currentAge) * 365) * 1.1
-        const maxDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysTotal);
+        // get chart maximum date as Date object
+        const daysTotal = ((retirementAge - currentAge) * 365)
+        const fireDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysTotal);
 
         // get coast fire date as Date object
         const daysAccumulating = ((result.coastFireAge ?? 0) - currentAge) * 365
         const coastFireDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + daysAccumulating);
 
-        const coastStepSize = Math.floor(dateDiffInDays(today, coastFireDate) / 10) // TODO: figure out a better way to handle step
-        const coastFireDates: Record<string, Date> = getDatesFormatted(today, coastFireDate, coastStepSize)
+        // accumulation phase
+        const preCoastStep = Math.floor(dateDiffInDays(today, coastFireDate) / 10) // TODO: figure out a better way to handle step
+        const preCoastDates: Record<string, Date> = getDatesFormatted(today, coastFireDate, preCoastStep)
 
-        for (const [dateStr, date] of Object.entries(coastFireDates)) {
+        // coasting phase
+        const postCoastStep = Math.floor(dateDiffInDays(coastFireDate, fireDate) / 10) // TODO: figure out a better way to handle step
+        const postCoastDates: Record<string, Date> = getDatesFormatted(coastFireDate, fireDate, postCoastStep)
+
+        for (const [dateStr, date] of Object.entries(preCoastDates)) {
             // years elapsed since current age
             const yearsElapsed = dateDiffInDays(today, date) / 365.0
             const dataPoint = {
                 x: dateStr,
                 y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed)
             }
-            data.data.push(dataPoint)
+            data.preCoastData.push(dataPoint)
         }
+
+        for (const [dateStr, date] of Object.entries(postCoastDates)) {
+            // years elapsed since current age
+            const yearsElapsed = dateDiffInDays(coastFireDate, date) / 365.0
+            const dataPoint = {
+                x: dateStr,
+                y: futureValue(result.coastFireNumber ?? 0, rate, 365, yearsElapsed)
+            }
+            data.postCoastData.push(dataPoint)
+        }
+
+        // append the specific coast fire day to datasets
+        const yearsElapsed = dateDiffInDays(today, coastFireDate) / 365.0
+        const dataPoint = {
+            x: formatDate(result.coastFireDate ?? today), // technically an x value of today would never happen
+            // x: result.coastFireDate?.toISOString() ?? today.toISOString(), // technically an x value of today would never happen
+            y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed)
+        }
+        data.preCoastData.push(dataPoint)
+        data.postCoastData.unshift(dataPoint)
     }
     return data
 
 }
 
-export { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSet }
+export { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSets }

@@ -2,15 +2,15 @@
 import "./App.css";
 
 // local imports
-import { generateDataSet } from "./models/calculations";
+import { generateDataSets } from "./models/calculations";
 
 // library imports
-import React, { useState } from "react";
-
-// component imports
+import { useState } from "react";
+import "chartjs-adapter-moment";
+import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
-    CategoryScale,
+    TimeScale,
     LinearScale,
     PointElement,
     LineElement,
@@ -18,61 +18,47 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
 
-export const options = {
-    animation: false,
-    responsive: true,
-    plugins: {
-        legend: {
-            position: "top",
-        },
-        title: {
-            display: true,
-            text: "Chart.js Line Chart",
-        },
-    },
-};
+ChartJS.register(
+    TimeScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 function App(props: any) {
-    ChartJS.register(
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        LineElement,
-        Title,
-        Tooltip,
-        Legend
-    );
-
     // setup local state (coast fire parameters)
     const [rate, setRate] = useState(0.07); // default to 7% APR
     const [currentAge, setCurrentAge] = useState(35);
-    const [retireAge, setRetireAge] = useState(50);
-    const [retireAgeLock, setRetireAgeLock] = useState(false);
-    const [pmtMonthly, setPmtMonthly] = useState(1000);
+    const [retireAge, setRetireAge] = useState(60);
+    const [pmtMonthly, setPmtMonthly] = useState(4000);
     const [fireNumber, setFireNumber] = useState(2000000);
 
-    const lockIcon = retireAgeLock ? <FontAwesomeIcon icon={faLock} /> : <FontAwesomeIcon color="red" icon={faLockOpen} />;
-
-    const projection = generateDataSet(fireNumber, currentAge, retireAge, rate, pmtMonthly).data
+    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate, pmtMonthly)
     const data = {
         datasets: [
             {
                 label: "Accumulation Phase",
-                data: projection,
+                data: projections.preCoastData,
                 borderColor: "rgb(255, 99, 132)",
                 backgroundColor: "rgba(255, 99, 132, 0.5)",
+            },
+            {
+                label: "Coasting Phase",
+                data: projections.postCoastData,
+                borderColor: "rgb(99, 102, 255)",
+                backgroundColor: "rgba(99, 102, 255, 0.5)",
             },
         ],
     };
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
-    const errorMessage = <div id="error">{projection.length === 0 ? 'FIRE is not possible with given parameters' : ''}</div>
+    const errorMessage = <div id="error">{projections.preCoastData.length === 0 ? 'FIRE is not possible with given parameters' : ''}</div>
 
-    // show a stacked area chart of pricipal, contributions, and interest
+    // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <div className="App">
             <h1>Coast FIRE Calculator</h1>
@@ -80,13 +66,6 @@ function App(props: any) {
             <fieldset>
                 <legend>Parameters</legend>
                 <div className="paramContainer">
-                    {/*
-                        <button className="paramLockToggle" onClick={(e) => {
-                            setRetireAgeLock(!retireAgeLock)
-                        }}>
-                            {lockIcon}
-                        </button>
-                    */}
                     <label className="paramLabel" htmlFor="currentAge">Current Age: </label>
                     <input id="currentAgeInput" name="currentAge" type="number"
                         value={currentAge}
@@ -118,7 +97,7 @@ function App(props: any) {
                     <input
                         id="rateInput" className="rangeInput" name="apr" type="range"
                         value={rate}
-                        min="0" max="0.2" step="any"
+                        min="0" max="0.2" step="0.001"
                         list="rateValues"
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
@@ -140,7 +119,7 @@ function App(props: any) {
                     <input
                         id="pmtMonthlyInput" className="rangeInput" name="pmtMonthly" type="range"
                         value={pmtMonthly}
-                        min="0" max="15000" step="any"
+                        min="0" max="15000" step="100"
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
                             setPmtMonthly(parseFloat(et.value))
@@ -172,9 +151,27 @@ function App(props: any) {
             {errorMessage}
 
             <div id="graph">
-                <Line data={data} />
-            </div>
+                <Line options={{
+                    animation: false,
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: "top",
+                        },
+                        title: {
+                            display: true,
+                            text: "Coast FIRE Projections",
+                        },
+                    },
+                    scales: {
+                        x: {
+                            type: 'time'
+                        }
+                    }
+                }} data={data} />
 
+
+            </div>
         </div>
     );
 }

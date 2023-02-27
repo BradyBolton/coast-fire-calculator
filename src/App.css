@@ -1,11 +1,15 @@
+html {
+  font-size: 1vw;
+}
+
 .App {
   text-align: center;
-  font-size: 1.3rem;
+  font-size: 0.7rem;
 }
 
 fieldset {
-  margin: 2rem 20%;
-  padding: 3rem;
+  margin: 2rem 20% 1rem 20%;
+  padding: 0 3rem 1rem 3rem;
   border-radius: 30px;
 }
 
@@ -29,7 +33,7 @@ em {
 
 input[type=number] {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 0.7rem;
   color: crimson;
 }
 
