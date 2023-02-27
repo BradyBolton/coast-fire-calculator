@@ -32,12 +32,6 @@ Run basic tests to verify coast fire calculations:
 npm run test
 ```
 
-## Roughly how it works
-
-* Slap a bunch of bootstrap for sliders and toggles
-* Indicate interest vs. principal and division between coast FIRE accumulation and non-accumulation phase with `chart.js`
-* Iteratively dial onto the coast FIRE number (because I didn't do the real math)
-
 ## Goals/Ideas
 
 There are a few potentially useful presentations of coast FIRE calculations:
