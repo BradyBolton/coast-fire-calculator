@@ -64,7 +64,6 @@ it('calculate record of 8 consecutive days', () => {
         '2023-03-02': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 4),
         '2023-03-03': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 5),
         '2023-03-04': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6),
-        '2023-03-05': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 7),
     }
 
     const result = getDatesFormatted(a, b, 1)
@@ -117,3 +116,12 @@ it('calculate datapoints of accumulation phase', () => {
     expect(postCoastValues).toEqual(expectedPostCoastValues)
 })
 
+
+it('zero FIRE number', () => {
+    const result = calculateCoastFire(0, 35, 60, 0.07, 1000)
+
+    expect(result.isPossible).toBeTruthy();
+    expect(result.coastFireNumber).toBeUndefined();
+    expect(result.coastFireAge).toBeUndefined();
+    expect(result.finalAmount).toBeUndefined();
+});

@@ -148,7 +148,7 @@ function App(props: any) {
                     <input
                         id="fireNumberInput" className="rangeInput" name="fireNumber" type="range"
                         value={fireNumber}
-                        min="10000" max="6000000" step="1000"
+                        min={principal} max="6000000" step="1000"
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
                             setFireNumber(parseFloat(et.value))

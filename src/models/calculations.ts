@@ -84,7 +84,6 @@ const convertYearsElapsedToDate = (startDate: Date, yearsElapsed: number): Date 
 const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number, principal: number = 0): CoastFireResult => {
 
     if (futureValue(principal, rate, 365, retirementAge - currentAge) >= fireNumber) {
-        console.log('already coast fire')
         return {
             isPossible: true,
             alreadyCoastFire: true,
@@ -133,9 +132,9 @@ interface CoastFireData {
 }
 
 const getDates = (startDate: Date, stopDate: Date, stepDays: number) => {
-    var dateArray: Date[] = new Array();
-    var currentDate = new Date(startDate);
-    while (currentDate <= stopDate) {
+    let dateArray: Date[] = new Array();
+    let currentDate = new Date(startDate);
+    while (currentDate < stopDate) {
         dateArray.push(new Date(currentDate));
         currentDate.setDate(currentDate.getDate() + stepDays);
     }
@@ -151,7 +150,7 @@ const formatDate = (date: Date): string => {
 const getDatesFormatted = (startDate: Date, stopDate: Date, stepDays: number): Record<string, Date> => {
     let dates = getDates(startDate, stopDate, stepDays)
 
-    var result = dates.reduce(function (map: Record<string, Date>, obj: Date) {
+    let result = dates.reduce(function (map: Record<string, Date>, obj: Date) {
         const formattedDate: string = formatDate(obj)
         map[formattedDate] = obj
         return map;
@@ -202,6 +201,15 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
 
         // accumulation phase
         const preCoastStep = Math.floor(dateDiffInDays(today, coastFireDate) / 10) // TODO: figure out a better way to handle step
+
+        // TODO: come up with a better replacement for this edge-case guardrail
+        // if the preCoastStep is 0, the app will not have a fun time
+        if (preCoastStep < 1) {
+            data.result.isPossible = true;
+            data.result.alreadyCoastFire = true; // for now just treat as already coast FIREd even though we technically haven't
+            return data;
+        }
+
         const preCoastDates: Record<string, Date> = getDatesFormatted(today, coastFireDate, preCoastStep)
 
         // coasting phase
