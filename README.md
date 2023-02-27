@@ -52,6 +52,10 @@ There are a few potentially useful presentations of coast FIRE calculations:
     
 Right now the calculator only *gives* you a coast FIRE number and date based on your desired retirement age and current rate of contribution. I.e. "how long do you have to keep things up until you hit coast FIRE?" It gives you a basic plan on how to get there. The next step would be to create a UI to allow people to trouble-shoot their own plans ("bring your own plan").
 
+<img src="./docs/timeline_concept.jpg" width="536" height="600">
+
+<img src="./docs/red_to_green_concept.jpg" width="646" height="300">
+
 ## Motivation
 
 My main motivation is to show the power of investing in your 20s. Coast FIRE is especially useful for young high-income earners. An ideal scenario would be:
