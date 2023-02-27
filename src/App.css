@@ -6,6 +6,7 @@
 fieldset {
   margin: 2rem 20%;
   padding: 3rem;
+  border-radius: 30px;
 }
 
 .rangeInput {
