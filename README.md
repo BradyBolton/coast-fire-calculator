@@ -73,6 +73,8 @@ After playing with the calculator, it is increasingly clear that shooting for a 
 
 Icons were generated with:
 
+TODO: actually need to fix the sizings (they're wrong)
+
 ```
 convert -background transparent -define 'icon:auto-resize=16,24,32,64' ./fire-solid.svg favicon.ico
 convert -background transparent -resize 192x192 ./fire-solid.svg logo192.png
