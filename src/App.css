@@ -11,7 +11,7 @@ html {
 }
 
 fieldset {
-  margin: 2rem 20% 1rem 20%;
+  margin: 0 20% 1rem 20%;
   padding: 0 3rem 1rem 3rem;
   border-radius: 30px;
 }

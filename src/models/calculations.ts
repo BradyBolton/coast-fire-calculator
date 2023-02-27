@@ -7,8 +7,8 @@ const futureValue = (p: number, r: number, n: number, t: number): number => {
 
 // calculate the future value of a series of payments
 // reference: https://www.thecalculatorsite.com/articles/finance/future-value-formula.php 
-const futureValueSeries = (pmt: number, r: number, n: number, t: number): number => {
-    return pmt * ((Math.pow(1 + (r / n), n * t) - 1) / (r / n))
+const futureValueSeries = (pmt: number, r: number, n: number, t: number, p: number = 0): number => {
+    return pmt * ((Math.pow(1 + (r / n), n * t) - 1) / (r / n)) + futureValue(p, r, n, t)
 }
 
 // quick helper function to average out monthly payments per day
@@ -18,6 +18,7 @@ const pmtMonthlyToDaily = (monthlyPmt: number): number => {
 
 interface CoastFireResult {
     isPossible: boolean;
+    alreadyCoastFire: boolean;
     coastFireNumber: number | undefined;
     coastFireAge: number | undefined;
     coastFireDate: Date | undefined;
@@ -28,7 +29,7 @@ interface CoastFireResult {
 // note: convergence won't work if coast fire is technically impossible (returning a mostly undefined result)
 const convergeCoastFire = (iterations: number,
     fireNumber: number, currentAge: number, retirementAge: number,
-    pmt: number, min: number, max: number, rate: number,
+    pmt: number, min: number, max: number, rate: number, principal: number = 0,
     coastFireResult: CoastFireResult | undefined): CoastFireResult => {
 
     const today = new Date()
@@ -36,6 +37,7 @@ const convergeCoastFire = (iterations: number,
     // default response indicating failure to compute coast fire number and year
     let result: CoastFireResult = coastFireResult !== undefined ? coastFireResult : {
         isPossible: false,
+        alreadyCoastFire: false,
         coastFireNumber: undefined,
         coastFireAge: undefined,
         coastFireDate: undefined,
@@ -51,7 +53,7 @@ const convergeCoastFire = (iterations: number,
     const step = (max - min) / 10
     for (let i = 1; i < 11; i++) {
         const numActiveYears = min + (i * step)
-        const coastAmount = futureValueSeries(pmt, rate, 365, numActiveYears)
+        const coastAmount = futureValueSeries(pmt, rate, 365, numActiveYears, principal)
         const numCoastYears = retirementAge - numActiveYears - currentAge
         const finalAmount = futureValue(coastAmount, rate, 365, numCoastYears)
 
@@ -60,12 +62,13 @@ const convergeCoastFire = (iterations: number,
             const newMax = numActiveYears
             const newResult: CoastFireResult = {
                 isPossible: true,
+                alreadyCoastFire: false,
                 coastFireNumber: coastAmount,
                 coastFireAge: numActiveYears + currentAge,
                 coastFireDate: convertYearsElapsedToDate(today, numActiveYears),
                 finalAmount: finalAmount
             }
-            return convergeCoastFire(iterations - 1, fireNumber, currentAge, retirementAge, pmt, newMin, newMax, rate, newResult)
+            return convergeCoastFire(iterations - 1, fireNumber, currentAge, retirementAge, pmt, newMin, newMax, rate, principal, newResult)
         }
     }
 
@@ -78,25 +81,39 @@ const convertYearsElapsedToDate = (startDate: Date, yearsElapsed: number): Date 
 }
 
 // calculate the coast fire amount and age necessary to retire at a given age with a given retirement goal at some rate of return
-const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number): CoastFireResult => {
+const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number, principal: number = 0): CoastFireResult => {
+
+    if (futureValue(principal, rate, 365, retirementAge - currentAge) >= fireNumber) {
+        console.log('already coast fire')
+        return {
+            isPossible: true,
+            alreadyCoastFire: true,
+            coastFireNumber: undefined,
+            coastFireAge: undefined,
+            finalAmount: undefined,
+            coastFireDate: undefined
+        }
+    }
+
     const pmt = pmtMonthlyToDaily(monthlyContribution)
 
     // TODO: make compounding period a parameter
     const yearsTilRetirement = retirementAge - currentAge
     for (let i = 1; i < (yearsTilRetirement + 1); i++) {
-        const coastAmount = futureValueSeries(pmt, rate, 365, i)
+        const coastAmount = futureValueSeries(pmt, rate, 365, i, principal)
         const numCoastYears = retirementAge - i - currentAge
         const finalAmount = futureValue(coastAmount, rate, 365, numCoastYears)
 
         if (finalAmount > fireNumber) {
             // hard-coded 3 iterations to converge toward coast fire data
-            return convergeCoastFire(3, fireNumber, currentAge, retirementAge, pmt, i - 1, i, rate, undefined)
+            return convergeCoastFire(3, fireNumber, currentAge, retirementAge, pmt, i - 1, i, rate, principal, undefined)
         }
     }
 
     // as numCoastYears approaches to 0, we approach a FIRE plan (no coasting)
     return {
         isPossible: false,
+        alreadyCoastFire: false,
         coastFireNumber: undefined,
         coastFireAge: undefined,
         finalAmount: undefined,
@@ -112,6 +129,7 @@ interface CoastFireDatum {
 interface CoastFireData {
     preCoastData: CoastFireDatum[] // today -> coast fire date, inclusive
     postCoastData: CoastFireDatum[] // coast fire date -> retire date, inclusive
+    result: CoastFireResult
 }
 
 const getDates = (startDate: Date, stopDate: Date, stepDays: number) => {
@@ -155,12 +173,21 @@ function dateDiffInDays(a: Date, b: Date) {
 }
 
 // Return the value for the outer data field used to paint the line chart
-const generateDataSets = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number): CoastFireData => {
-    const result = calculateCoastFire(fireNumber, currentAge, retirementAge, rate, monthlyContribution)
+const generateDataSets = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number, principal: number = 0): CoastFireData => {
+
+    const result = calculateCoastFire(fireNumber, currentAge, retirementAge, rate, monthlyContribution, principal)
+
     let data: CoastFireData = {
         preCoastData: [],
-        postCoastData: []
+        postCoastData: [],
+        result: result
     }
+
+    // check if the principal is already high enough to achieve FIRE at retirement age
+    if (result.alreadyCoastFire) {
+        return data
+    }
+
     if (result.isPossible) {
         // be careful: only use days for date calculations when using calculation results
         const today = new Date()
@@ -186,7 +213,7 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
             const yearsElapsed = dateDiffInDays(today, date) / 365.0
             const dataPoint = {
                 x: dateStr,
-                y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed)
+                y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed, principal)
             }
             data.preCoastData.push(dataPoint)
         }
@@ -205,7 +232,7 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
         const yearsElapsed = dateDiffInDays(today, coastFireDate) / 365.0
         const dataPoint = {
             x: formatDate(result.coastFireDate ?? today), // technically an x value of today would never happen
-            y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed)
+            y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed, principal)
         }
         data.preCoastData.push(dataPoint)
         data.postCoastData.unshift(dataPoint)

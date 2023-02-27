@@ -36,8 +36,9 @@ function App(props: any) {
     const [retireAge, setRetireAge] = useState(60);
     const [pmtMonthly, setPmtMonthly] = useState(4000);
     const [fireNumber, setFireNumber] = useState(2000000);
+    const [principal, setPrincipal] = useState(0);
 
-    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate, pmtMonthly)
+    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate, pmtMonthly, principal)
     const data = {
         datasets: [
             {
@@ -56,11 +57,15 @@ function App(props: any) {
     };
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
-    const errorMessage = projections.preCoastData.length === 0 ?
-        <div id="message"><em>FIRE is not possible with given parameters</em></div> :
-        <div id="message">
+
+    let summaryMessage = <div id="message"><em>FIRE is not possible with given parameters</em></div>
+    if (projections.result.alreadyCoastFire) {
+        summaryMessage = <div id="message">Coast FIRE already achieved!</div>
+    } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
+        summaryMessage = <div id="message">
             Coast FIRE number of <em>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</em> at {`${projections.postCoastData[0].x}`}
         </div >
+    }
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
@@ -150,9 +155,22 @@ function App(props: any) {
                         }}
                     />
                 </div>
+
+                <div className="paramContainer">
+                    <label className="paramLabel" htmlFor="principal">Initial value: <em>${principal.toLocaleString()}</em></label>
+                    <input
+                        id="principalInput" className="rangeInput" name="principal" type="range"
+                        value={principal}
+                        min="0" max="1000000" step="100"
+                        onInput={(e) => {
+                            const et = e.target as HTMLInputElement;
+                            setPrincipal(parseFloat(et.value))
+                        }}
+                    />
+                </div>
             </fieldset>
 
-            {errorMessage}
+            {summaryMessage}
 
             <div id="graph">
                 <Line options={{
