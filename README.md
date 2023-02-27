@@ -11,7 +11,7 @@ The goal of this coast FIRE calculator is to be simplistic, uncluttered, and eas
 * retirement age
 * APR
 * monthly contributions
-* Initial deposit
+* initial deposit (principal)
 
 Minor disclaimer: this app is completely static. Nothing is tracked.
 
