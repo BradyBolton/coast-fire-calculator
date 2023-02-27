@@ -1,6 +1,6 @@
 # coast-fire-calculator
 
-The goal of this coast FIRE calculator is to be simplistic, uncluttered, and easy to use (and look at). There are many great calculators out there that are much more capable, but my goal is to have something quick and dirty to do their napkin math. 
+The goal of this coast FIRE calculator is to be simplistic, uncluttered, and easy to use (and look at). There are many great calculators out there that are much more capable. In my opinion, [this guy](https://walletburst.com/tools/) has the best FIRE calculators on the Internet. My goal is to have something quick and dirty to do some napkin math while slapping a slider onto (almost) all of the parameters I care about. 
 
 `coast-fire-calculator` is a small CRA that attempts to calculate a coast FIRE number and date based on:
 
