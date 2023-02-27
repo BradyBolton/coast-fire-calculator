@@ -53,10 +53,11 @@ function App(props: any) {
     const [retireAge, setRetireAge] = useState(50);
     const [retireAgeLock, setRetireAgeLock] = useState(false);
     const [pmtMonthly, setPmtMonthly] = useState(1000);
+    const [fireNumber, setFireNumber] = useState(2000000);
 
     const lockIcon = retireAgeLock ? <FontAwesomeIcon icon={faLock} /> : <FontAwesomeIcon color="red" icon={faLockOpen} />;
 
-    const projection = generateDataSet(2000000, currentAge, retireAge, rate, pmtMonthly).data
+    const projection = generateDataSet(fireNumber, currentAge, retireAge, rate, pmtMonthly).data
     const data = {
         datasets: [
             {
@@ -133,7 +134,7 @@ function App(props: any) {
                 </div>
 
                 <div>
-                    <label className="paramLabel" htmlFor="pmtMonthly">Contributions (monthly): <em>${pmtMonthly.toFixed(2)}</em></label>
+                    <label className="paramLabel" htmlFor="pmtMonthly">Contributions (monthly): <em>${pmtMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</em></label>
                     <input
                         id="pmtMonthlyInput" className="rangeInput" name="pmtMonthly" type="range"
                         value={pmtMonthly}
@@ -141,6 +142,26 @@ function App(props: any) {
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
                             setPmtMonthly(parseFloat(et.value))
+                        }}
+                    />
+                </div>
+
+                <div>
+                    <label className="paramLabel" htmlFor="fireNumber">Fire Number: <em>${fireNumber.toLocaleString()}</em>
+                        <br />
+                        4% rule: <em>${(fireNumber * 0.04).toLocaleString()}/yr</em> at <em>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>
+                        <br />
+                        3% rule: <em>${(fireNumber * 0.03).toLocaleString()}/mo</em> at <em>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>
+                        <br />
+                        2% rule: <em>${(fireNumber * 0.02).toLocaleString()}/mo</em> at <em>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>
+                    </label>
+                    <input
+                        id="fireNumberInput" className="rangeInput" name="fireNumber" type="range"
+                        value={fireNumber}
+                        min="10000" max="6000000" step="1000"
+                        onInput={(e) => {
+                            const et = e.target as HTMLInputElement;
+                            setFireNumber(parseFloat(et.value))
                         }}
                     />
                 </div>
