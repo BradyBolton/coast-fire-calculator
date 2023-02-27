@@ -5,6 +5,9 @@ html {
 .App {
   text-align: center;
   font-size: 0.7rem;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
 }
 
 fieldset {
@@ -41,7 +44,10 @@ input[type=number] {
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
-  padding: 2rem 20%;
+  padding: 0 20%;
+  width: 50%;
+  height: 30%;
+  margin-bottom: 2rem;
 }
 
 button.paramLockToggle {
@@ -57,9 +63,13 @@ button.paramLockToggle:hover {
   background-color: lightgoldenrodyellow;
 }
 
-div#error {
-  color: crimson;
+div#message {
   font-weight: bold;
+  border: gray;
+  border-style: solid;
+  width: fit-content;
+  padding: 1rem;
+  border-radius: 30px;
 }
 
 div.paramContainer {

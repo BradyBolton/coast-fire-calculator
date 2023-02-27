@@ -25,7 +25,7 @@ interface CoastFireResult {
 }
 
 // numerically resolve the coast fire amount and date (I can't be bothered to figure out the symbolic math)
-// note: convergence won't work if coast fire is technically impossible
+// note: convergence won't work if coast fire is technically impossible (returning a mostly undefined result)
 const convergeCoastFire = (iterations: number,
     fireNumber: number, currentAge: number, retirementAge: number,
     pmt: number, min: number, max: number, rate: number,
@@ -81,7 +81,7 @@ const convertYearsElapsedToDate = (startDate: Date, yearsElapsed: number): Date 
 const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number): CoastFireResult => {
     const pmt = pmtMonthlyToDaily(monthlyContribution)
 
-    // TODO: remove hardcoded compounding period?
+    // TODO: make compounding period a parameter
     const yearsTilRetirement = retirementAge - currentAge
     for (let i = 1; i < (yearsTilRetirement + 1); i++) {
         const coastAmount = futureValueSeries(pmt, rate, 365, i)
@@ -134,7 +134,6 @@ const getDatesFormatted = (startDate: Date, stopDate: Date, stepDays: number): R
     let dates = getDates(startDate, stopDate, stepDays)
 
     var result = dates.reduce(function (map: Record<string, Date>, obj: Date) {
-        // const formattedDate: string = obj.toISOString()
         const formattedDate: string = formatDate(obj)
         map[formattedDate] = obj
         return map;
@@ -155,16 +154,7 @@ function dateDiffInDays(a: Date, b: Date) {
     return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
 
-/*
-Return the value for the outer data field used to paint the line chart
-  ...
-  data: {
-    datasets: [{
-      data: [{x: '2016-12-25', y: 1000}, {x: '2016-12-26', y: 1050}]
-    }]
-  }
-  ...
-*/
+// Return the value for the outer data field used to paint the line chart
 const generateDataSets = (fireNumber: number, currentAge: number, retirementAge: number, rate: number, monthlyContribution: number): CoastFireData => {
     const result = calculateCoastFire(fireNumber, currentAge, retirementAge, rate, monthlyContribution)
     let data: CoastFireData = {
@@ -215,7 +205,6 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
         const yearsElapsed = dateDiffInDays(today, coastFireDate) / 365.0
         const dataPoint = {
             x: formatDate(result.coastFireDate ?? today), // technically an x value of today would never happen
-            // x: result.coastFireDate?.toISOString() ?? today.toISOString(), // technically an x value of today would never happen
             y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed)
         }
         data.preCoastData.push(dataPoint)

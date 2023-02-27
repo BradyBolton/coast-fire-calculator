@@ -56,7 +56,11 @@ function App(props: any) {
     };
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
-    const errorMessage = <div id="error">{projections.preCoastData.length === 0 ? 'FIRE is not possible with given parameters' : ''}</div>
+    const errorMessage = projections.preCoastData.length === 0 ?
+        <div id="message"><em>FIRE is not possible with given parameters</em></div> :
+        <div id="message">
+            Coast FIRE number of <em>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</em> at {`${projections.postCoastData[0].x}`}
+        </div >
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
