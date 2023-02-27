@@ -79,12 +79,14 @@ function App(props: any) {
 
             <fieldset>
                 <legend>Parameters</legend>
-                <div>
-                    <button className="paramLockToggle" onClick={(e) => {
-                        setRetireAgeLock(!retireAgeLock)
-                    }}>
-                        {lockIcon}
-                    </button>
+                <div className="paramContainer">
+                    {/*
+                        <button className="paramLockToggle" onClick={(e) => {
+                            setRetireAgeLock(!retireAgeLock)
+                        }}>
+                            {lockIcon}
+                        </button>
+                    */}
                     <label className="paramLabel" htmlFor="currentAge">Current Age: </label>
                     <input id="currentAgeInput" name="currentAge" type="number"
                         value={currentAge}
@@ -98,7 +100,7 @@ function App(props: any) {
 
                 <br />
 
-                <div>
+                <div className="paramContainer">
                     <label className="paramLabel" htmlFor="retireAge">Retirement Age: <em>{retireAge}</em></label>
                     <input
                         id="retireAgeInput" className="rangeInput" name="retireAge" type="range"
@@ -111,7 +113,7 @@ function App(props: any) {
                     />
                 </div>
 
-                <div>
+                <div className="paramContainer">
                     <label className="paramLabel" htmlFor="apr">APR (return): <em>{(rate * 100).toFixed(2)}%</em></label>
                     <input
                         id="rateInput" className="rangeInput" name="apr" type="range"
@@ -133,7 +135,7 @@ function App(props: any) {
                     </datalist>
                 </div>
 
-                <div>
+                <div className="paramContainer">
                     <label className="paramLabel" htmlFor="pmtMonthly">Contributions (monthly): <em>${pmtMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</em></label>
                     <input
                         id="pmtMonthlyInput" className="rangeInput" name="pmtMonthly" type="range"
@@ -146,7 +148,7 @@ function App(props: any) {
                     />
                 </div>
 
-                <div>
+                <div className="paramContainer">
                     <label className="paramLabel" htmlFor="fireNumber">Fire Number: <em>${fireNumber.toLocaleString()}</em>
                         <br />
                         4% rule: <em>${(fireNumber * 0.04).toLocaleString()}/yr</em> at <em>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>

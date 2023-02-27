@@ -4,8 +4,8 @@
 }
 
 fieldset {
-  margin: 2rem;
-  padding: 2rem;
+  margin: 2rem 20%;
+  padding: 3rem;
 }
 
 .rangeInput {
@@ -55,4 +55,8 @@ button.paramLockToggle:hover {
 div#error {
   color: crimson;
   font-weight: bold;
+}
+
+div.paramContainer {
+  margin-top: 1rem;
 }
