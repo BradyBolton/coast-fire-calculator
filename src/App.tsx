@@ -2,7 +2,7 @@
 import "./App.css";
 
 // local imports
-import { generateDataSets } from "./models/calculations";
+import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
 
 // library imports
 import { useState } from "react";
@@ -44,6 +44,8 @@ function App(props: any) {
     const [principal, setPrincipal] = useState(0);
 
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate, pmtMonthly, principal)
+    const today = new Date()
+    const maxChartDate = convertYearsElapsedToDate(today, retireAge - currentAge);
     const data = {
         datasets: [
             {
@@ -63,12 +65,19 @@ function App(props: any) {
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
 
-    let summaryMessage = <div id="message"><em>FIRE is not possible with given parameters</em></div>
+    let summaryMessage = <div id="message" className="bad"><em>FIRE is not possible with given parameters</em></div>
     if (projections.result.alreadyCoastFire) {
-        summaryMessage = <div id="message">Coast FIRE already achieved!</div>
+        summaryMessage = <div id="message" className="great">Coast FIRE already achieved!</div>
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
-        summaryMessage = <div id="message">
-            Coast FIRE number of <em>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</em> at {`${projections.postCoastData[0].x}`}
+        summaryMessage = <div id="message" className="good">
+            Coast FIRE number of <em>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</em>
+            on {`${projections.result.coastFireDate ?
+                projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
+
+            (at age {`${projections.result.coastFireAge ?
+                (projections.result.coastFireAge).toFixed(2) : ''} `}
+            in {`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}
+            )
         </div >
     }
 
@@ -141,7 +150,7 @@ function App(props: any) {
                     <input
                         id="pmtMonthlyInput" className="rangeInput" name="pmtMonthly" type="range"
                         value={pmtMonthly}
-                        min="0" max="15000" step="100"
+                        min="0" max="15000" step="50"
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
                             setPmtMonthly(parseFloat(et.value))
@@ -200,7 +209,11 @@ function App(props: any) {
                     },
                     scales: {
                         x: {
-                            type: 'time'
+                            type: 'time',
+                            max: maxChartDate.toISOString()
+                        },
+                        y: {
+                            max: Math.floor(fireNumber * 1.1)
                         }
                     }
                 }} data={data} />

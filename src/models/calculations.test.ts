@@ -57,13 +57,13 @@ it('calculate record of 8 consecutive days', () => {
     const b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 7);
 
     const expected = {
-        '2023-02-26': new Date(a.getFullYear(), a.getMonth(), a.getDate()),
-        '2023-02-27': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 1),
-        '2023-02-28': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 2),
-        '2023-03-01': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 3),
-        '2023-03-02': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 4),
-        '2023-03-03': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 5),
-        '2023-03-04': new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6),
+        "2023-02-26T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate()),
+        "2023-02-27T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 1),
+        "2023-02-28T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 2),
+        "2023-03-01T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 3),
+        "2023-03-02T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 4),
+        "2023-03-03T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 5),
+        "2023-03-04T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6),
     }
 
     const result = getDatesFormatted(a, b, 1)
@@ -102,7 +102,8 @@ it('calculate datapoints of accumulation phase', () => {
         1478819.0030222044,
         1634824.6509129282,
         1807287.865364581,
-        1997944.8110658743, // <- fire date
+        1997944.8110658743,
+        2000000  // <- fire date
     ]
 
     const preCoastValues = result.preCoastData.map((x) => {

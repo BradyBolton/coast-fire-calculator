@@ -151,7 +151,7 @@ const getDatesFormatted = (startDate: Date, stopDate: Date, stepDays: number): R
     let dates = getDates(startDate, stopDate, stepDays)
 
     let result = dates.reduce(function (map: Record<string, Date>, obj: Date) {
-        const formattedDate: string = formatDate(obj)
+        const formattedDate: string = obj.toISOString()
         map[formattedDate] = obj
         return map;
     }, {});
@@ -237,16 +237,24 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
         }
 
         // append the specific coast fire day to datasets
-        const yearsElapsed = dateDiffInDays(today, coastFireDate) / 365.0
-        const dataPoint = {
-            x: formatDate(result.coastFireDate ?? today), // technically an x value of today would never happen
+        let yearsElapsed = dateDiffInDays(today, coastFireDate) / 365.0
+        let dataPoint = {
+            x: (result.coastFireDate ?? today).toISOString(), // technically an x value of today would never happen
             y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed, principal)
         }
         data.preCoastData.push(dataPoint)
         data.postCoastData.unshift(dataPoint)
+
+        // make sure to append the fire day to post coast dataset
+        yearsElapsed = dateDiffInDays(today, fireDate) / 365.0
+        dataPoint = {
+            x: fireDate.toISOString(),
+            y: fireNumber
+        }
+        data.postCoastData.push(dataPoint)
     }
     return data
 
 }
 
-export { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSets }
+export { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSets, convertYearsElapsedToDate, formatDate }

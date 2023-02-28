@@ -80,11 +80,29 @@ button.paramLockToggle:hover {
 
 div#message {
   font-weight: bold;
-  border: gray;
+  border: lightgrey;
   border-style: solid;
   width: fit-content;
   padding: 1rem;
   border-radius: 30px;
+  font-size: 0.9rem;
+}
+
+div#message.great {
+  border-color: lightgreen;
+  background-color: green;
+  color: white;
+  font-weight: bold;
+}
+
+div#message.bad {
+  background-color: crimson;
+  border-color: salmon;
+}
+
+div#message.bad em {
+  color: white;
+  font-weight: bold;
 }
 
 div.paramContainer {
