@@ -84,9 +84,9 @@ convert -background transparent -resize 512x512 ./fire-solid.svg logo192.png
 - [ ] Integrate AMUI, e.g. [slider with text input](https://mui.com/material-ui/react-slider/#slider-with-input-field) would be much better
     - [ ] Come up with a decent layout in Figma using AMUI elements (maybe)
 - [ ] Toggle for daily, monthly, quarterly, semiannually, annually compound interest
-- [ ] Make the coast FIRE message more user-friendly: "Your coast FIRE number is $XX.XX at age XX ({month} {day}(st|th|...), 20XX)"
+- [X] Make the coast FIRE message more user-friendly: "Your coast FIRE number is $XX.XX at age XX ({month} {day}(st|th|...), 20XX)"
 - [ ] Fix mobile
-- [ ] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
+- [X] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
     - [ ] Ensure that the number of datapoints on the timeline stays constant
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
 - [ ] Have a "save as link" feature where you get a URL embedded with current parameters (maybe base64 json) to show your calculations to others
