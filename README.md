@@ -79,3 +79,21 @@ convert -background transparent -define 'icon:auto-resize=16,24,32,64' ./fire-so
 convert -background transparent -resize 192x192 ./fire-solid.svg logo192.png
 convert -background transparent -resize 512x512 ./fire-solid.svg logo192.png
 ```
+
+## TODO:
+- [ ] Integrate AMUI, e.g. [slider with text input](https://mui.com/material-ui/react-slider/#slider-with-input-field) would be much better
+    - [ ] Come up with a decent layout in Figma using AMUI elements (maybe)
+- [ ] Toggle for daily, monthly, quarterly, semiannually, annually compound interest
+- [ ] Make the coast FIRE message more user-friendly: "Your coast FIRE number is $XX.XX at age XX ({month} {day}(st|th|...), 20XX)"
+- [ ] Fix mobile
+- [ ] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number
+    - [ ] Ensure that the number of datapoints on the timeline stays constant
+- [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
+- [ ] Have a "save as link" feature where you get a URL embedded with current parameters (maybe base64 json) to show your calculations to others
+- [ ] Tooltip for each parameter
+- [ ] Explanation of why FIRE is impossible
+    - [ ] Show all-red graph of current trajectory (instead of not showing anything at all)
+- [ ] Show an all-blue graph if already coast FIRE (instead of not showing anything at all)
+- [ ] Figure out a solution to the min/max ranges not meeting all user expectations/situations
+- [ ] iMovie-like "bring your own plan" calculator (might not ever get to this)
+- [ ] Red to green financial retirement spectrum (with info for cursor hover)
