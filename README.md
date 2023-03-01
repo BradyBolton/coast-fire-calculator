@@ -21,10 +21,6 @@ Using those inputs, you might see something like this:
 
 In this example, I'm 35, looking to retire at 60, setting aside $4000 a month toward a goal of $2m ($80k/yr by the 4% rule) expecting a steady 7% average return (starting from nothing). I would need to keep it up until I accumulate around $705K in investments by the time I turn 45 (so ~10 years). After my 45th birthday, I will halt all retirement contributions with the expectation that my nest-egg will grow into 2 million by the time I turn 60. By then, I should be able to withdraw $80k/yr (or $6666/mo) for the rest of my life.
 
-The red line is your accumulation phase. You're dumping dollars into the market through investments that appreciate over time. You will pass a threshold where your investments are large enough such that you can stop contributing and let time take care of the rest. In other words, your coast FIRE number will have enough time to grow to your FIRE number by a given retirement date as long as you start contributing **now**.
-
-The blue line is your coasting phase. You don't have to contribute at all to retirement, and still retire at your desired age. You can do whatever you want with the money you were previously contributing, and focus on living life.
-
 Depending on your situation, either of the following could be true:
 
 * You don't need to save any money (already coast FIREd): no graph (but it would technically be all blue)
