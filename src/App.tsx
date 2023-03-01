@@ -103,7 +103,7 @@ function App(props: any) {
                         min="15" max="100" step="1"
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
-                            setCurrentAge(parseInt(et.value))
+                            setCurrentAge(parseInt(et.value !== "" ? et.value : "0"))
                         }}
                     />
                 </div>
