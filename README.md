@@ -6,7 +6,7 @@ I wanted a simplistic calculator to do two things:
 * Tell me: "for how long do I have to save $X per month so that I can retire at X age?"
 * Put a slider on (almost) every parameter so I play with the graph
 
-`coast-fire-calculator` is a small CRA that attempts to calculate a coast FIRE number and date based on:
+Even though the app is called `coast-fire-calculator` it can actually calculate regular FIRE as well. The app converges onto a coast FIRE number and date based on:
 
 * FIRE number
 * current age
@@ -15,11 +15,11 @@ I wanted a simplistic calculator to do two things:
 * monthly contributions
 * initial deposit (principal)
 
-Using those inputs, you might see something like this:
+As the situation becomes less ideal, the coast FIRE number approaches your FIRE number. Beyond that, FIRE is not possible. Using the inputs above, you might see something like this:
 
 <img src="./docs/graph_example.png" width="720" height="475">
 
-In this example, I'm 35, looking to retire at 60, setting aside $4000 a month toward a goal of $2m ($80k/yr by the 4% rule) expecting a steady 7% average return (starting from nothing). I would need to keep it up until I accumulate around $705K in investments by the time I turn 45 (so ~10 years). After my 45th birthday, I will halt all retirement contributions with the expectation that my nest-egg will grow into 2 million by the time I turn 60. By then, I should be able to withdraw $80k/yr (or $6666/mo) for the rest of my life.
+In this example, I'm 35 starting from nothing, looking to retire at 60, setting aside $4000 a month toward a goal of $2m (to sustain a 4% withdrawal rate of $80k/yr) given that we see an average rate of turn of 7%. I would need to keep it up until I accumulate around $705K in investments by the time I turn 45 (so ~10 years). After my 45th birthday, I will halt all retirement contributions with the expectation that my nest-egg will grow by $1.3m by the time I turn 60. By then, I believe that $6666/mo (potentially more due to SS) will allow me to live comfortable for the rest of my life.
 
 Depending on your situation, either of the following could be true:
 
@@ -28,7 +28,7 @@ Depending on your situation, either of the following could be true:
 * You're saving money up until the day you retire: red line only (blue line is infinitesimal)
 * Your retirement goal is unrealistic and you will fall short of that goal: no graph (but it would technically be all red)
 
-If you like this but want something more polished I would check out [this guy](https://walletburst.com/tools/).
+If you like this but want something more polished I would check out [this guy](https://walletburst.com/tools/). There is a lot of nuance to the discussion of coast FIRE, and I think [Die with Zero](https://www.diewithzerobook.com/welcome) expresses the most common counter-argument to extreme FIRE. A coast FIRE strategy can be a decent balance between pragmatic nest-egg building and spending on yourself 'in the now'. You can turn the "boring middle" into an "exciting middle".
 
 ## To run
 
