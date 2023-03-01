@@ -28,8 +28,8 @@ The blue line is your coasting phase. You don't have to contribute at all to ret
 Depending on your situation, either of the following could be true:
 
 * You don't need to save any money (already coast FIREd): no graph (but it would technically be all blue)
-* You're saving money for only a few years: red and blue graph
-* You're saving money up until the day you retire: red graph only (blue graph is infinitesimal)
+* You're saving money for only a few years: red and blue lines
+* You're saving money up until the day you retire: red line only (blue line is infinitesimal)
 * Your retirement goal is unrealistic and you will fall short of that goal: no graph (but it would technically be all red)
 
 If you like this but want something more polished I would check out [this guy](https://walletburst.com/tools/).
