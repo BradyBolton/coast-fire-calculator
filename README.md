@@ -23,10 +23,14 @@ In this example, I'm 35 starting from nothing, looking to retire at 60, setting 
 
 Depending on your situation, either of the following could be true:
 
-* You don't need to save any money (already coast FIREd): no graph (but it would technically be all blue)
-* You're saving money for only a few years: red and blue lines
-* You're saving money up until the day you retire: red line only (blue line is infinitesimal)
-* Your retirement goal is unrealistic and you will fall short of that goal: no graph (but it would technically be all red)
+* You don't need to save any money (already coast FIREd)
+    * No graph shown yet (but it would technically be just a blue line)
+* You're saving money for only a few years
+    * Red and blue lines
+* You're saving money up until the day you retire:
+    * Red line only (blue line is infinitesimal)
+* Your retirement goal is unrealistic and you will fall short of that goal
+    * No graph shown yet (but it would technically be just a red line)
 
 If you like this but want something more polished I would check out [this guy](https://walletburst.com/tools/). There is a lot of nuance to the discussion of coast FIRE, and I think [Die with Zero](https://www.diewithzerobook.com/welcome) expresses the most common counter-argument to extreme FIRE. A coast FIRE strategy can be a decent balance between pragmatic nest-egg building and spending on yourself 'in the now'. You can turn the "boring middle" into an "exciting middle".
 
