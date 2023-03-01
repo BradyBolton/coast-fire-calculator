@@ -15,7 +15,7 @@ Even though the app is called `coast-fire-calculator` it can actually calculate 
 * monthly contributions
 * initial deposit (principal)
 
-As the situation becomes less ideal, the coast FIRE number approaches your FIRE number. Beyond that, FIRE is not possible. Using the inputs above, you might see something like this:
+As the situation becomes less attainable, the coast FIRE number approaches your FIRE number. Beyond that, FIRE is not possible. Using the inputs above, you might see something like this:
 
 <img src="./docs/graph_example.png" width="720" height="475">
 
