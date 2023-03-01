@@ -108,3 +108,35 @@ div#message.bad em {
 div.paramContainer {
   margin-top: 1rem;
 }
+
+/*
+  annoying: styling is messed up so hard by mobile, but there is no 'fool-proof'
+  way of testing that the user is on a phone
+  @media (max-width : 450px) {
+ */
+@media (pointer:none),
+(pointer:coarse) {
+  .App {
+    font-size: 12px;
+  }
+
+  div#message {
+    font-size: 12px;
+    margin: 0 10%;
+  }
+
+  fieldset {
+    margin: 2rem 0;
+  }
+
+  div#graph {
+    margin: 2rem 0;
+    padding: 0;
+    width: 80%;
+    height: 300px;
+  }
+
+  input[type=number] {
+    font-size: 12px;
+  }
+}

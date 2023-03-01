@@ -1,6 +1,6 @@
 # coast-fire-calculator
 
-> :point_right: **Go [here](https://bradybolton.github.io/coast-fire-calculator/) to play with the actual calculator** (warning: does NOT work on mobile)
+> :point_right: **Go [here](https://bradybolton.github.io/coast-fire-calculator/) to play with the actual calculator** (warning: might look bad on mobile)
 
 The goal of this coast FIRE calculator is to be simplistic, uncluttered, and easy to use (and look at). There are many great calculators out there that are much more capable. In my opinion, [this guy](https://walletburst.com/tools/) has the best FIRE calculators on the Internet. My goal is to have something quick and dirty to do some napkin math while slapping a slider onto (almost) all of the parameters I care about. 
 
@@ -73,8 +73,9 @@ Right now the calculator only *gives* you a coast FIRE number and date based on 
     - [ ] Come up with a decent layout in Figma using AMUI elements (maybe)
 - [ ] Toggle for daily, monthly, quarterly, semiannually, annually compound interest
 - [X] Make the coast FIRE message more user-friendly: "Your coast FIRE number is $XX.XX at age XX ({month} {day}(st|th|...), 20XX)"
-- [ ] Fix mobile
+- [X] Fix mobile
     - [ ] Show a mostly blank screen if on mobile, explicitly stating that mobile is not supported right now 
+    - [ ] Mobile is half-assed for now (need to whole-ass it when integrated with AMUI)
 - [X] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
     - [ ] Ensure that the number of datapoints on the timeline stays constant
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit

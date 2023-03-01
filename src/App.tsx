@@ -201,6 +201,7 @@ function App(props: any) {
                 <Line options={{
                     animation: false,
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: "top",
@@ -216,6 +217,7 @@ function App(props: any) {
                             max: maxChartDate.toISOString()
                         },
                         y: {
+                            min: 0,
                             max: Math.floor(fireNumber * 1.1)
                         }
                     }
