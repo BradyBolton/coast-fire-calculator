@@ -99,10 +99,13 @@ function App(props: any) {
                 <div className="paramContainer">
                     <label className="paramLabel" htmlFor="currentAge">Current Age: </label>
                     <input id="currentAgeInput" name="currentAge" type="number"
-                        value={currentAge}
+                        // treat zero as someone in the process of inputting their age
+                        // because who would *possibly* be trying to do this for a newborn right? (heh)
+                        value={currentAge ? currentAge : ''}
                         min="15" max="100" step="1"
                         onInput={(e) => {
                             const et = e.target as HTMLInputElement;
+                            // default to 0 if empty, otherwise app will explode
                             setCurrentAge(parseInt(et.value !== "" ? et.value : "0"))
                         }}
                     />
