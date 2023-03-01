@@ -1,8 +1,10 @@
 # coast-fire-calculator
 
-> :point_right: **Go [here](https://bradybolton.github.io/coast-fire-calculator/) to play with the actual calculator** (warning: might look bad on mobile)
+> :point_right: **Go [here](https://bradybolton.github.io/coast-fire-calculator/) to play with the actual calculator**
 
-The goal of this coast FIRE calculator is to be simplistic, uncluttered, and easy to use (and look at). There are many great calculators out there that are much more capable. In my opinion, [this guy](https://walletburst.com/tools/) has the best FIRE calculators on the Internet. My goal is to have something quick and dirty to do some napkin math while slapping a slider onto (almost) all of the parameters I care about. 
+I wanted a simplistic calculator to do two things:
+* Tell me: "for how long do I have to save $X per month so that I can retire at X age?"
+* Put a slider on (almost) every parameter so I play with the graph
 
 `coast-fire-calculator` is a small CRA that attempts to calculate a coast FIRE number and date based on:
 
@@ -13,7 +15,24 @@ The goal of this coast FIRE calculator is to be simplistic, uncluttered, and eas
 * monthly contributions
 * initial deposit (principal)
 
-Minor disclaimer: this app is completely static. Nothing is tracked.
+Using those inputs, you might see something like this:
+
+<img src="./docs/graph_example.png" width="720" height="475">
+
+In this example, I'm 35, looking to retire at 60, setting aside $4000 a month toward a goal of $2m ($80k/yr by the 4% rule) expecting a steady 7% average return (starting from nothing). I would need to keep it up until I accumulate around $705K in investments by the time I turn 45 (so ~10 years). After my 45th birthday, I will halt all retirement contributions with the expectation that my nest-egg will grow into 2 million by the time I turn 60. By then, I should be able to withdraw $80k/yr (or $6666/mo) for the rest of my life.
+
+The red line is your accumulation phase. You're dumping dollars into the market through investments that appreciate over time. You will pass a threshold where your investments are large enough such that you can stop contributing and let time take care of the rest. In other words, your coast FIRE number will have enough time to grow to your FIRE number by a given retirement date as long as you start contributing **now**.
+
+The blue line is your coasting phase. You don't have to contribute at all to retirement, and still retire at your desired age. You can do whatever you want with the money you were previously contributing, and focus on living life.
+
+Depending on your situation, either of the following could be true:
+
+* You don't need to save any money (already coast FIREd): no graph (but it would technically be all blue)
+* You're saving money for only a few years: red and blue graph
+* You're saving money up until the day you retire: red graph only (blue graph is infinitesimal)
+* Your retirement goal is unrealistic and you will fall short of that goal: no graph (but it would technically be all red)
+
+If you like this but want something more polished I would check out [this guy](https://walletburst.com/tools/).
 
 ## To run
 
@@ -34,11 +53,11 @@ npm run test
 
 ## Motivation
 
-My main motivation is to show the power of investing in your 20s. Coast FIRE is especially useful for young high-income earners. An ideal scenario would be:
+My main motivation is to show the power of investing in your 20/30s. Coast FIRE is especially useful for young high-income earners. The most ideal scenario would be:
 
 * All gas / no brakes approach toward savings in 20s
     * Max out all tax-advantaged savings (no exceptions) and top off a little extra in a taxable brokerage
-* Early 30s one can completely halt contributions
+* Early/mid 30s one can completely halt contributions
 * Let time and compound interest take care of the rest
 * Life-max to the fullest by dumping every conceivable dollar into housing, travel, projects etc.
 * Retire "early" at age 50 after ~20-25 years of high-octane living
@@ -74,8 +93,8 @@ Right now the calculator only *gives* you a coast FIRE number and date based on 
 - [ ] Toggle for daily, monthly, quarterly, semiannually, annually compound interest
 - [X] Make the coast FIRE message more user-friendly: "Your coast FIRE number is $XX.XX at age XX ({month} {day}(st|th|...), 20XX)"
 - [X] Fix mobile
-    - [ ] Show a mostly blank screen if on mobile, explicitly stating that mobile is not supported right now 
-    - [ ] Mobile is half-assed for now (need to whole-ass it when integrated with AMUI)
+    - [ ] ~~Show a mostly blank screen if on mobile, explicitly stating that mobile is not supported right now~~
+    - [X] Mobile is half-assed for now (need to whole-ass it when integrated with AMUI)
 - [X] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
     - [ ] Ensure that the number of datapoints on the timeline stays constant
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
