@@ -19,6 +19,20 @@ const defaultTheme = createTheme({
     palette: {
         mode: 'light', // could be 'dark'
     },
+    typography: {
+        body1: {
+            fontSize: '1.1rem',
+        },
+        label: {
+            // fontWeight: 'bold',
+            fontSize: '1.1rem',
+        },
+        subtitle1: {
+            color: 'slategrey',
+            fontSize: '1.1rem',
+            // fontWeight: 'bold'
+        }
+    },
 });
 
 // import CssBaseline to remove some browswer inconsistencies

@@ -1,4 +1,4 @@
-import { Input, Grid, Typography, Slider, Box } from '@mui/material'
+import { TextField, Input, Grid, Typography, Slider, Box } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 
 import React, { useState } from 'react'
@@ -18,10 +18,6 @@ interface IRangeProps {
 
 function Range(props: IRangeProps) {
 
-    // const [currentValue, setCurrentValue] = useState<number | number[]>(
-    //     props.defaultValue,
-    // );
-
     const handleSliderChange = (event: Event, value: number | number[]) => {
         // setCurrentValue(value);
         props.setState(value as number) // TODO: uncomment this
@@ -36,7 +32,7 @@ function Range(props: IRangeProps) {
     };
 
     // TODO: do something else about this gross sizing (trying to make mobile look good)
-    let textInputSize = 2
+    let textInputSize = 2.5
     if (Math.floor(Math.log10(props.maxValue)) > 2) {
         textInputSize = 4
     }
@@ -51,16 +47,27 @@ function Range(props: IRangeProps) {
         textInputSize = 3
     }
 
+    const marks = [
+        {
+            value: props.minValue,
+            label: props.minValue.toLocaleString(),
+        },
+        {
+            value: props.maxValue,
+            label: props.maxValue.toLocaleString(),
+        },
+    ];
+
     return (
         <Box>
-            <Typography variant="body1">
+            <Typography variant="label">
                 {props.labelText}
             </Typography>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12 - textInputSize}>
+            <Grid container spacing={2} alignItems="center" sx={{ pl: 2 }}>
+                <Grid item xs={12 - textInputSize} sx={{ pr: 2 }}>
                     <Slider
                         sx={{
-                            color: 'darkred'
+                            color: 'darkred',
                         }}
                         defaultValue={props.defaultValue}
                         value={props.state || 0}
@@ -68,14 +75,16 @@ function Range(props: IRangeProps) {
                         min={props.minValue}
                         max={props.maxValue}
                         step={props.step}
+                        valueLabelDisplay="auto"
+                        marks={marks}
                     />
                 </Grid>
-                <Grid item xs={textInputSize}>
+                <Grid item xs={textInputSize} alignSelf="flex-start">
                     <NumericFormat
                         value={props.state || 0}
                         defaultValue={0}
                         thousandSeparator=","
-                        customInput={Input}
+                        customInput={TextField}
                         decimalScale={2}
                         onValueChange={(values) => {
                             props.setState(values.floatValue ?? 0) // TODO: don't default to zero  (and also defaultValue prop)
@@ -83,6 +92,11 @@ function Range(props: IRangeProps) {
                         onBlur={handleBlur}
                         prefix={startAdornment}
                         suffix={endAdornment}
+                        sx={{
+                            // fontWeight: 'bold',
+                            fontSize: '1.1rem'
+                        }}
+                        size='small'
                     />
                 </Grid>
             </Grid>

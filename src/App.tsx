@@ -26,7 +26,11 @@ import {
     Alert,
     Box,
     Card,
+    List,
+    ListItem,
     Container,
+    Divider,
+    Grid,
     Link,
     Paper,
     Stack,
@@ -81,27 +85,30 @@ function App(props: any) {
     };
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
-    let summaryMessage = <Alert severity="error">
-        <p id="message" className="bad"><em>FIRE is not possible with given parameters</em></p>
+    let summaryMessage = <Alert variant="filled" severity="error">
+        <Typography>
+            FIRE is not currently possible
+        </Typography>
     </Alert>
     if (projections.result.alreadyCoastFire) {
-        summaryMessage = <Alert severity="success">
-            <p id="message" className="great">Coast FIRE already achieved!</p>
+        summaryMessage = <Alert variant="filled" severity="success">
+            <Typography>
+                Coast FIRE already achieved!
+            </Typography>
         </Alert>
 
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="outlined" severity="info">
-            <p id="message" className="good">
-                Coast FIRE number of <em>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</em>
+            <Typography >
+                Coast FIRE number of <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
                 on {`${projections.result.coastFireDate ?
                     projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
 
-                (at age {`${projections.result.coastFireAge ?
-                    (projections.result.coastFireAge).toFixed(2) : ''} `}
-                in {`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}
+                (at age <b>{`${projections.result.coastFireAge ?
+                    (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
+                in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}</b>
                 )
-            </p >
-
+            </Typography>
         </Alert>
 
     }
@@ -114,38 +121,49 @@ function App(props: any) {
         <>
             <ScopedCssBaseline sx={{ backgroundColor: 'ghostwhite' }}>
                 <Container maxWidth="md">
-                    <Stack spacing={1} sx={{ m: 2 }}>
-                        <Box sx={{ mt: 1 }}>
-                            <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
-                                <h2>Coast FIRE Calculator</h2>
-                                <Link sx={{ color: 'black' }} href="https://github.com/BradyBolton/coast-fire-calculator">
-                                    <FontAwesomeIcon icon={faPropIcon} size="xl" />
-                                </Link>
-                            </Stack>
-                        </Box>
-
+                    <Stack spacing={2} sx={{ m: 2 }}>
                         <Paper sx={{ p: 2 }} elevation={2}>
                             <Stack spacing={1}>
-                                <TextField
-                                    id="current-age"
-                                    label="Current Age"
-                                    size="small"
-                                    inputProps={{
-                                        type: "number",
-                                        inputMode: 'numeric',
-                                        pattern: '[0-9]*'
-                                    }}
-                                    value={currentAge ?? 35}
-                                    defaultValue={35}
-                                    onChange={(event) => {
-                                        if (event.target.value) {
-                                            setCurrentAge(parseFloat(event.target.value))
-                                        } else {
-                                            setCurrentAge(0)
-                                        }
-                                    }}
-                                />
-
+                                <Box>
+                                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                                        <h2>Coast FIRE Calculator</h2>
+                                        <Link sx={{ color: 'black' }} href="https://github.com/BradyBolton/coast-fire-calculator">
+                                            <FontAwesomeIcon icon={faPropIcon} size="xl" />
+                                        </Link>
+                                    </Stack>
+                                </Box>
+                                <Typography alignSelf="center" variant="subtitle1">(A calculator for a comfortable retirement)</Typography>
+                                <Divider light />
+                                <Grid container direction="row" alignItems="center">
+                                    <Typography variant="label" sx={{ mr: 2 }}>
+                                        Current Age
+                                    </Typography>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="current-age"
+                                            size="small"
+                                            inputProps={{
+                                                type: "number",
+                                                inputMode: 'numeric',
+                                                pattern: '[0-9]*'
+                                            }}
+                                            value={currentAge ?? 35}
+                                            defaultValue={35}
+                                            onChange={(event) => {
+                                                if (event.target.value) {
+                                                    setCurrentAge(parseFloat(event.target.value))
+                                                } else {
+                                                    setCurrentAge(0)
+                                                }
+                                            }}
+                                            sx={{
+                                                // fontWeight: 'bold',
+                                                fontSize: '1.1rem'
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Divider light />
                                 <Range
                                     labelText="Retirement Age"
                                     minValue={currentAge}
@@ -155,6 +173,7 @@ function App(props: any) {
                                     state={retireAge}
                                     setState={setRetireAge}
                                 />
+                                <Divider light />
                                 <Range
                                     labelText="APR (return)"
                                     minValue={0.01}
@@ -165,6 +184,7 @@ function App(props: any) {
                                     state={rate}
                                     setState={setRate}
                                 />
+                                <Divider light />
                                 <Range
                                     labelText="Contributions (monthly)"
                                     minValue={0}
@@ -175,6 +195,7 @@ function App(props: any) {
                                     state={pmtMonthly}
                                     setState={setPmtMonthly}
                                 />
+                                <Divider light />
                                 <Range
                                     labelText="FIRE Number"
                                     minValue={1000}
@@ -185,19 +206,32 @@ function App(props: any) {
                                     state={fireNumber}
                                     setState={setFireNumber}
                                 />
-                                <Card variant="outlined" sx={{ p: 1 }}>
-                                    <Typography>
-                                        4% rule: <b>${(fireNumber * 0.04).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
-                                    </Typography>
-                                    <Typography>
-                                        3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
-                                    </Typography>
-                                    <Typography>
-                                        2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
-                                    </Typography>
-                                </Card>
+                                <Grid item alignSelf="center">
+                                    <Alert severity="info" variant="outlined" sx={{ width: 'max-content', pl: 2, pr: 2, pb: 0, pt: 0 }}>
+                                        <Typography>Make sure to base your FIRE number off of your desired withdrawel rate!</Typography>
+                                        <List disablePadding>
+                                            <ListItem disablePadding>
+                                                <Typography>
+                                                    4% rule: <b>${(fireNumber * 0.04).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                </Typography>
+                                            </ListItem>
+                                            <ListItem disablePadding>
+                                                <Typography>
+                                                    3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                </Typography>
+                                            </ListItem>
+                                            <ListItem disablePadding>
+                                                <Typography>
+                                                    2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                </Typography>
+                                            </ListItem>
+                                        </List>
+                                    </Alert>
+
+                                </Grid>
+                                <Divider light />
                                 <Range
-                                    labelText="Initial Value"
+                                    labelText="Initial Principal"
                                     minValue={0}
                                     maxValue={fireNumber}
                                     defaultValue={2000000}
@@ -209,7 +243,9 @@ function App(props: any) {
                             </Stack>
                         </Paper>
 
-                        {summaryMessage}
+                        <Box sx={{ pl: 3, pr: 3 }}>
+                            {summaryMessage}
+                        </Box>
 
                         <div id="graph">
                             <Line options={{
@@ -239,6 +275,7 @@ function App(props: any) {
                         </div>
 
                         {/*
+                        TODO: create an accordion of instructions?
                         <Accordion  >
                             <AccordionSummary
                                 expandIcon={
