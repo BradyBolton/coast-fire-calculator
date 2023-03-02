@@ -55,14 +55,14 @@ ChartJS.register(
 
 function App(props: any) {
     // setup local state (coast fire parameters)
-    const [rate, setRate] = useState(0.07); // default to 7% APR
+    const [rate, setRate] = useState(7); // default to 7% APR
     const [currentAge, setCurrentAge] = useState(35);
     const [retireAge, setRetireAge] = useState(60);
     const [pmtMonthly, setPmtMonthly] = useState(4000);
     const [fireNumber, setFireNumber] = useState(2000000);
     const [principal, setPrincipal] = useState(0);
 
-    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate, pmtMonthly, principal)
+    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
     const today = new Date()
     const maxChartDate = convertYearsElapsedToDate(today, retireAge - currentAge);
     const data = {
@@ -179,9 +179,9 @@ function App(props: any) {
                                 <Range
                                     labelText="APR (return)"
                                     minValue={0.01}
-                                    maxValue={0.2}
-                                    defaultValue={.07}
-                                    step={0.001}
+                                    maxValue={15}
+                                    defaultValue={7}
+                                    step={0.01}
                                     format="percentage"
                                     state={rate}
                                     setState={setRate}
