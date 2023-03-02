@@ -60,7 +60,7 @@ function Range(props: IRangeProps) {
     return (
         <Box>
             <Typography variant="label">
-                {props.labelText}
+                {props.labelText}:
             </Typography>
             <Grid container spacing={2} alignItems="center" sx={{ pl: 2 }}>
                 <Grid item xs={12 - textInputSize} sx={{ pr: 2 }}>

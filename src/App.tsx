@@ -98,7 +98,7 @@ function App(props: any) {
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="outlined" severity="info">
             <Typography >
-                Coast FIRE number of <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
+                Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
                 on {`${projections.result.coastFireDate ?
                     projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
 
@@ -130,11 +130,11 @@ function App(props: any) {
                                         </Link>
                                     </Stack>
                                 </Box>
-                                <Typography alignSelf="center" variant="subtitle1">(A calculator for a comfortable retirement)</Typography>
+                                <Typography alignSelf="center" variant="subtitle1">I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</Typography>
                                 <Divider light />
                                 <Grid container direction="row" alignItems="center">
                                     <Typography variant="label" sx={{ mr: 2 }}>
-                                        Current Age
+                                        Current Age:
                                     </Typography>
                                     <Grid item xs={3}>
                                         <TextField
