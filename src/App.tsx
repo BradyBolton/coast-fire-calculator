@@ -210,7 +210,7 @@ function App(props: any) {
                                 />
                                 <Grid item alignSelf="center">
                                     <Alert severity="info" variant="outlined" sx={{ pl: 2, pr: 2, pb: 0, pt: 0 }}>
-                                        <Typography>Make sure to base your FIRE number off of your desired withdrawel rate!</Typography>
+                                        <Typography>Make sure to base your FIRE number off of your desired withdrawal rate!</Typography>
                                         <List disablePadding>
                                             <ListItem disablePadding>
                                                 <Typography>
