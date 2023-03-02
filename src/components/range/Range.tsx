@@ -47,7 +47,7 @@ function Range(props: IRangeProps) {
     }
     if (props.format && props.format === "percentage") {
         endAdornment = "%"
-        textInputSize = 2
+        textInputSize = 3
     }
 
     return (
@@ -80,7 +80,8 @@ function Range(props: IRangeProps) {
                             setCurrentValue(values.floatValue ?? 0)
                         }}
                         onBlur={handleBlur}
-                        prefix={'$'}
+                        prefix={startAdornment}
+                        suffix={endAdornment}
                     />
                 </Grid>
             </Grid>
