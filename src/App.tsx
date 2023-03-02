@@ -1,41 +1,54 @@
 // css imports
 import './App.scss'
 
-
 // local imports
-import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
 import { Range } from "./components/range"
+import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
 
-// library imports
-import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
-import { Alert, Card, Input, Grid, Typography, Slider, TextField, Stack, Box, Link, Button, ButtonGroup, Container, Paper } from '@mui/material'
-import { useState } from "react";
+// import hooks
 import "chartjs-adapter-moment";
+import { useState } from "react";
+
+// import components
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
-    TimeScale,
+    Legend,
+    LineElement,
     LinearScale,
     PointElement,
-    LineElement,
+    TimeScale,
     Title,
     Tooltip,
-    Legend,
 } from "chart.js";
-
-// import components
+import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
+import {
+    Alert,
+    Box,
+    Card,
+    Container,
+    Link,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
+} from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+// import Accordion from '@mui/material/Accordion';
+// import AccordionSummary from '@mui/material/AccordionSummary';
+// import AccordionDetails from '@mui/material/AccordionDetails';
+// import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 ChartJS.register(
-    TimeScale,
+    Legend,
+    LineElement,
     LinearScale,
     PointElement,
-    LineElement,
+    TimeScale,
     Title,
     Tooltip,
-    Legend
 );
 
 function App(props: any) {
@@ -94,14 +107,15 @@ function App(props: any) {
     }
 
     const faPropIcon = faGithub as IconProp;
+    // const faExpandPropIcon = faChevronUp as IconProp;
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <>
-            <ScopedCssBaseline>
+            <ScopedCssBaseline sx={{ backgroundColor: 'ghostwhite' }}>
                 <Container maxWidth="md">
-                    <Stack spacing={2}>
-                        <Box sx={{ mt: 2 }}>
+                    <Stack spacing={1} sx={{ m: 2 }}>
+                        <Box sx={{ mt: 1 }}>
                             <Stack direction="row" justifyContent="center" alignItems="center" spacing={2}>
                                 <h2>Coast FIRE Calculator</h2>
                                 <Link sx={{ color: 'black' }} href="https://github.com/BradyBolton/coast-fire-calculator">
@@ -109,6 +123,7 @@ function App(props: any) {
                                 </Link>
                             </Stack>
                         </Box>
+
                         <Paper sx={{ p: 2 }} elevation={2}>
                             <Stack spacing={1}>
                                 <TextField
@@ -130,6 +145,7 @@ function App(props: any) {
                                         }
                                     }}
                                 />
+
                                 <Range
                                     labelText="Retirement Age"
                                     minValue={currentAge}
@@ -195,7 +211,7 @@ function App(props: any) {
 
                         {summaryMessage}
 
-                        <Box sx={{ height: '500px' }}>
+                        <div id="graph">
                             <Line options={{
                                 animation: false,
                                 responsive: true,
@@ -220,9 +236,29 @@ function App(props: any) {
                                     }
                                 }
                             }} data={data} />
-                        </Box>
-                    </Stack>
+                        </div>
 
+                        {/*
+                        <Accordion  >
+                            <AccordionSummary
+                                expandIcon={
+                                    <FontAwesomeIcon icon={faExpandPropIcon} />
+                                }
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>Instructions</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                        */}
+
+                    </Stack>
                 </Container>
             </ScopedCssBaseline>
 

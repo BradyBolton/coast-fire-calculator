@@ -38,7 +38,7 @@ function Range(props: IRangeProps) {
     // TODO: do something else about this gross sizing (trying to make mobile look good)
     let textInputSize = 2
     if (Math.floor(Math.log10(props.maxValue)) > 2) {
-        textInputSize = 3
+        textInputSize = 4
     }
 
     let startAdornment = ""
@@ -53,7 +53,7 @@ function Range(props: IRangeProps) {
 
     return (
         <Box>
-            <Typography variant="button">
+            <Typography variant="body1">
                 {props.labelText}
             </Typography>
             <Grid container spacing={2} alignItems="center">
