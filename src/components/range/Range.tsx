@@ -12,25 +12,26 @@ interface IRangeProps {
     defaultValue: number;
     step: number;
     format?: RangeFormat;
+    state: number
     setState: React.Dispatch<React.SetStateAction<number>>
 }
 
 function Range(props: IRangeProps) {
 
-    const [currentValue, setCurrentValue] = useState<number | number[]>(
-        props.defaultValue,
-    );
+    // const [currentValue, setCurrentValue] = useState<number | number[]>(
+    //     props.defaultValue,
+    // );
 
     const handleSliderChange = (event: Event, value: number | number[]) => {
-        setCurrentValue(value);
-        // props.setState(value as number) // TODO: uncomment this
+        // setCurrentValue(value);
+        props.setState(value as number) // TODO: uncomment this
     };
 
     const handleBlur = () => {
-        if (currentValue < props.minValue) {
-            setCurrentValue(props.minValue);
-        } else if (currentValue > props.maxValue) {
-            setCurrentValue(props.maxValue);
+        if (props.state < props.minValue) {
+            props.setState(props.minValue);
+        } else if (props.state > props.maxValue) {
+            props.setState(props.maxValue);
         }
     };
 
@@ -59,10 +60,10 @@ function Range(props: IRangeProps) {
                 <Grid item xs={12 - textInputSize}>
                     <Slider
                         sx={{
-                            color: 'darkgreen'
+                            color: 'darkred'
                         }}
                         defaultValue={props.defaultValue}
-                        value={typeof currentValue === 'number' ? currentValue : props.defaultValue}
+                        value={props.state || 0}
                         onChange={handleSliderChange}
                         min={props.minValue}
                         max={props.maxValue}
@@ -71,13 +72,13 @@ function Range(props: IRangeProps) {
                 </Grid>
                 <Grid item xs={textInputSize}>
                     <NumericFormat
-                        value={Number(currentValue)}
+                        value={props.state || 0}
                         defaultValue={0}
                         thousandSeparator=","
                         customInput={Input}
                         decimalScale={2}
                         onValueChange={(values) => {
-                            setCurrentValue(values.floatValue ?? 0)
+                            props.setState(values.floatValue ?? 0) // TODO: don't default to zero  (and also defaultValue prop)
                         }}
                         onBlur={handleBlur}
                         prefix={startAdornment}
