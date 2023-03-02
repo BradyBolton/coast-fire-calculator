@@ -1,10 +1,14 @@
+// css imports
+import './App.scss'
+
+
 // local imports
 import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
 import { Range } from "./components/range"
 
 // library imports
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
-import { Input, Grid, Typography, Slider, TextField, Stack, Box, Link, Button, ButtonGroup, Container, Paper } from '@mui/material'
+import { Card, Input, Grid, Typography, Slider, TextField, Stack, Box, Link, Button, ButtonGroup, Container, Paper } from '@mui/material'
 import { useState } from "react";
 import "chartjs-adapter-moment";
 import { Line } from "react-chartjs-2";
@@ -97,7 +101,7 @@ function App(props: any) {
                         </Stack>
                     </Stack>
                     <Paper sx={{ p: 2 }} elevation={2}>
-                        <Stack spacing={2}>
+                        <Stack spacing={1}>
                             <TextField
                                 id="current-age"
                                 label="Current Age"
@@ -114,6 +118,7 @@ function App(props: any) {
                                 maxValue={100}
                                 defaultValue={60}
                                 step={1}
+                                setState={setCurrentAge}
                             />
                             <Range
                                 labelText="APR (return)"
@@ -122,6 +127,7 @@ function App(props: any) {
                                 defaultValue={7}
                                 step={0.01}
                                 format="percentage"
+                                setState={setRate}
                             />
                             <Range
                                 labelText="Contributions (monthly)"
@@ -130,6 +136,7 @@ function App(props: any) {
                                 defaultValue={1200}
                                 step={0.01}
                                 format="money"
+                                setState={setPmtMonthly}
                             />
                             <Range
                                 labelText="FIRE Number"
@@ -138,7 +145,19 @@ function App(props: any) {
                                 defaultValue={2000000}
                                 step={1000}
                                 format="money"
+                                setState={setFireNumber}
                             />
+                            <Card variant="outlined" sx={{ p: 1 }}>
+                                <Typography>
+                                    4% rule: <b>${(fireNumber * 0.04).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                </Typography>
+                                <Typography>
+                                    3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                </Typography>
+                                <Typography>
+                                    2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                </Typography>
+                            </Card>
                             <Range
                                 labelText="Initial Value"
                                 minValue={0}
@@ -146,6 +165,7 @@ function App(props: any) {
                                 defaultValue={2000000}
                                 step={1000}
                                 format="money"
+                                setState={setPrincipal}
                             />
                         </Stack>
                     </Paper>

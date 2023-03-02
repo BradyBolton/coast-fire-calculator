@@ -1,8 +1,8 @@
-import { Input, Grid, Typography, Slider, Box, } from '@mui/material'
+import { Input, Grid, Typography, Slider, Box, TextField } from '@mui/material'
 import InputAdornment from '@mui/material/InputAdornment';
 import { NumericFormat } from 'react-number-format'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 type RangeFormat = "money" | "percentage" | "none"
 
@@ -13,43 +13,39 @@ interface IRangeProps {
     defaultValue: number;
     step: number;
     format?: RangeFormat;
+    setState: React.Dispatch<React.SetStateAction<number>>
 }
 
-const NumberFormatCustom: React.FC = (props: any) => {
-    const { inputRef, onChange, ...other } = props
+interface InputWrapperProps {
+    children?: React.ReactNode
+}
+const NumberFormatCustom: React.FC = (props: React.PropsWithRef<InputWrapperProps>) => {
+    const { ...other } = props
 
     return (
-        <>
-            <NumericFormat
-                {...other}
-                getInputRef={inputRef}
-                getValueChange={(values: any) => {
-                    onChange({
-                        target: {
-                            name: props.name,
-                            value: values.value
-                        }
-                    })
-                }}
-                thousandSeparator
-            />
-        </>
+        <NumericFormat
+            {...other}
+            thousandSeparator
+        />
 
     )
 }
 
 function Range(props: IRangeProps) {
 
-    const [currentValue, setCurrentValue] = useState<number | string | Array<number | string>>(
+    const [currentValue, setCurrentValue] = useState<number | number[]>(
         props.defaultValue,
     );
 
-    const handleSliderChange = (event: Event, newValue: number | number[]) => {
-        setCurrentValue(newValue);
+    const [value, setValue] = useState<number>(0);
+
+    const handleSliderChange = (event: Event, value: number | number[]) => {
+        setCurrentValue(value);
+        // props.setState(value as number) // TODO: uncomment this
     };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentValue(event.target.value === '' ? '' : Number(event.target.value));
+        setCurrentValue(parseFloat(event.target.value));
     };
 
     const handleBlur = () => {
@@ -85,7 +81,7 @@ function Range(props: IRangeProps) {
                 <Grid item xs={12 - textInputSize}>
                     <Slider
                         sx={{
-                            color: 'blue'
+                            color: 'darkgreen'
                         }}
                         defaultValue={props.defaultValue}
                         value={typeof currentValue === 'number' ? currentValue : props.defaultValue}
@@ -96,6 +92,15 @@ function Range(props: IRangeProps) {
                     />
                 </Grid>
                 <Grid item xs={textInputSize}>
+                    <NumericFormat
+                        value={Number(currentValue)}
+                        defaultValue={0}
+                        thousandSeparator=","
+                        customInput={Input}
+                        decimalScale={2}
+
+                    />
+                    {/*
                     <Input
                         value={currentValue}
                         size="small"
@@ -110,6 +115,7 @@ function Range(props: IRangeProps) {
                             type: 'number',
                         }}
                     />
+                    */}
                 </Grid>
             </Grid>
         </Box>
