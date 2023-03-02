@@ -1,7 +1,7 @@
-import { TextField, Input, Grid, Typography, Slider, Box } from '@mui/material'
+import { TextField, Grid, Typography, Slider, Box } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 
-import React, { useState } from 'react'
+import React from 'react'
 
 type RangeFormat = "money" | "percentage" | "none"
 
@@ -19,8 +19,7 @@ interface IRangeProps {
 function Range(props: IRangeProps) {
 
     const handleSliderChange = (event: Event, value: number | number[]) => {
-        // setCurrentValue(value);
-        props.setState(value as number) // TODO: uncomment this
+        props.setState(value as number)
     };
 
     const handleBlur = () => {

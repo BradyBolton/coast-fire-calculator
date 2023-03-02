@@ -25,7 +25,6 @@ import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
     Alert,
     Box,
-    Card,
     List,
     ListItem,
     Container,
@@ -43,7 +42,6 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 // import Accordion from '@mui/material/Accordion';
 // import AccordionSummary from '@mui/material/AccordionSummary';
 // import AccordionDetails from '@mui/material/AccordionDetails';
-// import { faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 ChartJS.register(
     Legend,
@@ -147,17 +145,21 @@ function App(props: any) {
                                                 inputMode: 'numeric',
                                                 pattern: '[0-9]*'
                                             }}
-                                            value={currentAge ?? 35}
-                                            defaultValue={35}
-                                            onChange={(event) => {
-                                                if (event.target.value) {
-                                                    setCurrentAge(parseFloat(event.target.value))
-                                                } else {
-                                                    setCurrentAge(0)
+                                            value={currentAge ? currentAge : ''}
+                                            onInput={(e) => {
+                                                const et = e.target as HTMLInputElement;
+                                                // set to zero so that the app does not explode
+                                                const newCurrentAge = parseInt(et.value !== "" ? et.value : "0")
+                                                if (newCurrentAge <= retireAge) {
+                                                    setCurrentAge(newCurrentAge)
+                                                }
+                                            }}
+                                            onBlur={(e) => {
+                                                if (!currentAge) {
+                                                    setCurrentAge(35) // TODO: make this a default value constant
                                                 }
                                             }}
                                             sx={{
-                                                // fontWeight: 'bold',
                                                 fontSize: '1.1rem'
                                             }}
                                         />
