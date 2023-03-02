@@ -1,5 +1,5 @@
 // css import
-import "./App.css";
+import "./App.scss";
 
 // local imports
 import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
