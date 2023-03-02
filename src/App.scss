@@ -1,0 +1,17 @@
+html {
+    background-color: ghostwhite;
+
+    h2 {
+        margin: 0;
+    }
+
+    p b {
+        color: #b71540;
+    }
+
+    /* TODO: come up with a better sizing strategy for graphs (mobile vs. desktop) */
+    div#graph {
+        height: 400px;
+    }
+
+}

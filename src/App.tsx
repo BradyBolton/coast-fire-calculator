@@ -1,49 +1,68 @@
-// css import
-import "./App.css";
+// css imports
+import './App.scss'
 
 // local imports
+import { Range } from "./components/range"
 import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
 
-// library imports
-import { useState } from "react";
+// import hooks
 import "chartjs-adapter-moment";
+import { useState } from "react";
+
+// import components
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
-    TimeScale,
+    Legend,
+    LineElement,
     LinearScale,
     PointElement,
-    LineElement,
+    TimeScale,
     Title,
     Tooltip,
-    Legend,
 } from "chart.js";
-
-// import components
+import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
+import {
+    Alert,
+    Box,
+    List,
+    ListItem,
+    Container,
+    Divider,
+    Grid,
+    Link,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
+} from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+// import Accordion from '@mui/material/Accordion';
+// import AccordionSummary from '@mui/material/AccordionSummary';
+// import AccordionDetails from '@mui/material/AccordionDetails';
 
 ChartJS.register(
-    TimeScale,
+    Legend,
+    LineElement,
     LinearScale,
     PointElement,
-    LineElement,
+    TimeScale,
     Title,
     Tooltip,
-    Legend
 );
 
 function App(props: any) {
     // setup local state (coast fire parameters)
-    const [rate, setRate] = useState(0.07); // default to 7% APR
+    const [rate, setRate] = useState(7); // default to 7% APR
     const [currentAge, setCurrentAge] = useState(35);
     const [retireAge, setRetireAge] = useState(60);
     const [pmtMonthly, setPmtMonthly] = useState(4000);
     const [fireNumber, setFireNumber] = useState(2000000);
     const [principal, setPrincipal] = useState(0);
 
-    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate, pmtMonthly, principal)
+    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
     const today = new Date()
     const maxChartDate = convertYearsElapsedToDate(today, retireAge - currentAge);
     const data = {
@@ -64,168 +83,225 @@ function App(props: any) {
     };
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
-
-    let summaryMessage = <div id="message" className="bad"><em>FIRE is not possible with given parameters</em></div>
+    let summaryMessage = <Alert variant="filled" severity="error">
+        <Typography>
+            FIRE is not currently possible
+        </Typography>
+    </Alert>
     if (projections.result.alreadyCoastFire) {
-        summaryMessage = <div id="message" className="great">Coast FIRE already achieved!</div>
-    } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
-        summaryMessage = <div id="message" className="good">
-            Coast FIRE number of <em>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</em>
-            on {`${projections.result.coastFireDate ?
-                projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
+        summaryMessage = <Alert variant="filled" severity="success">
+            <Typography>
+                Coast FIRE already achieved!
+            </Typography>
+        </Alert>
 
-            (at age {`${projections.result.coastFireAge ?
-                (projections.result.coastFireAge).toFixed(2) : ''} `}
-            in {`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}
-            )
-        </div >
+    } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
+        summaryMessage = <Alert variant="outlined" severity="info">
+            <Typography >
+                Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
+                on {`${projections.result.coastFireDate ?
+                    projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
+
+                (at age <b>{`${projections.result.coastFireAge ?
+                    (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
+                in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}</b>
+                )
+            </Typography>
+        </Alert>
+
     }
 
     const faPropIcon = faGithub as IconProp;
+    // const faExpandPropIcon = faChevronUp as IconProp;
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
-        <div className="App">
+        <>
+            <ScopedCssBaseline sx={{ backgroundColor: 'ghostwhite' }}>
+                <Container maxWidth="md">
+                    <Stack spacing={2} sx={{ m: 2 }}>
+                        <Paper sx={{ p: 2 }} elevation={2}>
+                            <Stack spacing={1}>
+                                <Box>
+                                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                                        <h2>Coast FIRE Calculator</h2>
+                                        <Link sx={{ color: 'black' }} href="https://github.com/BradyBolton/coast-fire-calculator">
+                                            <FontAwesomeIcon icon={faPropIcon} size="xl" />
+                                        </Link>
+                                    </Stack>
+                                </Box>
+                                <Typography alignSelf="center" variant="subtitle1">I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</Typography>
+                                <Divider light />
+                                <Grid container direction="row" alignItems="center">
+                                    <Typography variant="label" sx={{ mr: 2 }}>
+                                        Current Age:
+                                    </Typography>
+                                    <Grid item xs={3}>
+                                        <TextField
+                                            id="current-age"
+                                            size="small"
+                                            inputProps={{
+                                                type: "number",
+                                                inputMode: 'numeric',
+                                                pattern: '[0-9]*'
+                                            }}
+                                            value={currentAge ? currentAge : ''}
+                                            onInput={(e) => {
+                                                const et = e.target as HTMLInputElement;
+                                                // set to zero so that the app does not explode
+                                                const newCurrentAge = parseInt(et.value !== "" ? et.value : "0")
+                                                if (newCurrentAge <= retireAge) {
+                                                    setCurrentAge(newCurrentAge)
+                                                }
+                                            }}
+                                            onBlur={(e) => {
+                                                if (!currentAge) {
+                                                    setCurrentAge(35) // TODO: make this a default value constant
+                                                }
+                                            }}
+                                            sx={{
+                                                fontSize: '1.1rem'
+                                            }}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                <Divider light />
+                                <Range
+                                    labelText="Retirement Age"
+                                    minValue={currentAge}
+                                    maxValue={100}
+                                    defaultValue={60}
+                                    step={1}
+                                    state={retireAge}
+                                    setState={setRetireAge}
+                                />
+                                <Divider light />
+                                <Range
+                                    labelText="APR (return)"
+                                    minValue={0.01}
+                                    maxValue={15}
+                                    defaultValue={7}
+                                    step={0.01}
+                                    format="percentage"
+                                    state={rate}
+                                    setState={setRate}
+                                />
+                                <Divider light />
+                                <Range
+                                    labelText="Contributions (monthly)"
+                                    minValue={0}
+                                    maxValue={15000}
+                                    defaultValue={1200}
+                                    step={0.01}
+                                    format="money"
+                                    state={pmtMonthly}
+                                    setState={setPmtMonthly}
+                                />
+                                <Divider light />
+                                <Range
+                                    labelText="FIRE Number"
+                                    minValue={1000}
+                                    maxValue={6000000}
+                                    defaultValue={2000000}
+                                    step={1000}
+                                    format="money"
+                                    state={fireNumber}
+                                    setState={setFireNumber}
+                                />
+                                <Grid item alignSelf="center">
+                                    <Alert severity="info" variant="outlined" sx={{ pl: 2, pr: 2, pb: 0, pt: 0 }}>
+                                        <Typography>Make sure to base your FIRE number off of your desired withdrawal rate!</Typography>
+                                        <List disablePadding>
+                                            <ListItem disablePadding>
+                                                <Typography>
+                                                    4% rule: <b>${(fireNumber * 0.04).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                </Typography>
+                                            </ListItem>
+                                            <ListItem disablePadding>
+                                                <Typography>
+                                                    3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                </Typography>
+                                            </ListItem>
+                                            <ListItem disablePadding>
+                                                <Typography>
+                                                    2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                </Typography>
+                                            </ListItem>
+                                        </List>
+                                    </Alert>
 
-            <a id="github-redirect" href="https://github.com/BradyBolton/coast-fire-calculator">
-                <FontAwesomeIcon icon={faPropIcon} size="2xl" />
-            </a>
+                                </Grid>
+                                <Divider light />
+                                <Range
+                                    labelText="Initial Principal"
+                                    minValue={0}
+                                    maxValue={fireNumber}
+                                    defaultValue={2000000}
+                                    step={1000}
+                                    format="money"
+                                    state={principal}
+                                    setState={setPrincipal}
+                                />
+                            </Stack>
+                        </Paper>
 
+                        <Box sx={{ pl: 3, pr: 3 }}>
+                            {summaryMessage}
+                        </Box>
 
-            <h1>Coast FIRE Calculator</h1>
+                        <div id="graph">
+                            <Line options={{
+                                animation: false,
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: "top",
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: "Coast FIRE Projections",
+                                    },
+                                },
+                                scales: {
+                                    x: {
+                                        type: 'time',
+                                        max: maxChartDate.toISOString()
+                                    },
+                                    y: {
+                                        min: 0,
+                                        max: Math.floor(fireNumber * 1.1)
+                                    }
+                                }
+                            }} data={data} />
+                        </div>
 
-            <fieldset>
-                <legend>Parameters</legend>
-                <div className="paramContainer">
-                    <label className="paramLabel" htmlFor="currentAge">Current Age: </label>
-                    <input id="currentAgeInput" name="currentAge" type="number"
-                        // treat zero as someone in the process of inputting their age
-                        // because who would *possibly* be trying to do this for a newborn right? (heh)
-                        value={currentAge ? currentAge : ''}
-                        min="15" max="100" step="1"
-                        onInput={(e) => {
-                            const et = e.target as HTMLInputElement;
-                            // default to 0 if empty, otherwise app will explode
-                            setCurrentAge(parseInt(et.value !== "" ? et.value : "0"))
-                        }}
-                    />
-                </div>
+                        {/*
+                        TODO: create an accordion of instructions?
+                        <Accordion  >
+                            <AccordionSummary
+                                expandIcon={
+                                    <FontAwesomeIcon icon={faExpandPropIcon} />
+                                }
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>Instructions</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
+                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                        */}
 
-                <br />
+                    </Stack>
+                </Container>
+            </ScopedCssBaseline>
 
-                <div className="paramContainer">
-                    <label className="paramLabel" htmlFor="retireAge">Retirement Age: <em>{retireAge}</em></label>
-                    <input
-                        id="retireAgeInput" className="rangeInput" name="retireAge" type="range"
-                        value={retireAge}
-                        min={currentAge} max="100" step="1"
-                        onInput={(e) => {
-                            const et = e.target as HTMLInputElement;
-                            setRetireAge(parseFloat(et.value))
-                        }}
-                    />
-                </div>
-
-                <div className="paramContainer">
-                    <label className="paramLabel" htmlFor="apr">APR (return): <em>{(rate * 100).toFixed(2)}%</em></label>
-                    <input
-                        id="rateInput" className="rangeInput" name="apr" type="range"
-                        value={rate}
-                        min="0" max="0.2" step="0.001"
-                        list="rateValues"
-                        onInput={(e) => {
-                            const et = e.target as HTMLInputElement;
-                            setRate(parseFloat(et.value))
-                        }}
-                    />
-                    <datalist id="rateValues">
-                        <option value="0" label="0"></option>
-                        <option value="0.04" label="4%"></option>
-                        <option value="0.08" label="8%"></option>
-                        <option value="0.12" label="12%"></option>
-                        <option value="0.16" label="16%"></option>
-                        <option value="0.20" label="20%"></option>
-                    </datalist>
-                </div>
-
-                <div className="paramContainer">
-                    <label className="paramLabel" htmlFor="pmtMonthly">Contributions (monthly): <em>${pmtMonthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</em></label>
-                    <input
-                        id="pmtMonthlyInput" className="rangeInput" name="pmtMonthly" type="range"
-                        value={pmtMonthly}
-                        min="0" max="15000" step="50"
-                        onInput={(e) => {
-                            const et = e.target as HTMLInputElement;
-                            setPmtMonthly(parseFloat(et.value))
-                        }}
-                    />
-                </div>
-
-                <div className="paramContainer">
-                    <label className="paramLabel" htmlFor="fireNumber">Fire Number: <em>${fireNumber.toLocaleString()}</em>
-                        <br />
-                        4% rule: <em>${(fireNumber * 0.04).toLocaleString()}/yr</em> at <em>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>
-                        <br />
-                        3% rule: <em>${(fireNumber * 0.03).toLocaleString()}/mo</em> at <em>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>
-                        <br />
-                        2% rule: <em>${(fireNumber * 0.02).toLocaleString()}/mo</em> at <em>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</em>
-                    </label>
-                    <input
-                        id="fireNumberInput" className="rangeInput" name="fireNumber" type="range"
-                        value={fireNumber}
-                        min={principal} max="6000000" step="1000"
-                        onInput={(e) => {
-                            const et = e.target as HTMLInputElement;
-                            setFireNumber(parseFloat(et.value))
-                        }}
-                    />
-                </div>
-
-                <div className="paramContainer">
-                    <label className="paramLabel" htmlFor="principal">Initial value: <em>${principal.toLocaleString()}</em></label>
-                    <input
-                        id="principalInput" className="rangeInput" name="principal" type="range"
-                        value={principal}
-                        min="0" max="1000000" step="100"
-                        onInput={(e) => {
-                            const et = e.target as HTMLInputElement;
-                            setPrincipal(parseFloat(et.value))
-                        }}
-                    />
-                </div>
-            </fieldset>
-
-            {summaryMessage}
-
-            <div id="graph">
-                <Line options={{
-                    animation: false,
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: "top",
-                        },
-                        title: {
-                            display: true,
-                            text: "Coast FIRE Projections",
-                        },
-                    },
-                    scales: {
-                        x: {
-                            type: 'time',
-                            max: maxChartDate.toISOString()
-                        },
-                        y: {
-                            min: 0,
-                            max: Math.floor(fireNumber * 1.1)
-                        }
-                    }
-                }} data={data} />
-
-
-            </div>
-        </div>
+        </>
     );
 }
 
