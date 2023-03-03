@@ -23,17 +23,29 @@ const defaultTheme = createTheme({
         primary: pink,
         secondary: yellow,
     },
+    breakpoints: {
+        values: {
+            xs: 400, // where things really break
+            sm: 475, // this width is when the UI starts disintegrating
+            md: 700, // start making things smaller here
+            lg: 1200,
+            xl: 1536,
+        },
+    },
     typography: {
         body1: {
+            fontSize: '1rem',
+        },
+        body2: {
             fontSize: '1.1rem',
         },
         label: {
             // fontWeight: 'bold',
-            fontSize: '1.1rem',
+            fontSize: '1rem',
         },
         subtitle1: {
             color: 'slategrey',
-            fontSize: '1.1rem',
+            fontSize: '1rem',
             // fontWeight: 'bold'
         }
     },

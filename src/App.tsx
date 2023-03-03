@@ -36,6 +36,8 @@ import {
     Stack,
     TextField,
     Typography,
+    useMediaQuery,
+    useTheme
 } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -97,20 +99,20 @@ function App(props: any) {
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
     let summaryMessage = <Alert variant="filled" severity="error">
-        <Typography>
+        <Typography variant="body2">
             FIRE is not currently possible
         </Typography>
     </Alert>
     if (projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="filled" severity="success">
-            <Typography>
+            <Typography variant="body2">
                 Coast FIRE already achieved!
             </Typography>
         </Alert>
 
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="outlined" severity="info">
-            <Typography >
+            <Typography variant="body2">
                 Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
                 on {`${projections.result.coastFireDate ?
                     projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
@@ -152,6 +154,12 @@ function App(props: any) {
         }
     }, [copiedUrl, setCopiedUrl]);
 
+    // warn peope of the difficulties of small phones (like mine)
+    const theme = useTheme();
+    const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
+        "(Dang you have a tiny phone! I want you to know this app is way better on a bigger phone screen)"
+        : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</div>
+
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <>
@@ -168,7 +176,7 @@ function App(props: any) {
                                         </Link>
                                     </Stack>
                                 </Box>
-                                <Typography alignSelf="center" variant="subtitle1">I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</Typography>
+                                <Typography alignSelf="center" variant="subtitle1">{topMessage}</Typography>
                                 <Box alignSelf="center">
                                     <Button
                                         sx={{ width: "max-content" }}
@@ -182,10 +190,10 @@ function App(props: any) {
                                 </Box>
                                 <Divider light />
                                 <Grid container direction="row" alignItems="center">
-                                    <Typography variant="label" sx={{ mr: 2 }}>
+                                    <Typography variant="label" >
                                         Current Age:
                                     </Typography>
-                                    <Grid item xs={3}>
+                                    <Grid item sx={{ ml: 2 }} xs={2}>
                                         <TextField
                                             id="current-age"
                                             size="small"
@@ -209,7 +217,7 @@ function App(props: any) {
                                                 }
                                             }}
                                             sx={{
-                                                fontSize: '1.1rem'
+                                                fontSize: '1rem'
                                             }}
                                         />
                                     </Grid>

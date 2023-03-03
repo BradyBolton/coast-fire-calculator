@@ -1,4 +1,4 @@
-import { TextField, Grid, Typography, Slider, Box } from '@mui/material'
+import { TextField, Grid, Typography, Slider, Box, useMediaQuery, useTheme } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 
 import React from 'react'
@@ -57,25 +57,39 @@ function Range(props: IRangeProps) {
         },
     ];
 
+    // avoid shenanigans on small screens
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+    const isMedium = useMediaQuery(theme.breakpoints.down("md"));
+
+    let spaceAfterSlider = isSmallScreen ? 1 : isMedium ? 2 : 2.5
+    if (isExtraSmallScreen) {
+        textInputSize = 0
+    }
+
+    // basically give up if the screen narrower than 300px
+    const slider = !isExtraSmallScreen ? <Grid item xs={12 - textInputSize} sx={{ pr: spaceAfterSlider }}>
+        <Slider
+            color='primary'
+            defaultValue={props.defaultValue}
+            value={props.state || 0}
+            onChange={handleSliderChange}
+            min={props.minValue}
+            max={props.maxValue}
+            step={props.step}
+            valueLabelDisplay="auto"
+            marks={marks}
+        />
+    </Grid> : <></>
+
     return (
         <Box>
             <Typography variant="label">
                 {props.labelText}:
             </Typography>
-            <Grid container spacing={2} alignItems="center" sx={{ pl: 2 }}>
-                <Grid item xs={12 - textInputSize} sx={{ pr: 2 }}>
-                    <Slider
-                        color='primary'
-                        defaultValue={props.defaultValue}
-                        value={props.state || 0}
-                        onChange={handleSliderChange}
-                        min={props.minValue}
-                        max={props.maxValue}
-                        step={props.step}
-                        valueLabelDisplay="auto"
-                        marks={marks}
-                    />
-                </Grid>
+            <Grid container spacing={spaceAfterSlider} alignItems="center" sx={{ pl: 2 }}>
+                {slider}
                 <Grid item xs={textInputSize} alignSelf="flex-start">
                     <NumericFormat
                         value={props.state || 0}
@@ -91,9 +105,10 @@ function Range(props: IRangeProps) {
                         suffix={endAdornment}
                         sx={{
                             // fontWeight: 'bold',
-                            fontSize: '1.1rem'
+                            fontSize: '1rem'
                         }}
                         size='small'
+                        onFocus={(event) => event.target.select()}
                     />
                 </Grid>
             </Grid>
