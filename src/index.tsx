@@ -27,7 +27,7 @@ const defaultTheme = createTheme({
         values: {
             xs: 400, // where things really break
             sm: 475, // this width is when the UI starts disintegrating
-            md: 700, // start making things smaller here
+            md: 900,
             lg: 1200,
             xl: 1536,
         },
