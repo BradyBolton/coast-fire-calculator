@@ -96,6 +96,7 @@ Right now the calculator only *gives* you a coast FIRE number and date based on 
     - [ ] ~~Show a mostly blank screen if on mobile, explicitly stating that mobile is not supported right now~~
     - [X] Mobile is half-assed for now (need to whole-ass it when integrated with AMUI)
     - [X] Full-assed the mobile version
+    - [ ] Extend the line chart ([example](https://stackoverflow.com/questions/30256695/chart-js-drawing-an-arbitrary-vertical-line)) to show a vertical line along the graph where the user is holding their thumb down (to make graph reading a bit easier on mobile, like RobinHood)
 - [X] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
     - [ ] Ensure that the number of datapoints on the timeline stays constant
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
