@@ -177,7 +177,7 @@ function App(props: any) {
                                         onClick={onShareClick}
                                         startIcon={copiedIcon}
                                     >
-                                        Copy graph URL
+                                        Share as URL
                                     </Button>
                                 </Box>
                                 <Divider light />
