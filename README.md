@@ -85,6 +85,8 @@ Right now the calculator only *gives* you a coast FIRE number and date based on 
 
 <img src="./docs/timeline_concept.jpg" width="536" height="600">
 
+After some searching, I think [this](https://projectionlab.com/) project kind of does the same thing.
+
 <img src="./docs/red_to_green_concept.jpg" width="646" height="300">
 
 ## TODO:
