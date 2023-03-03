@@ -7,7 +7,7 @@ import { generateDataSets, convertYearsElapsedToDate } from "./models/calculatio
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
@@ -25,6 +25,7 @@ import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
     Alert,
     Box,
+    Button,
     List,
     ListItem,
     Container,
@@ -39,6 +40,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faClipboard } from '@fortawesome/free-solid-svg-icons';
 // import Accordion from '@mui/material/Accordion';
 // import AccordionSummary from '@mui/material/AccordionSummary';
 // import AccordionDetails from '@mui/material/AccordionDetails';
@@ -54,13 +56,24 @@ ChartJS.register(
 );
 
 function App(props: any) {
+    // first parse any params
+    const currentUrl = new URL(window.location.href)
+    const currentAgeParam: number = parseInt(currentUrl.searchParams.get('ca') ?? "-1")
+    const retireAgeParam: number = parseInt(currentUrl.searchParams.get('ra') ?? "-1")
+    const pmtParam: number = parseFloat(currentUrl.searchParams.get('pmt') ?? "-1")
+    const rateParam: number = parseFloat(currentUrl.searchParams.get('r') ?? "-1")
+    const fireNumParam: number = parseFloat(currentUrl.searchParams.get('fn') ?? "-1")
+    const principalParam: number = parseFloat(currentUrl.searchParams.get('p') ?? "-1")
+
     // setup local state (coast fire parameters)
-    const [rate, setRate] = useState(7); // default to 7% APR
-    const [currentAge, setCurrentAge] = useState(35);
-    const [retireAge, setRetireAge] = useState(60);
-    const [pmtMonthly, setPmtMonthly] = useState(4000);
-    const [fireNumber, setFireNumber] = useState(2000000);
-    const [principal, setPrincipal] = useState(0);
+    const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
+    const [retireAge, setRetireAge] = useState(retireAgeParam > -1 ? retireAgeParam : 60);
+    const [pmtMonthly, setPmtMonthly] = useState(pmtParam > -1 ? pmtParam : 4000);
+    const [rate, setRate] = useState(rateParam > -1 ? rateParam : 7); // default to 7% APR
+    const [fireNumber, setFireNumber] = useState(fireNumParam > -1 ? fireNumParam : 2000000);
+    const [principal, setPrincipal] = useState(principalParam > -1 ? principalParam : 0);
+
+    const [copiedUrl, setCopiedUrl] = useState(false);
 
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
     const today = new Date()
@@ -108,11 +121,36 @@ function App(props: any) {
                 )
             </Typography>
         </Alert>
-
     }
 
     const faPropIcon = faGithub as IconProp;
+    const faClipboardPropIcon = faClipboard as IconProp;
     // const faExpandPropIcon = faChevronUp as IconProp;
+
+    const generatedUrl = `https://bradybolton.github.io/coast-fire-calculator/?` +
+        `ca=${currentAge}` +
+        `&ra=${retireAge}` +
+        `&r=${rate}` +
+        `&pmt=${pmtMonthly}` +
+        `&fn=${fireNumber}` +
+        `&p=${principal}`
+
+    const onShareClick = () => {
+        navigator.clipboard.writeText(generatedUrl);
+        setCopiedUrl(true)
+    }
+
+    const copiedIcon = copiedUrl ? <FontAwesomeIcon icon={faClipboardPropIcon} className="fa-flip" /> :
+        <FontAwesomeIcon icon={faClipboardPropIcon} />
+
+    useEffect(() => {
+        if (copiedUrl) {
+            const timer = setTimeout(() => {
+                setCopiedUrl(false)
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [copiedUrl, setCopiedUrl]);
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
@@ -131,6 +169,17 @@ function App(props: any) {
                                     </Stack>
                                 </Box>
                                 <Typography alignSelf="center" variant="subtitle1">I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</Typography>
+                                <Box alignSelf="center">
+                                    <Button
+                                        sx={{ width: "max-content" }}
+                                        color="primary"
+                                        variant="contained"
+                                        onClick={onShareClick}
+                                        startIcon={copiedIcon}
+                                    >
+                                        Copy graph URL
+                                    </Button>
+                                </Box>
                                 <Divider light />
                                 <Grid container direction="row" alignItems="center">
                                     <Typography variant="label" sx={{ mr: 2 }}>

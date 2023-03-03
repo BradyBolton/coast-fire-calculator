@@ -65,9 +65,7 @@ function Range(props: IRangeProps) {
             <Grid container spacing={2} alignItems="center" sx={{ pl: 2 }}>
                 <Grid item xs={12 - textInputSize} sx={{ pr: 2 }}>
                     <Slider
-                        sx={{
-                            color: 'darkred',
-                        }}
+                        color='primary'
                         defaultValue={props.defaultValue}
                         value={props.state || 0}
                         onChange={handleSliderChange}

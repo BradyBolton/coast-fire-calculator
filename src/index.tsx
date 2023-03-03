@@ -9,6 +9,8 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { pink } from '@mui/material/colors';
+import { yellow } from '@mui/material/colors';
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement
@@ -18,6 +20,8 @@ const root = ReactDOM.createRoot(
 const defaultTheme = createTheme({
     palette: {
         mode: 'light', // could be 'dark'
+        primary: pink,
+        secondary: yellow,
     },
     typography: {
         body1: {
