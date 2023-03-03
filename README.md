@@ -88,17 +88,18 @@ Right now the calculator only *gives* you a coast FIRE number and date based on 
 <img src="./docs/red_to_green_concept.jpg" width="646" height="300">
 
 ## TODO:
-- [ ] Integrate AMUI, e.g. [slider with text input](https://mui.com/material-ui/react-slider/#slider-with-input-field) would be much better
-    - [ ] Come up with a decent layout in Figma using AMUI elements (maybe)
+- [X] Integrate AMUI, e.g. [slider with text input](https://mui.com/material-ui/react-slider/#slider-with-input-field) would be much better
+    - [ ] ~~Come up with a decent layout in Figma using AMUI elements (maybe)~~
 - [ ] Toggle for daily, monthly, quarterly, semiannually, annually compound interest
 - [X] Make the coast FIRE message more user-friendly: "Your coast FIRE number is $XX.XX at age XX ({month} {day}(st|th|...), 20XX)"
 - [X] Fix mobile
     - [ ] ~~Show a mostly blank screen if on mobile, explicitly stating that mobile is not supported right now~~
     - [X] Mobile is half-assed for now (need to whole-ass it when integrated with AMUI)
+    - [X] Full-assed the mobile version
 - [X] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
     - [ ] Ensure that the number of datapoints on the timeline stays constant
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
-- [ ] Have a "save as link" feature where you get a URL embedded with current parameters (maybe base64 json) to show your calculations to others
+- [X] Have a "save as link" feature where you get a URL embedded with current parameters (maybe base64 json) to show your calculations to others
 - [ ] Tooltip for each parameter
 - [ ] Explanation of why FIRE is impossible
     - [ ] Show all-red graph of current trajectory (instead of not showing anything at all)
@@ -107,6 +108,7 @@ Right now the calculator only *gives* you a coast FIRE number and date based on 
 - [ ] iMovie-like "bring your own plan" calculator (might not ever get to this)
 - [ ] Red to green financial retirement spectrum (with info for cursor hover)
 - [ ] Fix icon sizing
+- [ ] Support dark mode
 
 ## Other notes
 

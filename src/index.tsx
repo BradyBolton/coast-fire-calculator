@@ -19,7 +19,7 @@ const root = ReactDOM.createRoot(
 // TODO: track dark mode via global state (perhaps using easy-peasy)
 const defaultTheme = createTheme({
     palette: {
-        mode: 'light', // could be 'dark'
+        mode: 'light', // TODO: support dark mode (value could be 'dark')
         primary: pink,
         secondary: yellow,
     },
