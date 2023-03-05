@@ -159,7 +159,7 @@ function App(props: any) {
     // warn peope of the difficulties of small phones (like mine)
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
-        "(Dang you have a tiny phone! I want you to know this app is way better on a bigger phone screen)"
+        "(tip: rotate your screen if you want sliders)"
         : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</div>
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
@@ -195,7 +195,7 @@ function App(props: any) {
                                     <Typography variant="label" >
                                         Current Age:
                                     </Typography>
-                                    <Grid item sx={{ ml: 2 }} xs={2}>
+                                    <Grid item sx={{ ml: 2 }} xs={3}>
                                         <TextField
                                             id="current-age"
                                             size="small"
@@ -334,32 +334,9 @@ function App(props: any) {
                                 }
                             }} data={data} />
                         </div>
-
-                        {/*
-                        TODO: create an accordion of instructions?
-                        <Accordion  >
-                            <AccordionSummary
-                                expandIcon={
-                                    <FontAwesomeIcon icon={faExpandPropIcon} />
-                                }
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
-                            >
-                                <Typography>Instructions</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                        */}
-
                     </Stack>
                 </Container>
             </ScopedCssBaseline>
-
         </>
     );
 }

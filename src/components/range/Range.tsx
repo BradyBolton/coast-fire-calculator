@@ -31,9 +31,11 @@ function Range(props: IRangeProps) {
     };
 
     // TODO: do something else about this gross sizing (trying to make mobile look good)
-    let textInputSize = 2.5
+    let spaceAfterSlider = 1.5
+    let textInputSize = 2.25
     if (Math.floor(Math.log10(props.maxValue)) > 2) {
-        textInputSize = 4
+        textInputSize = 4.5
+        spaceAfterSlider = 2.5
     }
 
     let startAdornment = ""
@@ -43,7 +45,7 @@ function Range(props: IRangeProps) {
     }
     if (props.format && props.format === "percentage") {
         endAdornment = "%"
-        textInputSize = 3
+        textInputSize = 3.25
     }
 
     const marks = [
@@ -59,11 +61,7 @@ function Range(props: IRangeProps) {
 
     // avoid shenanigans on small screens
     const theme = useTheme();
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
-    const isMedium = useMediaQuery(theme.breakpoints.down("md"));
-
-    let spaceAfterSlider = isSmallScreen ? 1 : isMedium ? 2 : 2.5
     if (isExtraSmallScreen) {
         textInputSize = 0
     }
@@ -88,9 +86,9 @@ function Range(props: IRangeProps) {
             <Typography variant="label">
                 {props.labelText}:
             </Typography>
-            <Grid container spacing={spaceAfterSlider} alignItems="center" sx={{ pl: 2 }}>
+            <Grid container direction="row" spacing={spaceAfterSlider} sx={{ pl: 2 }}>
                 {slider}
-                <Grid item xs={textInputSize} alignSelf="flex-start">
+                <Grid item xs={textInputSize}>
                     <NumericFormat
                         value={props.state || 0}
                         defaultValue={0}
@@ -105,7 +103,8 @@ function Range(props: IRangeProps) {
                         suffix={endAdornment}
                         sx={{
                             // fontWeight: 'bold',
-                            fontSize: '1rem'
+                            fontSize: '1rem',
+                            pr: 0
                         }}
                         size='small'
                         onFocus={(event) => event.target.select()}
