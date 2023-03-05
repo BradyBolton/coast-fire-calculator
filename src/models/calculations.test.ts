@@ -1,4 +1,13 @@
-import { futureValue, futureValueSeries, pmtMonthlyToDaily, calculateCoastFire, getDatesFormatted, generateDataSets } from './calculations';
+import {
+    calculateCoastFire,
+    futureValue,
+    futureValueSeries,
+    generateDataSets,
+    getDatesFormatted,
+    pmtMonthlyToDaily,
+} from './calculations';
+
+import { DateTime } from "luxon";
 
 const epsilon = 0.01
 
@@ -51,22 +60,22 @@ it('calculate coast fire date unsuccessfully', () => {
     expect(result.finalAmount).toBeUndefined();
 });
 
-it('calculate record of 8 consecutive days', () => {
-    const today = new Date(2023, 1, 26)
-    const a = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    const b = new Date(a.getFullYear(), a.getMonth(), a.getDate() + 7);
+it('calculate record of 7 consecutive days', () => {
+    const a = DateTime.fromISO('2023-01-26T17:36')
+    const b = a.plus({ days: 6 })
 
     const expected = {
-        "2023-02-26T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate()),
-        "2023-02-27T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 1),
-        "2023-02-28T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 2),
-        "2023-03-01T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 3),
-        "2023-03-02T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 4),
-        "2023-03-03T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 5),
-        "2023-03-04T05:00:00.000Z": new Date(a.getFullYear(), a.getMonth(), a.getDate() + 6),
+        "2023-01-26T17:36:00.000-05:00": a,
+        "2023-01-27T17:36:00.000-05:00": a.plus({ days: 1 }),
+        "2023-01-28T17:36:00.000-05:00": a.plus({ days: 2 }),
+        "2023-01-29T17:36:00.000-05:00": a.plus({ days: 3 }),
+        "2023-01-30T17:36:00.000-05:00": a.plus({ days: 4 }),
+        "2023-01-31T17:36:00.000-05:00": a.plus({ days: 5 }),
+        "2023-02-01T17:36:00.000-05:00": a.plus({ days: 6 }),
     }
 
-    const result = getDatesFormatted(a, b, 1)
+    // a list of 7 timestamps, equally spaced apart, between 'a' and 'b', including 'a' and 'b'
+    const result = getDatesFormatted(a, b, 7)
 
     expect(result).toEqual(expected);
 })
@@ -78,32 +87,27 @@ it('calculate datapoints of accumulation phase', () => {
     // both the 'x' and 'y' values if we used dependency injection)
     const expectedPreCoastValues = [
         0,
-        47534.254094779266,
-        99461.99074134445,
-        156189.28949854075,
-        218159.7629314719,
-        285858.0257015538,
-        359813.48429664073,
-        440604.47703725065,
-        528862.796734114,
-        625278.6313646277,
-        730605.9614047556,
-        732756.3276123962 // <- actual coast number
+        53080.70696295287,
+        111770.050604734,
+        176490.76995464208,
+        247825.07003303213,
+        326652.38124900963,
+        413556.41738648433,
+        509422.18698339653,
+        615298.2151632777,
+        731979.9605696297, // <- approximate coast number
     ]
     const expectedPostCoastValues = [
-        732756.3276123962, // <- post coast begins at coast fire date
-        732861.5518112757,
-        810173.6102652627,
-        895641.5807978954,
-        990125.8583225263,
-        1094577.6037391664,
-        1210048.3191472243,
-        1337700.433180012,
-        1478819.0030222044,
-        1634824.6509129282,
-        1807287.865364581,
-        1997944.8110658743,
-        2000000  // <- fire date
+        731979.9605696297, // <- post coast begins at approximate coast fire date
+        818206.8051920788,
+        914773.8357560807,
+        1022569.3620559797,
+        1143197.687580515,
+        1278110.8288341898,
+        1428671.5952278373,
+        1597287.3690478806,
+        1785521.7229659478,
+        1996154.3995112309, // <- approximate fire date
     ]
 
     const preCoastValues = result.preCoastData.map((x) => {
@@ -126,3 +130,26 @@ it('zero FIRE number', () => {
     expect(result.coastFireAge).toBeUndefined();
     expect(result.finalAmount).toBeUndefined();
 });
+
+interface CoastFireDatum {
+    x: string, // '2016-12-25'
+    y: number  // value (usd)
+}
+
+it('use dates within a single day to calculate a future value series', () => {
+    const a = DateTime.fromISO('2023-01-26')
+    const b = a.plus({ days: 1 })
+
+    const dates: Record<string, DateTime> = getDatesFormatted(a, b, 10)
+    let result = []
+
+    for (const [dateStr, date] of Object.entries(dates)) {
+        const yearsElapsed = date.diff(a, 'years').years
+        const dataPoint = {
+            x: dateStr,
+            y: futureValueSeries(pmtMonthlyToDaily(1000), 0.07, 365, yearsElapsed, 0)
+        }
+        result.push(dataPoint)
+    }
+    expect(result.length).toEqual(10)
+})

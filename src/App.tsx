@@ -3,7 +3,7 @@ import './App.scss'
 
 // local imports
 import { Range } from "./components/range"
-import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
+import { generateDataSets } from "./models/calculations";
 
 // import hooks
 import "chartjs-adapter-moment";
@@ -47,6 +47,8 @@ import { faClipboard } from '@fortawesome/free-solid-svg-icons';
 // import AccordionSummary from '@mui/material/AccordionSummary';
 // import AccordionDetails from '@mui/material/AccordionDetails';
 
+import { DateTime } from "luxon";
+
 ChartJS.register(
     Legend,
     LineElement,
@@ -78,8 +80,8 @@ function App(props: any) {
     const [copiedUrl, setCopiedUrl] = useState(false);
 
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
-    const today = new Date()
-    const maxChartDate = convertYearsElapsedToDate(today, retireAge - currentAge);
+    const today = DateTime.now()
+    const maxChartDate = today.plus({ years: retireAge - currentAge });
     const data = {
         datasets: [
             {
@@ -115,7 +117,7 @@ function App(props: any) {
             <Typography variant="body2">
                 Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
                 on {`${projections.result.coastFireDate ?
-                    projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
+                    projections.result.coastFireDate.toLocaleString() : ''} `}
 
                 (at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
@@ -323,7 +325,7 @@ function App(props: any) {
                                 scales: {
                                     x: {
                                         type: 'time',
-                                        max: maxChartDate.toISOString()
+                                        max: maxChartDate.toISO()
                                     },
                                     y: {
                                         min: 0,
