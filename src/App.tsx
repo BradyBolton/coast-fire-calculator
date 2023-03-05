@@ -3,7 +3,7 @@ import './App.scss'
 
 // local imports
 import { Range } from "./components/range"
-import { generateDataSets, convertYearsElapsedToDate } from "./models/calculations";
+import { generateDataSets } from "./models/calculations";
 
 // import hooks
 import "chartjs-adapter-moment";
@@ -47,6 +47,8 @@ import { faClipboard } from '@fortawesome/free-solid-svg-icons';
 // import AccordionSummary from '@mui/material/AccordionSummary';
 // import AccordionDetails from '@mui/material/AccordionDetails';
 
+import { DateTime } from "luxon";
+
 ChartJS.register(
     Legend,
     LineElement,
@@ -78,8 +80,8 @@ function App(props: any) {
     const [copiedUrl, setCopiedUrl] = useState(false);
 
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
-    const today = new Date()
-    const maxChartDate = convertYearsElapsedToDate(today, retireAge - currentAge);
+    const today = DateTime.now()
+    const maxChartDate = today.plus({ years: retireAge - currentAge });
     const data = {
         datasets: [
             {
@@ -115,7 +117,7 @@ function App(props: any) {
             <Typography variant="body2">
                 Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
                 on {`${projections.result.coastFireDate ?
-                    projections.result.coastFireDate.toLocaleDateString("en-US") : ''} `}
+                    projections.result.coastFireDate.toLocaleString() : ''} `}
 
                 (at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
@@ -157,7 +159,7 @@ function App(props: any) {
     // warn peope of the difficulties of small phones (like mine)
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
-        "(Dang you have a tiny phone! I want you to know this app is way better on a bigger phone screen)"
+        "(tip: rotate your screen if you want sliders)"
         : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</div>
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
@@ -193,7 +195,7 @@ function App(props: any) {
                                     <Typography variant="label" >
                                         Current Age:
                                     </Typography>
-                                    <Grid item sx={{ ml: 2 }} xs={2}>
+                                    <Grid item sx={{ ml: 2 }} xs={3}>
                                         <TextField
                                             id="current-age"
                                             size="small"
@@ -323,7 +325,7 @@ function App(props: any) {
                                 scales: {
                                     x: {
                                         type: 'time',
-                                        max: maxChartDate.toISOString()
+                                        max: maxChartDate.toISO()
                                     },
                                     y: {
                                         min: 0,
@@ -332,32 +334,9 @@ function App(props: any) {
                                 }
                             }} data={data} />
                         </div>
-
-                        {/*
-                        TODO: create an accordion of instructions?
-                        <Accordion  >
-                            <AccordionSummary
-                                expandIcon={
-                                    <FontAwesomeIcon icon={faExpandPropIcon} />
-                                }
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
-                            >
-                                <Typography>Instructions</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                    malesuada lacus ex, sit amet blandit leo lobortis eget.
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                        */}
-
                     </Stack>
                 </Container>
             </ScopedCssBaseline>
-
         </>
     );
 }

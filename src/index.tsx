@@ -25,7 +25,7 @@ const defaultTheme = createTheme({
     },
     breakpoints: {
         values: {
-            xs: 400, // where things really break
+            xs: 389, // where things really break, but plenty of phones are ~390px wide
             sm: 475, // this width is when the UI starts disintegrating
             md: 900,
             lg: 1200,
