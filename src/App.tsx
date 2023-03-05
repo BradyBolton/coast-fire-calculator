@@ -43,11 +43,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faClipboard } from '@fortawesome/free-solid-svg-icons';
-// import Accordion from '@mui/material/Accordion';
-// import AccordionSummary from '@mui/material/AccordionSummary';
-// import AccordionDetails from '@mui/material/AccordionDetails';
-
-import { DateTime } from "luxon";
 
 ChartJS.register(
     Legend,
@@ -80,8 +75,6 @@ function App(props: any) {
     const [copiedUrl, setCopiedUrl] = useState(false);
 
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
-    const today = DateTime.now()
-    const maxChartDate = today.plus({ years: retireAge - currentAge });
     const data = {
         datasets: [
             {
@@ -325,11 +318,12 @@ function App(props: any) {
                                 scales: {
                                     x: {
                                         type: 'time',
-                                        max: maxChartDate.toISO()
+                                        min: projections.xMin.toISO(),
+                                        max: projections.xMax.toISO()
                                     },
                                     y: {
-                                        min: 0,
-                                        max: Math.floor(fireNumber * 1.1)
+                                        min: projections.yMin,
+                                        max: projections.yMax
                                     }
                                 }
                             }} data={data} />

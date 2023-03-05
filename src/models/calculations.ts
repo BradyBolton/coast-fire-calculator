@@ -21,6 +21,10 @@ interface CoastFireData {
     preCoastData: CoastFireDatum[] // today -> coast fire date, inclusive
     postCoastData: CoastFireDatum[] // coast fire date -> retire date, inclusive
     result: CoastFireResult
+    xMin: DateTime,
+    xMax: DateTime,
+    yMin: number,
+    yMax: number,
 }
 
 // futureValue carries out a simple compound interest formula
@@ -135,13 +139,14 @@ const getDates = (startDate: DateTime, endDate: DateTime, numDates: number): Dat
     const diffDays = endDate.diff(startDate, 'days').days // a float w/ residual
     const stepSize = diffDays / (numDates - 1)
 
-    let dateArray: DateTime[] = new Array();
+    let dateArray: DateTime[] = [];
     let currentDate = startDate;
     for (let i = 0; i < numDates; i++) {
         dateArray.push(currentDate);
         currentDate = currentDate.plus({ days: stepSize }); // cloning not needed, this creates a new object (luxon's immutability)
     }
     dateArray.push(endDate);
+
     return dateArray;
 }
 
@@ -164,10 +169,20 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
 
     const result = calculateCoastFire(fireNumber, currentAge, retirementAge, rate, monthlyContribution, principal)
 
+    const today = DateTime.now()
+    const daysTilFire = ((retirementAge - currentAge) * 365)
+    const fireDate = today.plus({ days: daysTilFire })
+    const daysTilCoast = ((result.coastFireAge ?? currentAge) - currentAge) * 365 // 0 if no coast fire
+    const coastFireDate = today.plus({ days: daysTilCoast }) // if no coast fire possible, it will default to today
+
     let data: CoastFireData = {
         preCoastData: [],
         postCoastData: [],
-        result: result
+        result: result,
+        xMin: today,
+        xMax: fireDate,
+        yMin: principal,
+        yMax: Math.floor(fireNumber * 1.1),
     }
 
     /* At this point, 3 scenarios are possible
@@ -176,25 +191,13 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
        3. coast FIRE already achieved
      */
 
-    // check if the principal is already high enough to achieve FIRE at retirement age
-    if (result.alreadyCoastFire) {
-        return data
-    }
+    let preCoastDates: Record<string, DateTime> | undefined
+    let postCoastDates: Record<string, DateTime> | undefined
 
-    // if coast fire is possible, generate a chart
-    if (result.isPossible) {
-        const today = DateTime.now()
+    if (!result.isPossible) {
 
-        // get chart maximum date as DateTime object
-        const daysTotal = ((retirementAge - currentAge) * 365)
-        const fireDate = today.plus({ days: daysTotal })
-
-        // get coast fire date as DateTime object
-        const daysAccumulating = ((result.coastFireAge ?? 0) - currentAge) * 365
-        const coastFireDate = today.plus({ days: daysAccumulating })
-
-        const preCoastDates: Record<string, DateTime> = getDatesFormatted(today, coastFireDate, 10)
-        const postCoastDates: Record<string, DateTime> = getDatesFormatted(coastFireDate, fireDate, 10)
+        // case 1: only draw pre-coast graph
+        preCoastDates = getDatesFormatted(today, fireDate, 10)
 
         for (const [dateStr, date] of Object.entries(preCoastDates)) {
             const yearsElapsed = date.diff(today, 'years').years
@@ -205,20 +208,54 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
             data.preCoastData.push(dataPoint)
         }
 
-        // TODO: what if there's no coast fire date?
+        const finalValue = data.preCoastData[data.preCoastData.length - 1].y
+        data.yMax = Math.floor(finalValue * 1.1)
+
+    } else if (result.isPossible && !result.alreadyCoastFire) {
+
+        // case 2: draw pre and post coast graphs
+        preCoastDates = getDatesFormatted(today, coastFireDate, 10)
+        postCoastDates = getDatesFormatted(coastFireDate, fireDate, 10)
+
+        for (const [dateStr, date] of Object.entries(preCoastDates)) {
+            const yearsElapsed = date.diff(today, 'years').years
+            const dataPoint = {
+                x: dateStr,
+                y: futureValueSeries(pmtMonthlyToDaily(monthlyContribution), rate, 365, yearsElapsed, principal)
+            }
+            data.preCoastData.push(dataPoint)
+        }
         for (const [dateStr, date] of Object.entries(postCoastDates)) {
             const yearsElapsed = date.diff(coastFireDate, 'years').years
             const dataPoint = {
                 x: dateStr,
-                // note: result.coastFireDate cannot be used otherwise it would introduce a gap between the
-                // graphs due to the coast fire number being rounded
+                // note: do not use result.coastFireDate because there would be a gap in the graph
                 y: futureValue(data.preCoastData[data.preCoastData.length - 1].y, rate, 365, yearsElapsed)
             }
             data.postCoastData.push(dataPoint)
         }
-    }
-    return data
 
+    } else if (result.alreadyCoastFire) {
+
+        // case 3: only draw post-coast graph
+        postCoastDates = getDatesFormatted(today, fireDate, 10)
+
+        for (const [dateStr, date] of Object.entries(postCoastDates)) {
+            const yearsElapsed = date.diff(coastFireDate, 'years').years
+            const dataPoint = {
+                x: dateStr,
+                // note: do not use result.coastFireDate because there would be a gap in the graph
+                y: futureValue(principal, rate, 365, yearsElapsed)
+            }
+            data.postCoastData.push(dataPoint)
+        }
+
+        const finalValue = data.postCoastData[data.postCoastData.length - 1].y
+        data.yMax = Math.floor(finalValue * 1.1)
+
+    }
+
+    return data
 }
 
 export {

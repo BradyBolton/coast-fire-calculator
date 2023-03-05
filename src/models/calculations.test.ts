@@ -80,6 +80,14 @@ it('calculate record of 7 consecutive days', () => {
     expect(result).toEqual(expected);
 })
 
+it('calculate record of 10 equidistant dates', () => {
+    const startDate = DateTime.fromISO("2023-03-05T17:24:21.792-05:00")
+    const endDate = DateTime.fromISO("2030-06-24T21:00:21.792-04:00")
+
+    const result = getDatesFormatted(startDate, endDate, 10)
+    expect(Object.keys(result).length).toEqual(10);
+})
+
 it('calculate datapoints of accumulation phase', () => {
     const result = generateDataSets(2000000, 23, 50, 0.07, 3000)
 
