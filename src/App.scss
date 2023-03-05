@@ -1,3 +1,5 @@
+$primary-color: #e91e63;
+
 html {
     background-color: ghostwhite;
     font-size: 14px;
@@ -6,8 +8,12 @@ html {
         margin: 0;
     }
 
+    #gh-icon:hover {
+        color: $primary-color
+    }
+
     p b {
-        color: #e91e63;
+        color: $primary-color
     }
 
     /* TODO: come up with a better sizing strategy for graphs (mobile vs. desktop) */

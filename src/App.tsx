@@ -166,8 +166,10 @@ function App(props: any) {
                                 <Box>
                                     <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
                                         <h2>Coast FIRE Calculator</h2>
-                                        <Link sx={{ color: 'black' }} href="https://github.com/BradyBolton/coast-fire-calculator">
-                                            <FontAwesomeIcon icon={faPropIcon} size="xl" />
+                                        <Link sx={{
+                                            color: 'black',
+                                        }} href="https://github.com/BradyBolton/coast-fire-calculator">
+                                            <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
                                         </Link>
                                     </Stack>
                                 </Box>
