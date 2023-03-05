@@ -100,7 +100,7 @@ After some searching, I think [this](https://projectionlab.com/) project kind of
     - [X] Full-assed the mobile version
     - [ ] Extend the line chart ([example](https://stackoverflow.com/questions/30256695/chart-js-drawing-an-arbitrary-vertical-line)) to show a vertical line along the graph where the user is holding their thumb down (to make graph reading a bit easier on mobile, like RobinHood)
 - [X] Fix bug where the y-axis is not consistent when changing parameters that are not the FIRE number (which is responsible for the jerking motion when the chart canvas attempts to repaint itself; the animations should instead be smooth)
-    - [ ] Ensure that the number of datapoints on the timeline stays constant
+    - [X] Ensure that the number of datapoints on the timeline stays constant
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
 - [X] Have a "save as link" feature where you get a URL embedded with current parameters (maybe base64 json) to show your calculations to others
 - [ ] Tooltip for each parameter
