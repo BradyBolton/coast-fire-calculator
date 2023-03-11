@@ -65,7 +65,7 @@ function App(props: any) {
     const rateParam: number = parseFloat(currentUrl.searchParams.get('r') ?? "-1")
     const fireNumParam: number = parseFloat(currentUrl.searchParams.get('fn') ?? "-1")
     const principalParam: number = parseFloat(currentUrl.searchParams.get('p') ?? "-1")
-    const pmtBaristaParam: number = parseFloat(currentUrl.searchParams.get('pmtb') ?? "-1")
+    const pmtBaristaParam: number = parseFloat(currentUrl.searchParams.get('pmtb') ?? "0")
 
     // setup local state (coast fire parameters)
     const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
@@ -74,10 +74,10 @@ function App(props: any) {
     const [rate, setRate] = useState(rateParam > -1 ? rateParam : 7); // default to 7% APR
     const [fireNumber, setFireNumber] = useState(fireNumParam > -1 ? fireNumParam : 2000000);
     const [principal, setPrincipal] = useState(principalParam > -1 ? principalParam : 0);
-    const [pmtMonthlyBarista, setPmtMonthlyBarista] = useState(pmtBaristaParam > -1 ? pmtBaristaParam : 0);
+    const [pmtMonthlyBarista, setPmtMonthlyBarista] = useState(pmtBaristaParam);
 
     const [copiedUrl, setCopiedUrl] = useState(false);
-    const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista > 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
+    const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
 
     const baristaPmtMonthly = calcMode === "coast" ? 0 : pmtMonthlyBarista
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal, baristaPmtMonthly)
