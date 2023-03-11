@@ -1,5 +1,18 @@
-import { TextField, Grid, Typography, Slider, Box, useMediaQuery, useTheme } from '@mui/material'
+import {
+    IconButton,
+    Box,
+    Grid,
+    Slider,
+    TextField,
+    Typography,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material'
 import { NumericFormat } from 'react-number-format'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+
 
 import React from 'react'
 
@@ -14,10 +27,15 @@ interface IRangeProps {
     format?: RangeFormat;
     state: number
     setState: React.Dispatch<React.SetStateAction<number>>
+    openTipDialog: React.Dispatch<React.SetStateAction<boolean>>
+    setTipDialogText: React.Dispatch<React.SetStateAction<string>>
+    tipDialogText: string
     disabled?: boolean
 }
 
 function Range(props: IRangeProps) {
+
+    const faCircleQuestionProp = faCircleQuestion as IconProp;
 
     const handleSliderChange = (event: Event, value: number | number[]) => {
         props.setState(value as number)
@@ -96,7 +114,13 @@ function Range(props: IRangeProps) {
     return (
         <Box>
             <Typography variant="label">
-                {props.labelText}:
+                {props.labelText}
+                <IconButton size="small" onClick={() => {
+                    props.setTipDialogText(props.tipDialogText)
+                    props.openTipDialog(true)
+                }}>
+                    <FontAwesomeIcon icon={faCircleQuestionProp} size="sm" />
+                </IconButton>
             </Typography>
             <Grid container direction="row" spacing={spaceAfterSlider} sx={{ pl: 2 }}>
                 {slider}

@@ -27,6 +27,11 @@ import {
     Box,
     Button,
     Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Divider,
     Grid,
     Link,
@@ -39,7 +44,7 @@ import {
     ToggleButtonGroup,
     Typography,
     useMediaQuery,
-    useTheme
+    useTheme,
 } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -69,8 +74,8 @@ function App(props: any) {
 
     // setup local state (coast fire parameters)
     const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
-    const [retireAge, setRetireAge] = useState(retireAgeParam > -1 ? retireAgeParam : 60);
-    const [pmtMonthly, setPmtMonthly] = useState(pmtParam > -1 ? pmtParam : 4000);
+    const [retireAge, setRetireAge] = useState(retireAgeParam > -1 ? retireAgeParam : 67);
+    const [pmtMonthly, setPmtMonthly] = useState(pmtParam > -1 ? pmtParam : 2500);
     const [rate, setRate] = useState(rateParam > -1 ? rateParam : 7); // default to 7% APR
     const [fireNumber, setFireNumber] = useState(fireNumParam > -1 ? fireNumParam : 2000000);
     const [principal, setPrincipal] = useState(principalParam > -1 ? principalParam : 0);
@@ -78,6 +83,12 @@ function App(props: any) {
 
     const [copiedUrl, setCopiedUrl] = useState(false);
     const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
+    const [tipDialogText, setTipDialogText] = useState("");
+    const [openTipDialog, setOpenTipDialog] = useState(false); // tip dialog
+
+    const handleClose = () => {
+        setOpenTipDialog(false);
+    };
 
     const baristaPmtMonthly = calcMode === "coast" ? 0 : pmtMonthlyBarista
     const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal, baristaPmtMonthly)
@@ -103,14 +114,14 @@ function App(props: any) {
     const summaryAddendum = calcMode === "barista" ?
         pmtMonthlyBarista > 0 ?
             <Typography variant="body2">
-                (After {coastDateStr}, you will be able to retire by <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}/mo`}</b>)
+                (i.e. after <b>{coastDateStr}</b> you will be able to retire at age <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}/mo`}</b>)
             </Typography> :
             <Typography variant="body2">
-                (You can still retire by <b>{retireAge}</b> even if you withdraw <b>{`$${(-1 * pmtMonthlyBarista).toFixed(2)}/mo`}</b> from your savings after {coastDateStr})
+                (i.e. you can start withdrawing <b>{`$${(-1 * pmtMonthlyBarista).toFixed(2)}/mo`}</b> from savings on <b>{coastDateStr}</b> and still retire at age <b>{retireAge}</b>)
             </Typography> :
         <Typography variant="body2">
-            (After {coastDateStr} you can halt all retirement contributions and still retire at {retireAge})
-        </Typography>
+            (i.e. after <b>{coastDateStr}</b> you can halt all retirement contributions and still retire at age <b>{retireAge}</b >)
+        </Typography >
 
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
@@ -129,15 +140,14 @@ function App(props: any) {
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="outlined" severity="info">
             <Typography variant="body2">
-                Your {calcMode} FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
-                on {`${coastDateStr} `} at age <b>{`${projections.result.coastFireAge ?
+                In <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years `}</b>
+                you can {calcMode} FIRE once you save up <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
+                on <b>{`${coastDateStr} `}</b> at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
-                in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years `}</b>
             </Typography>
             {summaryAddendum}
         </Alert>
     }
-
 
     const faPropIcon = faGithub as IconProp;
     const faClipboardPropIcon = faClipboard as IconProp;
@@ -173,7 +183,12 @@ function App(props: any) {
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
         "(tip: rotate your screen if you want sliders)"
-        : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better) <br /> <b>Note:</b> Barista FIRE calculator mode is experimental</div>
+        : <div>
+
+            Watch <a href="https://www.youtube.com/watch?v=V1ategW3cyk">this video</a> {' '}
+            and check out <a href="https://walletburst.com/tools/coast-fire-calc/" > this guy's calculator</a> if you're confused
+            <br /> <b>Note:</b> Barista FIRE calculator mode is experimental
+        </div >
 
     const handleCalculatorMode = (
         event: React.MouseEvent<HTMLElement>,
@@ -290,6 +305,9 @@ function App(props: any) {
                                     step={1}
                                     state={retireAge}
                                     setState={setRetireAge}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Retirement Age is the age you plan to fully retire. In other words, the age you plan to start fully withdrawing money from your retirement savings."}
                                 />
                                 <Divider light />
                                 <Range
@@ -301,6 +319,9 @@ function App(props: any) {
                                     format="money"
                                     state={principal}
                                     setState={setPrincipal}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Initial Principal is the total value of your retirement assets today. Only include investement assets (not cash). Do not count home equity unless you plan to turn that into retirement income."}
                                 />
                                 <Divider light />
                                 <Range
@@ -312,6 +333,9 @@ function App(props: any) {
                                     format="money"
                                     state={fireNumber}
                                     setState={setFireNumber}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"FIRE Number is the total value of investments you will need in order to retire comfortably. Your FIRE number should be big enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim for save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."}
                                 />
                                 <Grid item alignSelf="center">
                                     <Alert severity="info" variant="outlined" sx={{ pl: 2, pr: 2, pb: 0, pt: 0 }}>
@@ -345,6 +369,9 @@ function App(props: any) {
                                     format="money"
                                     state={pmtMonthly}
                                     setState={setPmtMonthly}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Contributions is the amount you contribute each month to savings during your accumulation period (before achieving coast/barista FIRE). During this period, you should aggressively save toward retirement. Later down the road once you achieve coast/barista FIRE, you can stop contributing this amount (and either save less, save nothing, or start making small withdrawels)."}
                                 />
                                 <Divider light />
                                 <Range
@@ -359,10 +386,13 @@ function App(props: any) {
                                     format="money"
                                     state={pmtMonthlyBarista}
                                     setState={setPmtMonthlyBarista}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Barista FIRE Contributions is the amount you plan to add (or withdraw) monthly to or from your savings once you achieve barista FIRE. With barista FIRE, you can take a lower paying job, work fewer hours, and even start making small withdrawals from your savings until you achieve true retirement (when you stop working entirely)."}
                                 />
                                 <Divider light />
                                 <Range
-                                    labelText="APR (return)"
+                                    labelText="APR (real return)"
                                     minValue={0.01}
                                     maxValue={15}
                                     defaultValue={7}
@@ -370,6 +400,9 @@ function App(props: any) {
                                     format="percentage"
                                     state={rate}
                                     setState={setRate}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={`APR is the expected real rate of return on your investments. In other words, how much do you expect your investments to grow (in ${new Date().getFullYear()} dollars after taking into account taxes and inflation). Some people use 7% as a rule of thumb, but it is always better to exercise caution when choosing a growth rate to build your retirement plans off of. Many will argue that 7% is too optimistic. Others will say that 7% is too conservative.`}
                                 />
                             </Stack>
                         </Paper>
@@ -408,6 +441,24 @@ function App(props: any) {
                         </div>
                     </Stack>
                 </Container>
+                <Dialog
+                    open={openTipDialog}
+                    onClose={handleClose}
+                >
+                    <DialogTitle>
+                        {"Explanation"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {tipDialogText}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} autoFocus>
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </ScopedCssBaseline >
         </>
     );
