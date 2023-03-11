@@ -26,15 +26,17 @@ import {
     Alert,
     Box,
     Button,
-    List,
-    ListItem,
     Container,
     Divider,
     Grid,
     Link,
+    List,
+    ListItem,
     Paper,
     Stack,
     TextField,
+    ToggleButton,
+    ToggleButtonGroup,
     Typography,
     useMediaQuery,
     useTheme
@@ -63,6 +65,7 @@ function App(props: any) {
     const rateParam: number = parseFloat(currentUrl.searchParams.get('r') ?? "-1")
     const fireNumParam: number = parseFloat(currentUrl.searchParams.get('fn') ?? "-1")
     const principalParam: number = parseFloat(currentUrl.searchParams.get('p') ?? "-1")
+    const pmtBaristaParam: number = parseFloat(currentUrl.searchParams.get('pmtb') ?? "-1")
 
     // setup local state (coast fire parameters)
     const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
@@ -71,10 +74,13 @@ function App(props: any) {
     const [rate, setRate] = useState(rateParam > -1 ? rateParam : 7); // default to 7% APR
     const [fireNumber, setFireNumber] = useState(fireNumParam > -1 ? fireNumParam : 2000000);
     const [principal, setPrincipal] = useState(principalParam > -1 ? principalParam : 0);
+    const [pmtMonthlyBarista, setPmtMonthlyBarista] = useState(pmtBaristaParam > -1 ? pmtBaristaParam : 0);
 
     const [copiedUrl, setCopiedUrl] = useState(false);
+    const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista > 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
 
-    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
+    const baristaPmtMonthly = calcMode === "coast" ? 0 : pmtMonthlyBarista
+    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal, baristaPmtMonthly)
     const data = {
         datasets: [
             {
@@ -92,6 +98,13 @@ function App(props: any) {
         ],
     };
 
+    const coastDateStr = projections.result.coastFireDate ?
+        projections.result.coastFireDate.toLocaleString() : ''
+    const baristaAddendum = calcMode === "barista" ? <Typography variant="body2">
+        (After {coastDateStr}, you will be able to retire by <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}`}</b> a month)
+    </Typography> : <></>
+
+
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
     let summaryMessage = <Alert variant="filled" severity="error">
         <Typography variant="body2">
@@ -101,24 +114,22 @@ function App(props: any) {
     if (projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="filled" severity="success">
             <Typography variant="body2">
-                Coast FIRE already achieved!
+                {calcMode.charAt(0).toUpperCase() + calcMode.slice(1)} FIRE already achieved!
             </Typography>
         </Alert>
 
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="outlined" severity="info">
             <Typography variant="body2">
-                Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
-                on {`${projections.result.coastFireDate ?
-                    projections.result.coastFireDate.toLocaleString() : ''} `}
-
-                (at age <b>{`${projections.result.coastFireAge ?
+                Your {calcMode} FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
+                on {`${coastDateStr} `} at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
                 in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}</b>
-                )
             </Typography>
+            {baristaAddendum}
         </Alert>
     }
+
 
     const faPropIcon = faGithub as IconProp;
     const faClipboardPropIcon = faClipboard as IconProp;
@@ -130,7 +141,8 @@ function App(props: any) {
         `&r=${rate}` +
         `&pmt=${pmtMonthly}` +
         `&fn=${fireNumber}` +
-        `&p=${principal}`
+        `&p=${principal}` +
+        `&pmtb=${pmtMonthlyBarista}`
 
     const onShareClick = () => {
         navigator.clipboard.writeText(generatedUrl);
@@ -155,6 +167,13 @@ function App(props: any) {
         "(tip: rotate your screen if you want sliders)"
         : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</div>
 
+    const handleCalculatorMode = (
+        event: React.MouseEvent<HTMLElement>,
+        newMode: "coast" | "barista",
+    ) => {
+        setCalcMode(newMode);
+    };
+
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <>
@@ -175,15 +194,37 @@ function App(props: any) {
                                 </Box>
                                 <Typography alignSelf="center" variant="subtitle1">{topMessage}</Typography>
                                 <Box alignSelf="center">
-                                    <Button
-                                        sx={{ width: "max-content" }}
-                                        color="primary"
-                                        variant="contained"
-                                        onClick={onShareClick}
-                                        startIcon={copiedIcon}
-                                    >
-                                        Share as URL
-                                    </Button>
+                                    <Stack direction="row" alignItems="center" spacing={1}>
+                                        <ToggleButtonGroup
+                                            color="primary"
+                                            value={calcMode}
+                                            exclusive
+                                            onChange={handleCalculatorMode}
+                                            size="small"
+                                        >
+                                            <ToggleButton value="coast">
+                                                Coast FIRE
+                                            </ToggleButton>
+                                            <ToggleButton value="barista">
+                                                Barista FIRE
+                                            </ToggleButton>
+                                        </ToggleButtonGroup>
+
+                                        <Button
+                                            sx={{
+                                                width: "max-content",
+                                                height: "max-content",
+                                                p: 1
+                                            }}
+                                            color="primary"
+                                            variant="contained"
+                                            onClick={onShareClick}
+                                            startIcon={copiedIcon}
+                                            size="small"
+                                        >
+                                            Share as URL
+                                        </Button>
+                                    </Stack>
                                 </Box>
                                 <Divider light />
                                 <Grid container direction="row" alignItems="center">
@@ -296,12 +337,28 @@ function App(props: any) {
                                     state={principal}
                                     setState={setPrincipal}
                                 />
+
+                                <Divider light />
+                                <Range
+                                    disabled={calcMode === "coast"}
+                                    labelText="Barista FIRE contributions (monthly)"
+                                    // negative barista "income" has interesting implications
+                                    // i.e. a "soft-retirement" with smaller withdrawels
+                                    minValue={0}
+                                    maxValue={pmtMonthly}
+                                    defaultValue={0}
+                                    step={0.01}
+                                    format="money"
+                                    state={pmtMonthlyBarista}
+                                    setState={setPmtMonthlyBarista}
+                                />
                             </Stack>
                         </Paper>
 
                         <Box sx={{ pl: 3, pr: 3 }}>
                             {summaryMessage}
                         </Box>
+
 
                         <div id="graph">
                             <Line options={{
@@ -332,7 +389,7 @@ function App(props: any) {
                         </div>
                     </Stack>
                 </Container>
-            </ScopedCssBaseline>
+            </ScopedCssBaseline >
         </>
     );
 }

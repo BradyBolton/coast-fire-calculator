@@ -14,6 +14,7 @@ interface IRangeProps {
     format?: RangeFormat;
     state: number
     setState: React.Dispatch<React.SetStateAction<number>>
+    disabled?: boolean
 }
 
 function Range(props: IRangeProps) {
@@ -78,6 +79,7 @@ function Range(props: IRangeProps) {
             step={props.step}
             valueLabelDisplay="auto"
             marks={marks}
+            disabled={props.disabled}
         />
     </Grid> : <></>
 
@@ -90,6 +92,7 @@ function Range(props: IRangeProps) {
                 {slider}
                 <Grid item xs={textInputSize}>
                     <NumericFormat
+                        disabled={props.disabled}
                         value={props.state || 0}
                         defaultValue={0}
                         thousandSeparator=","
