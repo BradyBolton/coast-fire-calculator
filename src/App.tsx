@@ -109,7 +109,7 @@ function App(props: any) {
                 (You can still retire by <b>{retireAge}</b> even if you withdraw <b>{`$${(-1 * pmtMonthlyBarista).toFixed(2)}/mo`}</b> from your savings after {coastDateStr})
             </Typography> :
         <Typography variant="body2">
-            (after {coastDateStr} you can halt all retirement contributions and still retire at {retireAge})
+            (After {coastDateStr} you can halt all retirement contributions and still retire at {retireAge})
         </Typography>
 
 
