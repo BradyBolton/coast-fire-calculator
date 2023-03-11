@@ -360,7 +360,7 @@ function App(props: any) {
                                 <Divider light />
                                 <Range
                                     disabled={calcMode === "coast"}
-                                    labelText="Barista FIRE contributions (monthly)"
+                                    labelText="Barista FIRE Contributions (monthly)"
                                     // negative barista "income" has interesting implications
                                     // i.e. a "soft-retirement" with smaller withdrawels
                                     minValue={Math.floor(-1 * pmtMonthly)}
