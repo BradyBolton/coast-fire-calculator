@@ -307,7 +307,7 @@ function App(props: any) {
                                     setState={setRetireAge}
                                     openTipDialog={setOpenTipDialog}
                                     setTipDialogText={setTipDialogText}
-                                    tipDialogText={"Retirement Age is the age you plan to fully retire. In other words, the age you plan to start fully withdrawing money from your retirement savings."}
+                                    tipDialogText={"Retirement Age is the age you plan to fully retire. In other words, the age you plan to start fully withdrawing money from your retirement savings and stop working."}
                                 />
                                 <Divider light />
                                 <Range
@@ -321,7 +321,7 @@ function App(props: any) {
                                     setState={setPrincipal}
                                     openTipDialog={setOpenTipDialog}
                                     setTipDialogText={setTipDialogText}
-                                    tipDialogText={"Initial Principal is the total value of your retirement assets today. Only include investement assets (not cash). Do not count home equity unless you plan to turn that into retirement income."}
+                                    tipDialogText={"Initial Principal is the total face value of your retirement assets today. Only include investment assets (not cash). Do not count home equity unless you know what you're doing and you plan to turn that equity into retirement income."}
                                 />
                                 <Divider light />
                                 <Range
@@ -335,7 +335,7 @@ function App(props: any) {
                                     setState={setFireNumber}
                                     openTipDialog={setOpenTipDialog}
                                     setTipDialogText={setTipDialogText}
-                                    tipDialogText={"FIRE Number is the total value of investments you will need in order to retire comfortably. Your FIRE number should be big enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim for save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."}
+                                    tipDialogText={"FIRE Number is the total value of investments you will need to retire comfortably. Your FIRE number should be large enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim for save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."}
                                 />
                                 <Grid item alignSelf="center">
                                     <Alert severity="info" variant="outlined" sx={{ pl: 2, pr: 2, pb: 0, pt: 0 }}>
@@ -371,14 +371,14 @@ function App(props: any) {
                                     setState={setPmtMonthly}
                                     openTipDialog={setOpenTipDialog}
                                     setTipDialogText={setTipDialogText}
-                                    tipDialogText={"Contributions is the amount you contribute each month to savings during your accumulation period (before achieving coast/barista FIRE). During this period, you should aggressively save toward retirement. Later down the road once you achieve coast/barista FIRE, you can stop contributing this amount (and either save less, save nothing, or start making small withdrawels)."}
+                                    tipDialogText={"Contributions is the amount you contribute each month to savings during your accumulation period (before achieving coast/barista FIRE). During this period, you should aggressively save toward retirement. Later down the road once you achieve coast/barista FIRE, you can stop contributing this amount (and either save less, save nothing, or start making small withdrawals)."}
                                 />
                                 <Divider light />
                                 <Range
                                     disabled={calcMode === "coast"}
                                     labelText="Barista FIRE Contributions (monthly)"
                                     // negative barista "income" has interesting implications
-                                    // i.e. a "soft-retirement" with smaller withdrawels
+                                    // i.e. a "soft-retirement" with smaller withdrawals
                                     minValue={Math.floor(-1 * pmtMonthly)}
                                     maxValue={Math.floor(pmtMonthly)}
                                     defaultValue={0}
@@ -402,7 +402,7 @@ function App(props: any) {
                                     setState={setRate}
                                     openTipDialog={setOpenTipDialog}
                                     setTipDialogText={setTipDialogText}
-                                    tipDialogText={`APR is the expected real rate of return on your investments. In other words, how much do you expect your investments to grow (in ${new Date().getFullYear()} dollars after taking into account taxes and inflation). Some people use 7% as a rule of thumb, but it is always better to exercise caution when choosing a growth rate to build your retirement plans off of. Many will argue that 7% is too optimistic. Others will say that 7% is too conservative.`}
+                                    tipDialogText={`APR is the expected real rate of return on your investments. In other words, what is the growth of your investments (in ${new Date().getFullYear()} dollars) after accounting for taxes and inflation? Some people use 7% as a rule of thumb, but it is always better to exercise caution when choosing a projected growth rate. Many will argue that 7% is too optimistic. Others will say that 7% is too conservative.`}
                                 />
                             </Stack>
                         </Paper>
