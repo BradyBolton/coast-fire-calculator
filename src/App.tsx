@@ -129,7 +129,9 @@ function App(props: any) {
                 Your {calcMode} FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
                 on {`${coastDateStr} `} at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
-                in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}</b>
+                in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years `}</b>
+                <br />
+                (after {coastDateStr} you can halt all retirement contributions and still retire at {retireAge})
             </Typography>
             {baristaAddendum}
         </Alert>
