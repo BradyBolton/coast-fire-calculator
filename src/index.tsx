@@ -46,6 +46,7 @@ const defaultTheme = createTheme({
         subtitle1: {
             color: 'slategrey',
             fontSize: '1rem',
+            textAlign: "center"
             // fontWeight: 'bold'
         }
     },

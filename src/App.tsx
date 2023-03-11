@@ -170,7 +170,7 @@ function App(props: any) {
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
         "(tip: rotate your screen if you want sliders)"
-        : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</div>
+        : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better) <br /> <b>Note:</b> Barista FIRE calculator mode is experimental</div>
 
     const handleCalculatorMode = (
         event: React.MouseEvent<HTMLElement>,
