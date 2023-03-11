@@ -100,14 +100,17 @@ function App(props: any) {
 
     const coastDateStr = projections.result.coastFireDate ?
         projections.result.coastFireDate.toLocaleString() : ''
-    const baristaAddendum = calcMode === "barista" ?
+    const summaryAddendum = calcMode === "barista" ?
         pmtMonthlyBarista > 0 ?
             <Typography variant="body2">
                 (After {coastDateStr}, you will be able to retire by <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}/mo`}</b>)
             </Typography> :
             <Typography variant="body2">
                 (You can still retire by <b>{retireAge}</b> even if you withdraw <b>{`$${(-1 * pmtMonthlyBarista).toFixed(2)}/mo`}</b> from your savings after {coastDateStr})
-            </Typography> : <></>
+            </Typography> :
+        <Typography variant="body2">
+            (after {coastDateStr} you can halt all retirement contributions and still retire at {retireAge})
+        </Typography>
 
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
@@ -130,10 +133,8 @@ function App(props: any) {
                 on {`${coastDateStr} `} at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
                 in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years `}</b>
-                <br />
-                (after {coastDateStr} you can halt all retirement contributions and still retire at {retireAge})
             </Typography>
-            {baristaAddendum}
+            {summaryAddendum}
         </Alert>
     }
 
