@@ -281,7 +281,6 @@ function App(props: any) {
                                     </Grid>
 
                                 </Box>
-
                                 <Divider light />
                                 <Range
                                     labelText="Retirement Age"
@@ -294,25 +293,14 @@ function App(props: any) {
                                 />
                                 <Divider light />
                                 <Range
-                                    labelText="APR (return)"
-                                    minValue={0.01}
-                                    maxValue={15}
-                                    defaultValue={7}
-                                    step={0.01}
-                                    format="percentage"
-                                    state={rate}
-                                    setState={setRate}
-                                />
-                                <Divider light />
-                                <Range
-                                    labelText="Contributions (monthly)"
+                                    labelText="Initial Principal"
                                     minValue={0}
-                                    maxValue={15000}
-                                    defaultValue={1200}
-                                    step={0.01}
+                                    maxValue={fireNumber}
+                                    defaultValue={2000000}
+                                    step={1000}
                                     format="money"
-                                    state={pmtMonthly}
-                                    setState={setPmtMonthly}
+                                    state={principal}
+                                    setState={setPrincipal}
                                 />
                                 <Divider light />
                                 <Range
@@ -346,20 +334,18 @@ function App(props: any) {
                                             </ListItem>
                                         </List>
                                     </Alert>
-
                                 </Grid>
                                 <Divider light />
                                 <Range
-                                    labelText="Initial Principal"
+                                    labelText="Contributions (monthly)"
                                     minValue={0}
-                                    maxValue={fireNumber}
-                                    defaultValue={2000000}
-                                    step={1000}
+                                    maxValue={15000}
+                                    defaultValue={1200}
+                                    step={0.01}
                                     format="money"
-                                    state={principal}
-                                    setState={setPrincipal}
+                                    state={pmtMonthly}
+                                    setState={setPmtMonthly}
                                 />
-
                                 <Divider light />
                                 <Range
                                     disabled={calcMode === "coast"}
@@ -373,6 +359,17 @@ function App(props: any) {
                                     format="money"
                                     state={pmtMonthlyBarista}
                                     setState={setPmtMonthlyBarista}
+                                />
+                                <Divider light />
+                                <Range
+                                    labelText="APR (return)"
+                                    minValue={0.01}
+                                    maxValue={15}
+                                    defaultValue={7}
+                                    step={0.01}
+                                    format="percentage"
+                                    state={rate}
+                                    setState={setRate}
                                 />
                             </Stack>
                         </Paper>

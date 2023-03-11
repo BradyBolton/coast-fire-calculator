@@ -31,11 +31,16 @@ function Range(props: IRangeProps) {
         }
     };
 
+    const theme = useTheme();
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
     // TODO: do something else about this gross sizing (trying to make mobile look good)
     let spaceAfterSlider = 1.5
-    let textInputSize = 2.25
+    let textInputSize = isMediumScreen ? 2.5 : 1.5
     if (Math.floor(Math.log10(props.maxValue)) > 2) {
-        textInputSize = 4.5
+        textInputSize = isExtraSmallScreen ? 4.5 : isSmallScreen ? 4.5 : isMediumScreen ? 3.75 : 2
         spaceAfterSlider = 2.5
     }
 
@@ -46,7 +51,7 @@ function Range(props: IRangeProps) {
     }
     if (props.format && props.format === "percentage") {
         endAdornment = "%"
-        textInputSize = 3.25
+        textInputSize = isMediumScreen ? 3.5 : 1.5
     }
 
     let marks = [
@@ -68,8 +73,6 @@ function Range(props: IRangeProps) {
     }
 
     // avoid shenanigans on small screens
-    const theme = useTheme();
-    const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
     if (isExtraSmallScreen) {
         textInputSize = 0
     }
