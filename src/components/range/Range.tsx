@@ -49,7 +49,7 @@ function Range(props: IRangeProps) {
         textInputSize = 3.25
     }
 
-    const marks = [
+    let marks = [
         {
             value: props.minValue,
             label: props.minValue.toLocaleString(),
@@ -59,6 +59,13 @@ function Range(props: IRangeProps) {
             label: props.maxValue.toLocaleString(),
         },
     ];
+
+    if (props.minValue < 0) {
+        marks.push({
+            value: 0,
+            label: "0"
+        })
+    }
 
     // avoid shenanigans on small screens
     const theme = useTheme();

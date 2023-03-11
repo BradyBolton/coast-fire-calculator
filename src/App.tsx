@@ -100,9 +100,14 @@ function App(props: any) {
 
     const coastDateStr = projections.result.coastFireDate ?
         projections.result.coastFireDate.toLocaleString() : ''
-    const baristaAddendum = calcMode === "barista" ? <Typography variant="body2">
-        (After {coastDateStr}, you will be able to retire by <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}`}</b> a month)
-    </Typography> : <></>
+    const baristaAddendum = calcMode === "barista" ?
+        pmtMonthlyBarista > 0 ?
+            <Typography variant="body2">
+                (After {coastDateStr}, you will be able to retire by <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}/mo`}</b>)
+            </Typography> :
+            <Typography variant="body2">
+                (You can still retire by <b>{retireAge}</b> even if you withdraw <b>{`$${(-1 * pmtMonthlyBarista).toFixed(2)}/mo`}</b> from your savings after {coastDateStr})
+            </Typography> : <></>
 
 
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
@@ -194,72 +199,86 @@ function App(props: any) {
                                 </Box>
                                 <Typography alignSelf="center" variant="subtitle1">{topMessage}</Typography>
                                 <Box alignSelf="center">
-                                    <Stack direction="row" alignItems="center" spacing={1}>
-                                        <ToggleButtonGroup
-                                            color="primary"
-                                            value={calcMode}
-                                            exclusive
-                                            onChange={handleCalculatorMode}
-                                            size="small"
-                                        >
-                                            <ToggleButton value="coast">
-                                                Coast FIRE
-                                            </ToggleButton>
-                                            <ToggleButton value="barista">
-                                                Barista FIRE
-                                            </ToggleButton>
-                                        </ToggleButtonGroup>
-
-                                        <Button
-                                            sx={{
-                                                width: "max-content",
-                                                height: "max-content",
-                                                p: 1
-                                            }}
-                                            color="primary"
-                                            variant="contained"
-                                            onClick={onShareClick}
-                                            startIcon={copiedIcon}
-                                            size="small"
-                                        >
-                                            Share as URL
-                                        </Button>
-                                    </Stack>
+                                    <Button
+                                        sx={{
+                                            width: "max-content",
+                                            height: "max-content",
+                                            p: 1
+                                        }}
+                                        color="primary"
+                                        variant="contained"
+                                        onClick={onShareClick}
+                                        startIcon={copiedIcon}
+                                        size="small"
+                                    >
+                                        Share as URL
+                                    </Button>
                                 </Box>
                                 <Divider light />
-                                <Grid container direction="row" alignItems="center">
-                                    <Typography variant="label" >
-                                        Current Age:
-                                    </Typography>
-                                    <Grid item sx={{ ml: 2 }} xs={3}>
-                                        <TextField
-                                            id="current-age"
-                                            size="small"
-                                            inputProps={{
-                                                type: "number",
-                                                inputMode: 'numeric',
-                                                pattern: '[0-9]*'
-                                            }}
-                                            value={currentAge ? currentAge : ''}
-                                            onInput={(e) => {
-                                                const et = e.target as HTMLInputElement;
-                                                // set to zero so that the app does not explode
-                                                const newCurrentAge = parseInt(et.value !== "" ? et.value : "0")
-                                                if (newCurrentAge <= retireAge) {
-                                                    setCurrentAge(newCurrentAge)
-                                                }
-                                            }}
-                                            onBlur={(e) => {
-                                                if (!currentAge) {
-                                                    setCurrentAge(35) // TODO: make this a default value constant
-                                                }
-                                            }}
-                                            sx={{
-                                                fontSize: '1rem'
-                                            }}
-                                        />
+                                <Box alignSelf="center">
+                                    <Grid container direction="row" alignItems="center">
+                                        <Typography variant="label" >
+                                            FIRE Type:
+                                        </Typography>
+                                        <Grid item sx={{ ml: 2 }}>
+                                            <ToggleButtonGroup
+                                                color="primary"
+                                                value={calcMode}
+                                                exclusive
+                                                onChange={handleCalculatorMode}
+                                                size="small"
+                                            >
+                                                <ToggleButton value="coast">
+                                                    Coast FIRE
+                                                </ToggleButton>
+                                                <ToggleButton value="barista">
+                                                    Barista FIRE
+                                                </ToggleButton>
+                                            </ToggleButtonGroup>
+
+                                        </Grid>
                                     </Grid>
-                                </Grid>
+                                </Box>
+
+                                <Divider light />
+
+                                <Box alignSelf="center">
+                                    <Grid container direction="row" alignItems="center">
+                                        <Typography variant="label" >
+                                            Current Age:
+                                        </Typography>
+                                        <Grid item sx={{ ml: 2, width: '6rem' }}>
+                                            <TextField
+                                                id="current-age"
+                                                size="small"
+                                                inputProps={{
+                                                    type: "number",
+                                                    inputMode: 'numeric',
+                                                    pattern: '[0-9]*'
+                                                }}
+                                                value={currentAge ? currentAge : ''}
+                                                onInput={(e) => {
+                                                    const et = e.target as HTMLInputElement;
+                                                    // set to zero so that the app does not explode
+                                                    const newCurrentAge = parseInt(et.value !== "" ? et.value : "0")
+                                                    if (newCurrentAge <= retireAge) {
+                                                        setCurrentAge(newCurrentAge)
+                                                    }
+                                                }}
+                                                onBlur={(e) => {
+                                                    if (!currentAge) {
+                                                        setCurrentAge(35) // TODO: make this a default value constant
+                                                    }
+                                                }}
+                                                sx={{
+                                                    fontSize: '1rem'
+                                                }}
+                                            />
+                                        </Grid>
+                                    </Grid>
+
+                                </Box>
+
                                 <Divider light />
                                 <Range
                                     labelText="Retirement Age"
@@ -344,8 +363,8 @@ function App(props: any) {
                                     labelText="Barista FIRE contributions (monthly)"
                                     // negative barista "income" has interesting implications
                                     // i.e. a "soft-retirement" with smaller withdrawels
-                                    minValue={0}
-                                    maxValue={pmtMonthly}
+                                    minValue={Math.floor(-1 * pmtMonthly)}
+                                    maxValue={Math.floor(pmtMonthly)}
                                     defaultValue={0}
                                     step={0.01}
                                     format="money"
