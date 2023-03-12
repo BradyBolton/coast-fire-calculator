@@ -101,11 +101,12 @@ const calculateCoastFire = (fireNumber: number, currentAge: number, retirementAg
     const pmt = pmtMonthlyToDaily(pmtMonthly)
     const pmtBarista = pmtMonthlyToDaily(pmtMonthlyBarista)
 
-    if (futureValue(principal, rate, 365, retirementAge - currentAge) >= fireNumber
-        || futureValueSeries(pmtBarista, rate, 365, retirementAge - currentAge, principal) >= fireNumber) {
+    // check if coast/barista FIRE has already been achieved:
+    // (account for a sufficiently reckless barista withdrawal rate sabotaging an otherwise workable coast FIRE scenario)
+    if (futureValueSeries(pmtBarista, rate, 365, retirementAge - currentAge, principal) >= fireNumber) {
         return {
             isPossible: true,
-            alreadyCoastFire: true,
+            alreadyCoastFire: true, // also counts as barista FIRE if |pmtBarista| > 0
             coastFireNumber: undefined,
             coastFireAge: undefined,
             finalAmount: undefined,

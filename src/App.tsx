@@ -379,8 +379,9 @@ function App(props: any) {
                                     labelText="Barista FIRE Contributions (monthly)"
                                     // negative barista "income" has interesting implications
                                     // i.e. a "soft-retirement" with smaller withdrawals
-                                    minValue={Math.floor(-1 * pmtMonthly)}
-                                    maxValue={Math.floor(pmtMonthly)}
+                                    // caps are based off of theoretical withdrawal limits of 4% rule (otherwise the purpose of coast/barista fire is defeated)
+                                    minValue={Math.floor(-1 * fireNumber * 0.04 / 12)}
+                                    maxValue={Math.floor(fireNumber * 0.04 / 12)}
                                     defaultValue={0}
                                     step={0.01}
                                     format="money"
