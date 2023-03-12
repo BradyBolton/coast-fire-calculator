@@ -24,6 +24,7 @@ import {
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
     Alert,
+    Fab,
     Box,
     Button,
     Container,
@@ -183,12 +184,11 @@ function App(props: any) {
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
         "(tip: rotate your screen if you want sliders)"
-        : <div>
-
+        : <Typography variant="body1">
             Watch <a href="https://www.youtube.com/watch?v=V1ategW3cyk">this video</a> {' '}
             and check out <a href="https://walletburst.com/tools/coast-fire-calc/" > this guy's calculator</a> if you're confused
             <br /> <b>Note:</b> Barista FIRE calculator mode is experimental
-        </div >
+        </Typography>
 
     const handleCalculatorMode = (
         event: React.MouseEvent<HTMLElement>,
@@ -200,7 +200,7 @@ function App(props: any) {
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <>
-            <ScopedCssBaseline sx={{ backgroundColor: 'ghostwhite' }}>
+            <ScopedCssBaseline>
                 <Container maxWidth="md">
                     <Stack spacing={2} sx={{ m: 2 }}>
                         <Paper sx={{ p: 2 }} elevation={2}>
