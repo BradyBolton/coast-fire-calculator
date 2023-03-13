@@ -26,18 +26,25 @@ import {
     Alert,
     Box,
     Button,
-    List,
-    ListItem,
     Container,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Divider,
     Grid,
     Link,
+    List,
+    ListItem,
     Paper,
     Stack,
     TextField,
+    ToggleButton,
+    ToggleButtonGroup,
     Typography,
     useMediaQuery,
-    useTheme
+    useTheme,
 } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -63,18 +70,28 @@ function App(props: any) {
     const rateParam: number = parseFloat(currentUrl.searchParams.get('r') ?? "-1")
     const fireNumParam: number = parseFloat(currentUrl.searchParams.get('fn') ?? "-1")
     const principalParam: number = parseFloat(currentUrl.searchParams.get('p') ?? "-1")
+    const pmtBaristaParam: number = parseFloat(currentUrl.searchParams.get('pmtb') ?? "0")
 
     // setup local state (coast fire parameters)
     const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
-    const [retireAge, setRetireAge] = useState(retireAgeParam > -1 ? retireAgeParam : 60);
-    const [pmtMonthly, setPmtMonthly] = useState(pmtParam > -1 ? pmtParam : 4000);
+    const [retireAge, setRetireAge] = useState(retireAgeParam > -1 ? retireAgeParam : 67);
+    const [pmtMonthly, setPmtMonthly] = useState(pmtParam > -1 ? pmtParam : 2500);
     const [rate, setRate] = useState(rateParam > -1 ? rateParam : 7); // default to 7% APR
     const [fireNumber, setFireNumber] = useState(fireNumParam > -1 ? fireNumParam : 2000000);
     const [principal, setPrincipal] = useState(principalParam > -1 ? principalParam : 0);
+    const [pmtMonthlyBarista, setPmtMonthlyBarista] = useState(pmtBaristaParam);
 
     const [copiedUrl, setCopiedUrl] = useState(false);
+    const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
+    const [tipDialogText, setTipDialogText] = useState("");
+    const [openTipDialog, setOpenTipDialog] = useState(false); // tip dialog
 
-    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal)
+    const handleClose = () => {
+        setOpenTipDialog(false);
+    };
+
+    const baristaPmtMonthly = calcMode === "coast" ? 0 : pmtMonthlyBarista
+    const projections = generateDataSets(fireNumber, currentAge, retireAge, rate / 100, pmtMonthly, principal, baristaPmtMonthly)
     const data = {
         datasets: [
             {
@@ -92,6 +109,21 @@ function App(props: any) {
         ],
     };
 
+    const coastDateStr = projections.result.coastFireDate ?
+        projections.result.coastFireDate.toLocaleString() : ''
+    const summaryAddendum = calcMode === "barista" ?
+        pmtMonthlyBarista > 0 ?
+            <Typography variant="body2">
+                (i.e. after <b>{coastDateStr}</b> you will be able to retire at age <b>{retireAge}</b> as long as you continue saving <b>{`$${(pmtMonthlyBarista).toFixed(2)}/mo`}</b>)
+            </Typography> :
+            <Typography variant="body2">
+                (i.e. you can start withdrawing <b>{`$${(-1 * pmtMonthlyBarista).toFixed(2)}/mo`}</b> from savings on <b>{coastDateStr}</b> and still retire at age <b>{retireAge}</b>)
+            </Typography> :
+        <Typography variant="body2">
+            (i.e. after <b>{coastDateStr}</b> you can halt all retirement contributions and still retire at age <b>{retireAge}</b >)
+        </Typography >
+
+
     // TODO: maybe add a tool-tip showing the math as to why FIRE is not possible
     let summaryMessage = <Alert variant="filled" severity="error">
         <Typography variant="body2">
@@ -101,22 +133,19 @@ function App(props: any) {
     if (projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="filled" severity="success">
             <Typography variant="body2">
-                Coast FIRE already achieved!
+                {calcMode.charAt(0).toUpperCase() + calcMode.slice(1)} FIRE already achieved!
             </Typography>
         </Alert>
 
     } else if (projections.result.isPossible && !projections.result.alreadyCoastFire) {
         summaryMessage = <Alert variant="outlined" severity="info">
             <Typography variant="body2">
-                Your coast FIRE number is <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
-                on {`${projections.result.coastFireDate ?
-                    projections.result.coastFireDate.toLocaleString() : ''} `}
-
-                (at age <b>{`${projections.result.coastFireAge ?
+                In <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years `}</b>
+                you can {calcMode} FIRE once you save up <b>${(projections.postCoastData[0].y).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' '}</b>
+                on <b>{`${coastDateStr} `}</b> at age <b>{`${projections.result.coastFireAge ?
                     (projections.result.coastFireAge).toFixed(2) : ''} `}</b>
-                in <b>{`${((projections.result.coastFireAge ? projections.result.coastFireAge : 0) - currentAge).toFixed(2)} years`}</b>
-                )
             </Typography>
+            {summaryAddendum}
         </Alert>
     }
 
@@ -130,7 +159,8 @@ function App(props: any) {
         `&r=${rate}` +
         `&pmt=${pmtMonthly}` +
         `&fn=${fireNumber}` +
-        `&p=${principal}`
+        `&p=${principal}` +
+        `&pmtb=${pmtMonthlyBarista}`
 
     const onShareClick = () => {
         navigator.clipboard.writeText(generatedUrl);
@@ -153,12 +183,23 @@ function App(props: any) {
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
         "(tip: rotate your screen if you want sliders)"
-        : <div>I'll let <a href="https://walletburst.com/tools/coast-fire-calc/">this guy</a> explain what Coast FIRE is (and you might like his calculator better)</div>
+        : <Typography variant="subtitle2">
+            Watch <Link href="https://www.youtube.com/watch?v=V1ategW3cyk">this video</Link> {' '}
+            and check out <Link href="https://walletburst.com/tools/coast-fire-calc/" > this guy's calculator</Link> if you're confused
+            <br /> <b>Note:</b> Barista FIRE calculator mode is experimental
+        </Typography>
+
+    const handleCalculatorMode = (
+        event: React.MouseEvent<HTMLElement>,
+        newMode: "coast" | "barista",
+    ) => {
+        setCalcMode(newMode);
+    };
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
     return (
         <>
-            <ScopedCssBaseline sx={{ backgroundColor: 'ghostwhite' }}>
+            <ScopedCssBaseline>
                 <Container maxWidth="md">
                     <Stack spacing={2} sx={{ m: 2 }}>
                         <Paper sx={{ p: 2 }} elevation={2}>
@@ -167,7 +208,7 @@ function App(props: any) {
                                     <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
                                         <h2>Coast FIRE Calculator</h2>
                                         <Link sx={{
-                                            color: 'black',
+                                            color: props.theme === 'light' ? 'black' : 'white',
                                         }} href="https://github.com/BradyBolton/coast-fire-calculator">
                                             <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
                                         </Link>
@@ -176,49 +217,84 @@ function App(props: any) {
                                 <Typography alignSelf="center" variant="subtitle1">{topMessage}</Typography>
                                 <Box alignSelf="center">
                                     <Button
-                                        sx={{ width: "max-content" }}
+                                        sx={{
+                                            width: "max-content",
+                                            height: "max-content",
+                                            p: 1
+                                        }}
                                         color="primary"
                                         variant="contained"
                                         onClick={onShareClick}
                                         startIcon={copiedIcon}
+                                        size="small"
                                     >
                                         Share as URL
                                     </Button>
                                 </Box>
                                 <Divider light />
-                                <Grid container direction="row" alignItems="center">
-                                    <Typography variant="label" >
-                                        Current Age:
-                                    </Typography>
-                                    <Grid item sx={{ ml: 2 }} xs={3}>
-                                        <TextField
-                                            id="current-age"
-                                            size="small"
-                                            inputProps={{
-                                                type: "number",
-                                                inputMode: 'numeric',
-                                                pattern: '[0-9]*'
-                                            }}
-                                            value={currentAge ? currentAge : ''}
-                                            onInput={(e) => {
-                                                const et = e.target as HTMLInputElement;
-                                                // set to zero so that the app does not explode
-                                                const newCurrentAge = parseInt(et.value !== "" ? et.value : "0")
-                                                if (newCurrentAge <= retireAge) {
-                                                    setCurrentAge(newCurrentAge)
-                                                }
-                                            }}
-                                            onBlur={(e) => {
-                                                if (!currentAge) {
-                                                    setCurrentAge(35) // TODO: make this a default value constant
-                                                }
-                                            }}
-                                            sx={{
-                                                fontSize: '1rem'
-                                            }}
-                                        />
+                                <Box alignSelf="center">
+                                    <Grid container direction="row" alignItems="center">
+                                        <Typography variant="label" >
+                                            FIRE Type:
+                                        </Typography>
+                                        <Grid item sx={{ ml: 2 }}>
+                                            <ToggleButtonGroup
+                                                color="primary"
+                                                value={calcMode}
+                                                exclusive
+                                                onChange={handleCalculatorMode}
+                                                size="small"
+                                            >
+                                                <ToggleButton value="coast">
+                                                    Coast FIRE
+                                                </ToggleButton>
+                                                <ToggleButton value="barista">
+                                                    Barista FIRE
+                                                </ToggleButton>
+                                            </ToggleButtonGroup>
+
+                                        </Grid>
                                     </Grid>
-                                </Grid>
+                                </Box>
+
+                                <Divider light />
+
+                                <Box alignSelf="center">
+                                    <Grid container direction="row" alignItems="center">
+                                        <Typography variant="label" >
+                                            Current Age:
+                                        </Typography>
+                                        <Grid item sx={{ ml: 2, width: '6rem' }}>
+                                            <TextField
+                                                id="current-age"
+                                                size="small"
+                                                inputProps={{
+                                                    type: "number",
+                                                    inputMode: 'numeric',
+                                                    pattern: '[0-9]*'
+                                                }}
+                                                value={currentAge ? currentAge : ''}
+                                                onInput={(e) => {
+                                                    const et = e.target as HTMLInputElement;
+                                                    // set to zero so that the app does not explode
+                                                    const newCurrentAge = parseInt(et.value !== "" ? et.value : "0")
+                                                    if (newCurrentAge <= retireAge) {
+                                                        setCurrentAge(newCurrentAge)
+                                                    }
+                                                }}
+                                                onBlur={(e) => {
+                                                    if (!currentAge) {
+                                                        setCurrentAge(35) // TODO: make this a default value constant
+                                                    }
+                                                }}
+                                                sx={{
+                                                    fontSize: '1rem'
+                                                }}
+                                            />
+                                        </Grid>
+                                    </Grid>
+
+                                </Box>
                                 <Divider light />
                                 <Range
                                     labelText="Retirement Age"
@@ -228,28 +304,23 @@ function App(props: any) {
                                     step={1}
                                     state={retireAge}
                                     setState={setRetireAge}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Retirement Age is the age you plan to fully retire. In other words, the age you plan to start fully withdrawing money from your retirement savings and stop working."}
                                 />
                                 <Divider light />
                                 <Range
-                                    labelText="APR (return)"
-                                    minValue={0.01}
-                                    maxValue={15}
-                                    defaultValue={7}
-                                    step={0.01}
-                                    format="percentage"
-                                    state={rate}
-                                    setState={setRate}
-                                />
-                                <Divider light />
-                                <Range
-                                    labelText="Contributions (monthly)"
+                                    labelText="Initial Principal"
                                     minValue={0}
-                                    maxValue={15000}
-                                    defaultValue={1200}
-                                    step={0.01}
+                                    maxValue={fireNumber}
+                                    defaultValue={2000000}
+                                    step={1000}
                                     format="money"
-                                    state={pmtMonthly}
-                                    setState={setPmtMonthly}
+                                    state={principal}
+                                    setState={setPrincipal}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Initial Principal is the total face value of your retirement assets today. Only include investment assets (not cash). Do not count home equity unless you know what you're doing and you plan to turn that equity into retirement income."}
                                 />
                                 <Divider light />
                                 <Range
@@ -261,6 +332,9 @@ function App(props: any) {
                                     format="money"
                                     state={fireNumber}
                                     setState={setFireNumber}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"FIRE Number is the total value of investments you will need to retire comfortably. Your FIRE number should be large enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim to save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."}
                                 />
                                 <Grid item alignSelf="center">
                                     <Alert severity="info" variant="outlined" sx={{ pl: 2, pr: 2, pb: 0, pt: 0 }}>
@@ -283,18 +357,52 @@ function App(props: any) {
                                             </ListItem>
                                         </List>
                                     </Alert>
-
                                 </Grid>
                                 <Divider light />
                                 <Range
-                                    labelText="Initial Principal"
+                                    labelText="Contributions (monthly)"
                                     minValue={0}
-                                    maxValue={fireNumber}
-                                    defaultValue={2000000}
-                                    step={1000}
+                                    maxValue={15000}
+                                    defaultValue={1200}
+                                    step={0.01}
                                     format="money"
-                                    state={principal}
-                                    setState={setPrincipal}
+                                    state={pmtMonthly}
+                                    setState={setPmtMonthly}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Contributions is the amount you contribute each month to savings during your accumulation period (before achieving coast/barista FIRE). During this period, you should aggressively save toward retirement. Later down the road once you achieve coast/barista FIRE, you can stop contributing this amount (and either save less, save nothing, or start making small withdrawals)."}
+                                />
+                                <Divider light />
+                                <Range
+                                    disabled={calcMode === "coast"}
+                                    labelText="Barista FIRE Contributions (monthly)"
+                                    // negative barista "income" has interesting implications
+                                    // i.e. a "soft-retirement" with smaller withdrawals
+                                    // caps are based off of theoretical withdrawal limits of 4% rule (otherwise the purpose of coast/barista fire is defeated)
+                                    minValue={Math.floor(-1 * fireNumber * 0.04 / 12)}
+                                    maxValue={Math.floor(fireNumber * 0.04 / 12)}
+                                    defaultValue={0}
+                                    step={0.01}
+                                    format="money"
+                                    state={pmtMonthlyBarista}
+                                    setState={setPmtMonthlyBarista}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={"Barista FIRE Contributions is the amount you plan to add (or withdraw) monthly to or from your savings once you achieve barista FIRE. With barista FIRE, you can take a lower paying job, work fewer hours, and even start making small withdrawals from your savings until you achieve true retirement (when you stop working entirely)."}
+                                />
+                                <Divider light />
+                                <Range
+                                    labelText="APR (real return)"
+                                    minValue={0}
+                                    maxValue={15}
+                                    defaultValue={7}
+                                    step={0.01}
+                                    format="percentage"
+                                    state={rate}
+                                    setState={setRate}
+                                    openTipDialog={setOpenTipDialog}
+                                    setTipDialogText={setTipDialogText}
+                                    tipDialogText={`APR is the expected real rate of return on your investments. In other words, what is the growth of your investments (in ${new Date().getFullYear()} dollars) after accounting for taxes and inflation? Some people use 7% as a rule of thumb, but it is always better to exercise caution when choosing a projected growth rate. Many will argue that 7% is too optimistic. Others will say that 7% is too conservative.`}
                                 />
                             </Stack>
                         </Paper>
@@ -302,6 +410,7 @@ function App(props: any) {
                         <Box sx={{ pl: 3, pr: 3 }}>
                             {summaryMessage}
                         </Box>
+
 
                         <div id="graph">
                             <Line options={{
@@ -311,28 +420,56 @@ function App(props: any) {
                                 plugins: {
                                     legend: {
                                         position: "top",
+                                        labels: {
+                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                        }
                                     },
                                     title: {
                                         display: true,
                                         text: "Coast FIRE Projections",
+                                        color: props.theme === 'light' ? '#212121' : 'white'
                                     },
                                 },
                                 scales: {
                                     x: {
                                         type: 'time',
                                         min: projections.xMin.toISO(),
-                                        max: projections.xMax.toISO()
+                                        max: projections.xMax.toISO(),
+                                        ticks: {
+                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                        }
                                     },
                                     y: {
                                         min: projections.yMin,
-                                        max: projections.yMax
+                                        max: projections.yMax,
+                                        ticks: {
+                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                        }
                                     }
                                 }
                             }} data={data} />
                         </div>
                     </Stack>
                 </Container>
-            </ScopedCssBaseline>
+                <Dialog
+                    open={openTipDialog}
+                    onClose={handleClose}
+                >
+                    <DialogTitle>
+                        {"Explanation"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            {tipDialogText}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} autoFocus>
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </ScopedCssBaseline >
         </>
     );
 }

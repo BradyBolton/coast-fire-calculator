@@ -103,15 +103,17 @@ After some searching, I think [this](https://projectionlab.com/) project kind of
     - [ ] Ensure that the number of datapoints on the timeline stays constant (undid this checkmark, need to investigate further)
 - [ ] Update the chart to be a stacked area graph breaking down contributions, interest, and initial deposit
 - [X] Have a "save as link" feature where you get a URL embedded with current parameters (maybe base64 json) to show your calculations to others
-- [ ] Tooltip for each parameter
+- [X] Tooltip/explanation for each parameter
 - [ ] Explanation of why FIRE is impossible
     - [X] Show all-red graph of current trajectory (instead of not showing anything at all)
 - [X] Show an all-blue graph if already coast FIRE (instead of not showing anything at all)
+- [X] Support for barista FIRE calculations
 - [ ] Figure out a solution to the min/max ranges not meeting all user expectations/situations
 - [ ] iMovie-like "bring your own plan" calculator (might not ever get to this)
 - [ ] Red to green financial retirement spectrum (with info for cursor hover)
 - [ ] Fix icon sizing
-- [ ] Support dark mode
+- [X] Support dark mode
+- [X] fixed ~~Bug when you prefill an alredy coast fire scenario but then empty out APR~~
 
 ## Other notes
 

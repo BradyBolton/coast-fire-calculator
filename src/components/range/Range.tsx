@@ -1,5 +1,18 @@
-import { TextField, Grid, Typography, Slider, Box, useMediaQuery, useTheme } from '@mui/material'
+import {
+    IconButton,
+    Box,
+    Grid,
+    Slider,
+    TextField,
+    Typography,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material'
 import { NumericFormat } from 'react-number-format'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+
 
 import React from 'react'
 
@@ -14,9 +27,15 @@ interface IRangeProps {
     format?: RangeFormat;
     state: number
     setState: React.Dispatch<React.SetStateAction<number>>
+    openTipDialog: React.Dispatch<React.SetStateAction<boolean>>
+    setTipDialogText: React.Dispatch<React.SetStateAction<string>>
+    tipDialogText: string
+    disabled?: boolean
 }
 
 function Range(props: IRangeProps) {
+
+    const faCircleQuestionProp = faCircleQuestion as IconProp;
 
     const handleSliderChange = (event: Event, value: number | number[]) => {
         props.setState(value as number)
@@ -30,11 +49,16 @@ function Range(props: IRangeProps) {
         }
     };
 
+    const theme = useTheme();
+    const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+    const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
     // TODO: do something else about this gross sizing (trying to make mobile look good)
     let spaceAfterSlider = 1.5
-    let textInputSize = 2.25
+    let textInputSize = isMediumScreen ? 2.5 : 1.5
     if (Math.floor(Math.log10(props.maxValue)) > 2) {
-        textInputSize = 4.5
+        textInputSize = isExtraSmallScreen ? 4.5 : isSmallScreen ? 4.5 : isMediumScreen ? 3.75 : 2
         spaceAfterSlider = 2.5
     }
 
@@ -45,10 +69,10 @@ function Range(props: IRangeProps) {
     }
     if (props.format && props.format === "percentage") {
         endAdornment = "%"
-        textInputSize = 3.25
+        textInputSize = isMediumScreen ? 3.5 : 1.5
     }
 
-    const marks = [
+    let marks = [
         {
             value: props.minValue,
             label: props.minValue.toLocaleString(),
@@ -59,9 +83,14 @@ function Range(props: IRangeProps) {
         },
     ];
 
+    if (props.minValue < 0) {
+        marks.push({
+            value: 0,
+            label: "0"
+        })
+    }
+
     // avoid shenanigans on small screens
-    const theme = useTheme();
-    const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
     if (isExtraSmallScreen) {
         textInputSize = 0
     }
@@ -78,18 +107,26 @@ function Range(props: IRangeProps) {
             step={props.step}
             valueLabelDisplay="auto"
             marks={marks}
+            disabled={props.disabled}
         />
     </Grid> : <></>
 
     return (
         <Box>
             <Typography variant="label">
-                {props.labelText}:
+                {props.labelText}
+                <IconButton size="small" onClick={() => {
+                    props.setTipDialogText(props.tipDialogText)
+                    props.openTipDialog(true)
+                }}>
+                    <FontAwesomeIcon icon={faCircleQuestionProp} size="sm" />
+                </IconButton>
             </Typography>
             <Grid container direction="row" spacing={spaceAfterSlider} sx={{ pl: 2 }}>
                 {slider}
                 <Grid item xs={textInputSize}>
                     <NumericFormat
+                        disabled={props.disabled}
                         value={props.state || 0}
                         defaultValue={0}
                         thousandSeparator=","
