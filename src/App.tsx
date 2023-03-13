@@ -24,7 +24,6 @@ import {
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
     Alert,
-    Fab,
     Box,
     Button,
     Container,
@@ -184,9 +183,9 @@ function App(props: any) {
     const theme = useTheme();
     const topMessage = useMediaQuery(theme.breakpoints.down("xs")) ?
         "(tip: rotate your screen if you want sliders)"
-        : <Typography variant="body1">
-            Watch <a href="https://www.youtube.com/watch?v=V1ategW3cyk">this video</a> {' '}
-            and check out <a href="https://walletburst.com/tools/coast-fire-calc/" > this guy's calculator</a> if you're confused
+        : <Typography variant="subtitle2">
+            Watch <Link href="https://www.youtube.com/watch?v=V1ategW3cyk">this video</Link> {' '}
+            and check out <Link href="https://walletburst.com/tools/coast-fire-calc/" > this guy's calculator</Link> if you're confused
             <br /> <b>Note:</b> Barista FIRE calculator mode is experimental
         </Typography>
 
@@ -209,7 +208,7 @@ function App(props: any) {
                                     <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
                                         <h2>Coast FIRE Calculator</h2>
                                         <Link sx={{
-                                            color: 'black',
+                                            color: props.theme === 'light' ? 'black' : 'white',
                                         }} href="https://github.com/BradyBolton/coast-fire-calculator">
                                             <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
                                         </Link>
@@ -394,7 +393,7 @@ function App(props: any) {
                                 <Divider light />
                                 <Range
                                     labelText="APR (real return)"
-                                    minValue={0.01}
+                                    minValue={0}
                                     maxValue={15}
                                     defaultValue={7}
                                     step={0.01}
@@ -421,21 +420,31 @@ function App(props: any) {
                                 plugins: {
                                     legend: {
                                         position: "top",
+                                        labels: {
+                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                        }
                                     },
                                     title: {
                                         display: true,
                                         text: "Coast FIRE Projections",
+                                        color: props.theme === 'light' ? '#212121' : 'white'
                                     },
                                 },
                                 scales: {
                                     x: {
                                         type: 'time',
                                         min: projections.xMin.toISO(),
-                                        max: projections.xMax.toISO()
+                                        max: projections.xMax.toISO(),
+                                        ticks: {
+                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                        }
                                     },
                                     y: {
                                         min: projections.yMin,
-                                        max: projections.yMax
+                                        max: projections.yMax,
+                                        ticks: {
+                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                        }
                                     }
                                 }
                             }} data={data} />

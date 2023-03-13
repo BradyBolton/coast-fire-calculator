@@ -36,7 +36,10 @@ const futureValue = (p: number, r: number, n: number, t: number): number => {
 // futureValueSeries calculates the future value of a series of payments
 // reference: https://www.thecalculatorsite.com/articles/finance/future-value-formula.php 
 const futureValueSeries = (pmt: number, r: number, n: number, t: number, p: number = 0): number => {
-    return pmt * ((Math.pow(1 + (r / n), n * t) - 1) / (r / n)) + futureValue(p, r, n, t)
+    if (r > 0) {
+        return pmt * ((Math.pow(1 + (r / n), n * t) - 1) / (r / n)) + futureValue(p, r, n, t)
+    }
+    return p + (pmt * n * t) // no interest accumulation
 }
 
 // pmtMonthlyToDaily is a quick helper function to average out monthly payments per day

@@ -9,7 +9,7 @@ import React, { FC, useMemo, useState } from "react";
 import ReactDOM from "react-dom/client";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { pink, yellow, grey } from '@mui/material/colors';
+import { pink, grey } from '@mui/material/colors';
 import { PaletteMode, Fab } from '@mui/material';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -24,29 +24,27 @@ const root = ReactDOM.createRoot(
 const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
         mode: mode, // TODO: support dark mode (value could be 'dark')
-        // primary: pink,
-        // secondary: yellow,
         ...(mode === 'light'
             ? {
                 // palette values for light mode
                 primary: pink,
-                divider: yellow[200],
+                divider: pink[200],
                 text: {
                     primary: grey[900],
-                    secondary: grey[800],
+                    secondary: grey[900],
                 },
             }
             : {
                 // palette values for dark mode
                 primary: pink,
-                divider: yellow[700],
+                divider: pink[700],
                 background: {
                     default: grey[900],
                     paper: grey[900],
                 },
                 text: {
-                    primary: '#e8e8e8',
-                    secondary: '#e8e8e8',
+                    primary: '#ffffff',
+                    secondary: '#ffffff',
                 },
             }),
     },
@@ -71,10 +69,15 @@ const getDesignTokens = (mode: PaletteMode) => ({
             fontSize: '1rem',
         },
         subtitle1: {
-            color: 'slategrey',
+            color: 'secondary',
             fontSize: '1rem',
             textAlign: "center"
             // fontWeight: 'bold'
+        },
+        subtitle2: {
+            color: 'secondary',
+            fontSize: '1.1rem',
+            fontWeight: 400,
         }
     },
 });
@@ -85,7 +88,7 @@ const AppWrapper: FC = () => {
     const faSunProp = faSun as IconProp;
     const faMoonProp = faMoon as IconProp;
 
-    const [mode, setMode] = useState<PaletteMode>('dark');
+    const [mode, setMode] = useState<PaletteMode>('light');
 
     const colorMode = useMemo(
         () => ({
@@ -127,7 +130,7 @@ const AppWrapper: FC = () => {
             >
                 {mode === "dark" ? <FontAwesomeIcon icon={faSunProp} size="lg" /> : <FontAwesomeIcon icon={faMoonProp} size="lg" />}
             </Fab>
-            <App />
+            <App theme={mode} />
         </ThemeProvider>
     )
 }

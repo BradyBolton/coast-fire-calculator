@@ -26,6 +26,15 @@ it('compound interest with contributions', () => {
     expect(Math.abs(fv - expected)).toBeLessThan(epsilon);
 });
 
+// 0 interest rate
+it('no compound interest with contributions and principal', () => {
+    // stacking 500/mo in cash for 10 years, no interest
+    const pmt = pmtMonthlyToDaily(500)
+    const fv = futureValueSeries(pmt, 0, 365, 10, 500)
+    const expected = 60500
+    expect(Math.abs(fv - expected)).toBeLessThan(epsilon);
+});
+
 // calculate coast fire scenario for someone contributing $3070 per month, 
 // 0 pricipal for 12.2 years at 7% APR compounded daily
 it('calculate coast fire date successfully', () => {
@@ -95,27 +104,27 @@ it('calculate datapoints of accumulation phase', () => {
     // both the 'x' and 'y' values if we used dependency injection)
     const expectedPreCoastValues = [
         0,
-        53080.70696295287,
-        111770.050604734,
-        176490.76995464208,
-        247825.07003303213,
-        326652.38124900963,
-        413556.41738648433,
-        509422.18698339653,
-        615298.2151632777,
-        731979.9605696297, // <- approximate coast number
+        53085.24029631768,
+        111775.05287378076,
+        176491.95474191985,
+        247831.1593998274,
+        326659.10045653314,
+        413560.6269551159,
+        509429.0204452079,
+        615307.2406895051,
+        731999.8218920437, // <- approximate coast number
     ]
     const expectedPostCoastValues = [
-        731979.9605696297, // <- post coast begins at approximate coast fire date
-        818206.8051920788,
-        914773.8357560807,
-        1022569.3620559797,
-        1143197.687580515,
-        1278110.8288341898,
-        1428671.5952278373,
-        1597287.3690478806,
-        1785521.7229659478,
-        1996154.3995112309, // <- approximate fire date
+        731999.8218920437, // <- post coast begins at approximate coast fire date
+        818222.4684609286,
+        914798.6569521059,
+        1022590.7819789144,
+        1143219.5722832766,
+        1278135.296234613,
+        1428704.0317885152,
+        1597317.946575876,
+        1785555.9429217286,
+        1996208.5625597467, // <- approximate fire date
     ]
 
     const preCoastValues = result.preCoastData.map((x) => {
