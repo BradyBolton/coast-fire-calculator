@@ -33,6 +33,9 @@ const getDesignTokens = (mode: PaletteMode) => ({
                     primary: grey[900],
                     secondary: grey[900],
                 },
+                background: {
+                    default: '#f2f2f2'
+                }
             }
             : {
                 // palette values for dark mode
@@ -89,18 +92,6 @@ const AppWrapper: FC = () => {
     const faMoonProp = faMoon as IconProp;
 
     const [mode, setMode] = useState<PaletteMode>('light');
-
-    const colorMode = useMemo(
-        () => ({
-            // The dark mode switch would invoke this method
-            toggleColorMode: () => {
-                setMode((prevMode: PaletteMode) =>
-                    prevMode === 'light' ? 'dark' : 'light',
-                );
-            },
-        }),
-        [],
-    );
 
     // Update the theme only if the mode changes
     // @ts-ignore
