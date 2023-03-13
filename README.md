@@ -112,8 +112,8 @@ After some searching, I think [this](https://projectionlab.com/) project kind of
 - [ ] iMovie-like "bring your own plan" calculator (might not ever get to this)
 - [ ] Red to green financial retirement spectrum (with info for cursor hover)
 - [ ] Fix icon sizing
-- [ ] Support dark mode
-- [ ] Bug when you prefill an alredy coast fire scenario but then empty out APR
+- [X] Support dark mode
+- [X] fixed ~~Bug when you prefill an alredy coast fire scenario but then empty out APR~~
 
 ## Other notes
 

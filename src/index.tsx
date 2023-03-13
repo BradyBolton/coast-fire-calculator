@@ -23,7 +23,7 @@ const root = ReactDOM.createRoot(
 
 const getDesignTokens = (mode: PaletteMode) => ({
     palette: {
-        mode: mode, // TODO: support dark mode (value could be 'dark')
+        mode: mode,
         ...(mode === 'light'
             ? {
                 // palette values for light mode
@@ -96,9 +96,6 @@ const AppWrapper: FC = () => {
     // Update the theme only if the mode changes
     // @ts-ignore
     const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
-
-    // TODO: track dark mode via global state (perhaps using easy-peasy)
-    // const defaultTheme = createTheme();
 
     return (
         <ThemeProvider theme={theme}>
