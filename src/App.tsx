@@ -347,12 +347,12 @@ function App(props: any) {
                                             </ListItem>
                                             <ListItem disablePadding>
                                                 <Typography>
-                                                    3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                    3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
                                                 </Typography>
                                             </ListItem>
                                             <ListItem disablePadding>
                                                 <Typography>
-                                                    2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/mo</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                    2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
                                                 </Typography>
                                             </ListItem>
                                         </List>
