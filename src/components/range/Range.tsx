@@ -1,12 +1,12 @@
 import {
     IconButton,
     Box,
-    Grid,
     Slider,
     TextField,
     Typography,
     useMediaQuery,
     useTheme,
+    Theme,
 } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -14,7 +14,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 
 
-import React from 'react'
+import React, { ReactNode } from 'react'
 
 type RangeFormat = "money" | "percentage" | "none"
 
@@ -28,13 +28,28 @@ interface IRangeProps {
     state: number
     setState: React.Dispatch<React.SetStateAction<number>>
     openTipDialog: React.Dispatch<React.SetStateAction<boolean>>
-    setTipDialogText: React.Dispatch<React.SetStateAction<string>>
+    setTipDialogText: React.Dispatch<React.SetStateAction<string | ReactNode>>
     tipDialogText: string
     disabled?: boolean
 }
 
-function Range(props: IRangeProps) {
+// calcMinInputWidth adjusts the width of the input boxes appropriately based on
+// expected ranges, formatting, and font size
+function calcMinInputWidth(maxValue: number, step: number,
+    isMediumScreen: boolean, isSmallScreen: boolean, isExtraSmallScreen: boolean): number {
+    let totalCharLength = 1
+    if (step < 1) {
+        totalCharLength += 2;
+    }
 
+    totalCharLength += maxValue.toString().length;
+    let charSize = (isExtraSmallScreen || isSmallScreen) ? 12 : isMediumScreen ? 14 : 16;
+
+    return totalCharLength * charSize;
+}
+
+
+function Range(props: IRangeProps) {
     const faCircleQuestionProp = faCircleQuestion as IconProp;
 
     const handleSliderChange = (event: Event, value: number | number[]) => {
@@ -54,13 +69,8 @@ function Range(props: IRangeProps) {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isExtraSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
-    // TODO: do something else about this gross sizing (trying to make mobile look good)
-    let spaceAfterSlider = 1.5
-    let textInputSize = isMediumScreen ? 2.5 : 1.5
-    if (Math.floor(Math.log10(props.maxValue)) > 2) {
-        textInputSize = isExtraSmallScreen ? 4.5 : isSmallScreen ? 4.5 : isMediumScreen ? 3.75 : 2
-        spaceAfterSlider = 2.5
-    }
+    const minInputWidth = calcMinInputWidth(props.maxValue, props.step,
+        isMediumScreen, isSmallScreen, isExtraSmallScreen);
 
     let startAdornment = ""
     let endAdornment = ""
@@ -69,7 +79,6 @@ function Range(props: IRangeProps) {
     }
     if (props.format && props.format === "percentage") {
         endAdornment = "%"
-        textInputSize = isMediumScreen ? 3.5 : 1.5
     }
 
     let marks = [
@@ -90,14 +99,10 @@ function Range(props: IRangeProps) {
         })
     }
 
-    // avoid shenanigans on small screens
-    if (isExtraSmallScreen) {
-        textInputSize = 0
-    }
-
     // basically give up if the screen narrower than 300px
-    const slider = !isExtraSmallScreen ? <Grid item xs={12 - textInputSize} sx={{ pr: spaceAfterSlider }}>
+    const slider =
         <Slider
+            className="range-slider"
             color='primary'
             defaultValue={props.defaultValue}
             value={props.state || 0}
@@ -109,11 +114,10 @@ function Range(props: IRangeProps) {
             marks={marks}
             disabled={props.disabled}
         />
-    </Grid> : <></>
 
     return (
-        <Box>
-            <Typography variant="label">
+        <Box className="range-container">
+            <Typography variant="label" className="range-label">
                 {props.labelText}
                 <IconButton size="small" onClick={() => {
                     props.setTipDialogText(props.tipDialogText)
@@ -122,32 +126,35 @@ function Range(props: IRangeProps) {
                     <FontAwesomeIcon icon={faCircleQuestionProp} size="sm" />
                 </IconButton>
             </Typography>
-            <Grid container direction="row" spacing={spaceAfterSlider} sx={{ pl: 2 }}>
+            <Box className="range-content">
                 {slider}
-                <Grid item xs={textInputSize}>
-                    <NumericFormat
-                        disabled={props.disabled}
-                        value={props.state || 0}
-                        defaultValue={0}
-                        thousandSeparator=","
-                        customInput={TextField}
-                        decimalScale={2}
-                        onValueChange={(values) => {
-                            props.setState(values.floatValue ?? 0) // TODO: don't default to zero  (and also defaultValue prop)
-                        }}
-                        onBlur={handleBlur}
-                        prefix={startAdornment}
-                        suffix={endAdornment}
-                        sx={{
-                            // fontWeight: 'bold',
-                            fontSize: '1rem',
-                            pr: 0
-                        }}
-                        size='small'
-                        onFocus={(event) => event.target.select()}
-                    />
-                </Grid>
-            </Grid>
+                <NumericFormat
+                    className="range-input"
+                    disabled={props.disabled}
+                    value={props.state || 0}
+                    defaultValue={0}
+                    thousandSeparator=","
+                    customInput={TextField}
+                    type="tel"
+                    decimalScale={2}
+                    fixedDecimalScale={props.step < 1 ? true : false}
+                    onValueChange={(values) => {
+                        props.setState(values.floatValue ?? 0) // TODO: don't default to zero  (and also defaultValue prop)
+                    }}
+                    onBlur={handleBlur}
+                    prefix={startAdornment}
+                    suffix={endAdornment}
+                    sx={{
+                        // fontWeight: 'bold',
+                        fontSize: '1rem',
+                        pr: 0,
+                        width: `${minInputWidth}px`,
+                        minWidth: `${minInputWidth}px`
+                    }}
+                    size='small'
+                    onFocus={(event) => event.target.select()}
+                />
+            </Box>
         </Box>
     )
 }

@@ -7,7 +7,7 @@ import { generateDataSets } from "./models/calculations";
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
@@ -36,6 +36,7 @@ import {
     DialogTitle,
     Divider,
     Grid,
+    IconButton,
     Link,
     List,
     ListItem,
@@ -50,8 +51,8 @@ import {
 } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { faClipboard, faAngleDown, faCircleInfo } from '@fortawesome/free-solid-svg-icons';
+// import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faClipboard, faAngleDown, faCircleInfo, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 
 ChartJS.register(
     Legend,
@@ -85,7 +86,7 @@ function App(props: any) {
 
     const [copiedUrl, setCopiedUrl] = useState(false);
     const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
-    const [tipDialogText, setTipDialogText] = useState("");
+    const [tipDialogText, setTipDialogText] = useState<string | ReactNode>("");
     const [openTipDialog, setOpenTipDialog] = useState(false); // tip dialog
 
     const handleClose = () => {
@@ -151,10 +152,11 @@ function App(props: any) {
         </Alert>
     }
 
-    const faPropIcon = faGithub as IconProp;
+    // const faPropIcon = faGithub as IconProp;
     const faClipboardPropIcon = faClipboard as IconProp;
     const faAngleDownPropIcon = faAngleDown as IconProp;
     const faCircleInfoPropIcon = faCircleInfo as IconProp;
+    const faCircleQuestionProp = faCircleQuestion as IconProp;
 
     const generatedUrl = `https://bradybolton.github.io/coast-fire-calculator/?` +
         `ca=${currentAge}` +
@@ -207,18 +209,23 @@ function App(props: any) {
                     <div id="controls-container">
                         <Paper sx={{ p: 2 }} elevation={2}>
                             <Stack spacing={1}>
-                                <Box>
-                                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                                <Stack spacing={{ xs: 1, sm: 2 }} direction={{ sm: "row" }} justifyContent="center" alignItems="center">
+                                    <Stack direction="row" justifyContent="center" alignItems="center">
                                         <h2>Coast FIRE Calculator</h2>
-                                        <Link sx={{
-                                            color: props.theme === 'light' ? 'black' : 'white',
-                                        }} href="https://github.com/BradyBolton/coast-fire-calculator">
-                                            <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
-                                        </Link>
+                                        {/*
+                                            <Link sx={{
+                                                color: props.theme === 'light' ? 'black' : 'white',
+                                            }} href="https://github.com/BradyBolton/coast-fire-calculator">
+                                                <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
+                                            </Link>
+                                        */}
+                                        <IconButton size="small" onClick={() => {
+                                            setTipDialogText(<Typography variant="subtitle1">{topMessage}</Typography>);
+                                            setOpenTipDialog(true);
+                                        }}>
+                                            <FontAwesomeIcon icon={faCircleQuestionProp} size="sm" />
+                                        </IconButton>
                                     </Stack>
-                                </Box>
-                                <Typography alignSelf="center" variant="subtitle1">{topMessage}</Typography>
-                                <Box alignSelf="center">
                                     <Button
                                         sx={{
                                             width: "max-content",
@@ -233,46 +240,38 @@ function App(props: any) {
                                     >
                                         Share as URL
                                     </Button>
-                                </Box>
+                                </Stack>
                                 <Divider light />
-                                <Box alignSelf="center">
-                                    <Grid container direction="row" alignItems="center">
-                                        <Typography variant="label" >
+                                <Box sx={{ display: 'flex', justifyContent: "space-around" }}>
+                                    <Box>
+                                        <Typography variant="label" sx={{ mr: 1 }} >
                                             FIRE Type:
                                         </Typography>
-                                        <Grid item sx={{ ml: 2 }}>
-                                            <ToggleButtonGroup
-                                                color="primary"
-                                                value={calcMode}
-                                                exclusive
-                                                onChange={handleCalculatorMode}
-                                                size="small"
-                                            >
-                                                <ToggleButton value="coast">
-                                                    Coast FIRE
-                                                </ToggleButton>
-                                                <ToggleButton value="barista">
-                                                    Barista FIRE
-                                                </ToggleButton>
-                                            </ToggleButtonGroup>
-
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-
-                                <Divider light />
-
-                                <Box alignSelf="center">
-                                    <Grid container direction="row" alignItems="center">
-                                        <Typography variant="label" >
+                                        <ToggleButtonGroup
+                                            color="primary"
+                                            value={calcMode}
+                                            exclusive
+                                            onChange={handleCalculatorMode}
+                                            size="small"
+                                        >
+                                            <ToggleButton value="coast">
+                                                Coast FIRE
+                                            </ToggleButton>
+                                            <ToggleButton value="barista">
+                                                Barista FIRE
+                                            </ToggleButton>
+                                        </ToggleButtonGroup>
+                                    </Box>
+                                    <Box sx={{ display: 'flex' }} flexDirection="row" alignItems="center">
+                                        <Typography variant="label" sx={{ mr: 1 }}>
                                             Current Age:
                                         </Typography>
-                                        <Grid item sx={{ ml: 2, width: '6rem' }}>
+                                        <Box sx={{ width: '5rem' }}>
                                             <TextField
                                                 id="current-age"
                                                 size="small"
                                                 inputProps={{
-                                                    type: "number",
+                                                    type: "tel",
                                                     inputMode: 'numeric',
                                                     pattern: '[0-9]*'
                                                 }}
@@ -294,8 +293,8 @@ function App(props: any) {
                                                     fontSize: '1rem'
                                                 }}
                                             />
-                                        </Grid>
-                                    </Grid>
+                                        </Box>
+                                    </Box> {/* end of current age input box */}
 
                                 </Box>
                                 <Divider light />
@@ -476,6 +475,7 @@ function App(props: any) {
                 <Dialog
                     open={openTipDialog}
                     onClose={handleClose}
+                    maxWidth="md"
                 >
                     <DialogTitle>
                         {"Explanation"}
