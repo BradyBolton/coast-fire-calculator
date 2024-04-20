@@ -22,10 +22,9 @@ html {
     padding-left: 2rem;
     gap: 1rem;
 
-    // on a second thought, this rtl isn't a fun UX (need to achieve right-alignment differently)
-    // input {
-    //     direction: rtl;
-    // }
+    input {
+        text-align: right;
+    }
 
     .range-input {
         margin-left: 2rem;
