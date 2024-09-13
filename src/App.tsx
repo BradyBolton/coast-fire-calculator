@@ -3,14 +3,15 @@ import './App.scss'
 
 // local imports
 import { Range } from "./components/range"
-import { generateDataSets } from "./models/calculations";
+import { generateDataSets, CoastFireDatum } from "./models/calculations";
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
+import { getRelativePosition } from 'chart.js/helpers';
 import {
     Chart as ChartJS,
     Legend,
@@ -85,6 +86,9 @@ function App(props: any) {
     const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
     const [tipDialogText, setTipDialogText] = useState("");
     const [openTipDialog, setOpenTipDialog] = useState(false); // tip dialog
+
+    // refs
+    const chartRef = useRef<ChartJS<"line", CoastFireDatum[], string>>(null);
 
     const handleClose = () => {
         setOpenTipDialog(false);
@@ -413,7 +417,26 @@ function App(props: any) {
 
 
                         <div id="graph">
-                            <Line options={{
+                            <Line
+                                ref={chartRef}
+                                options={{
+                                // TODO: rip this out, but this is a good starting point for a potential plugin to
+                                // draw a vertical line and some text/info about the intersecting point
+                                onClick: (e) => {
+                                    if (chartRef != null && chartRef.current) {
+                                        // coordinates of click relative to canvas
+                                        const chart = chartRef.current as any; // as any??
+                                        const { x, y } = getRelativePosition(e, chart);
+                                        // can also use const x = e.native.offsetX, y = e.native.offsetY;
+
+                                        // get values relative to chart axes
+                                        // x axis is in millisecond epoch
+                                        const dataX = new Date(chart.scales.x.getValueForPixel(x))
+                                        const dataY = chart.scales.y.getValueForPixel(y);
+
+                                        console.log(`dataX: ${dataX}, dataY: ${dataY}`)
+                                    }
+                                },
                                 animation: false,
                                 responsive: true,
                                 maintainAspectRatio: false,

@@ -10,7 +10,7 @@ interface CoastFireResult {
     finalAmount: number | undefined;
 }
 
-interface CoastFireDatum {
+export interface CoastFireDatum {
     x: string, // '2016-12-25'
     y: number  // value (usd)
 }
