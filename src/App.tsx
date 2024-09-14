@@ -21,6 +21,7 @@ import {
     TimeScale,
     Title,
     Tooltip,
+    Plugin as ChartJSPlugin,
 } from "chart.js";
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
@@ -61,6 +62,58 @@ ChartJS.register(
     Title,
     Tooltip,
 );
+
+// copied example plugin
+interface CorsairPluginOptions {
+    width: number;
+    color: string;
+    dash: number[];
+}
+
+// this example 'any' is used on 'chart' since corsair is not defined
+// (seems to be a workaround for passing data between each callback)
+const plugin: ChartJSPlugin<"line", CorsairPluginOptions> = {
+    id: 'corsair',
+    defaults: {
+        width: 1,
+        color: '#FF4949',
+        dash: [3, 3],
+    },
+    afterInit: (chart: any, args, opts) => {
+      chart.corsair = {
+        x: 0,
+        y: 0,
+      }
+    },
+    afterEvent: (chart: any, args) => {
+      const {inChartArea} = args
+      const {x,y} = args.event // 'type' is also available
+
+      chart.corsair = {x, y, draw: inChartArea}
+      chart.draw()
+    },
+    beforeDatasetsDraw: (chart: any, args, opts) => {
+      const {ctx} = chart
+      const {top, bottom, left, right} = chart.chartArea
+      const {x, y, draw} = chart.corsair
+      if (!draw) return
+
+      ctx.save()
+
+      ctx.beginPath()
+      ctx.lineWidth = opts.width
+      ctx.strokeStyle = opts.color
+      ctx.setLineDash(opts.dash)
+      ctx.moveTo(x, bottom)
+      ctx.lineTo(x, top)
+      ctx.moveTo(left, y)
+      ctx.lineTo(right, y)
+      ctx.stroke()
+
+      ctx.restore()
+    }
+  }
+
 
 function App(props: any) {
     // first parse any params
@@ -452,6 +505,11 @@ function App(props: any) {
                                         text: "Coast FIRE Projections",
                                         color: props.theme === 'light' ? '#212121' : 'white'
                                     },
+                                    // we'll need to provide our own typings like so:
+                                    // https://www.chartjs.org/docs/latest/developers/plugins.html#typescript-typings
+                                    // corsair: {
+                                    //     color: 'black',
+                                    // },
                                 },
                                 scales: {
                                     x: {
@@ -469,8 +527,14 @@ function App(props: any) {
                                             color: props.theme === 'light' ? '#212121' : 'white'
                                         }
                                     }
+                                },
+                                hover: {
+                                    mode: 'index',
+                                    intersect: false,
                                 }
-                            }} data={data} />
+                            }}
+                            plugins={[plugin]}
+                            data={data} />
                         </div>
                     </Stack>
                 </Container>
