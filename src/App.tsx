@@ -3,11 +3,11 @@ import './App.scss'
 
 // local imports
 import { Range } from "./components/range"
-import { generateDataSets, CoastFireDatum } from "./models/calculations";
+import { generateDataSets, CoastFireDatum, getValueCalculator } from "./models/calculations";
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
@@ -22,6 +22,7 @@ import {
     Title,
     Tooltip,
     Plugin as ChartJSPlugin,
+    ChartType,
 } from "chart.js";
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
@@ -52,7 +53,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { DateTime } from 'luxon';
 
+// copied example plugin
+interface CorsairPluginOptions {
+    width: number;
+    color: string;
+    dash: number[];
+    valCalculator?: (date: DateTime) => number;
+}
+
+// TODO: register the plugin above
 ChartJS.register(
     Legend,
     LineElement,
@@ -63,73 +74,14 @@ ChartJS.register(
     Tooltip,
 );
 
-// copied example plugin
-interface CorsairPluginOptions {
-    width: number;
-    color: string;
-    dash: number[];
-}
-
-// this example 'any' is used on 'chart' since corsair is not defined
-// (seems to be a workaround for passing data between each callback)
-const plugin: ChartJSPlugin<"line", CorsairPluginOptions> = {
-    id: 'corsair',
-    defaults: {
-        width: 1,
-        color: '#FF4949',
-        dash: [3, 3],
-    },
-    afterInit: (chart: any, args, opts) => {
-      chart.corsair = {
-        x: 0,
-        y: 0,
-      }
-    },
-    afterEvent: (chart: any, args) => {
-      const {inChartArea} = args
-      const {x,y} = args.event // 'type' is also available
-
-      chart.corsair = {x, y, draw: inChartArea}
-      chart.draw()
-    },
-    beforeDatasetsDraw: (chart: any, args, opts) => {
-        const {ctx} = chart
-        const {top, bottom, left, right} = chart.chartArea
-        const {x, y, draw} = chart.corsair
-
-        if (!draw) return
-
-        // get values relative to chart axes
-        // x axis is in millisecond epoch
-        const dataX = new Date(chart.scales.x.getValueForPixel(x));
-        const dataY = chart.scales.y.getValueForPixel(y) as number;
-        const formattedX = dataX.toLocaleDateString("en-US")
-        const formattedY = dataY.toLocaleString('en-US', {maximumFractionDigits:2});
-
-        ctx.save()
-
-        ctx.beginPath()
-        ctx.lineWidth = opts.width
-        ctx.strokeStyle = opts.color
-        ctx.setLineDash(opts.dash)
-        ctx.moveTo(x, bottom)
-        ctx.lineTo(x, top)
-        ctx.moveTo(left, y)
-        ctx.lineTo(right, y)
-        ctx.stroke()
-        ctx.restore()
-
-        ctx.save()
-        ctx.font = 'bold 12 sans-serif'        
-        ctx.fillStyle = 'grey'
-        ctx.textAlign = 'center'
-        ctx.fillText(`${formattedX}, ${formattedY}`, 350, 350)
-
-        // ctx.restore()
-
+declare module 'chart.js' {
+  interface PluginOptionsByType<TType extends ChartType> {
+    corsair?: {
+      color?: string;
+      valCalculator?: (date: DateTime) => number;
     }
   }
-
+}
 
 function App(props: any) {
     // first parse any params
@@ -172,15 +124,87 @@ function App(props: any) {
                 data: projections.preCoastData,
                 borderColor: "rgb(255, 99, 132)",
                 backgroundColor: "rgba(255, 99, 132, 0.5)",
+                pointRadius: 0,
             },
             {
                 label: "Coasting Phase",
                 data: projections.postCoastData,
                 borderColor: "rgb(99, 102, 255)",
                 backgroundColor: "rgba(99, 102, 255, 0.5)",
+                pointRadius: 0,
             },
         ],
     };
+
+    // this example 'any' is used on 'chart' since corsair is not defined
+    // (seems to be a workaround for passing data between each callback)
+    const plugin: ChartJSPlugin<"line", CorsairPluginOptions> = {
+        id: 'corsair',
+        defaults: {
+            width: 1,
+            color: '#FF4949',
+            dash: [3, 3],
+        },
+        afterInit: (chart: any, args, opts) => {
+        chart.corsair = {
+            x: 0,
+            y: 0,
+        }
+        },
+        afterEvent: (chart: any, args) => {
+        const {inChartArea} = args
+        const {x,y} = args.event // 'type' is also available
+
+        chart.corsair = {x, y, draw: inChartArea}
+        chart.draw()
+        },
+        //beforeDatasetsDraw: (chart: any, args, opts) => {
+        afterDatasetsDraw: (chart: any, args, opts) => {
+            const {ctx} = chart
+            const {top, bottom, left, right} = chart.chartArea
+            const {x, y, draw} = chart.corsair
+
+            if (!draw) return
+
+            // get values relative to chart axes
+            // x axis is in millisecond epoch
+            const dataX = DateTime.fromMillis(chart.scales.x.getValueForPixel(x));
+            if (opts.valCalculator === undefined) {
+                return
+            }
+
+            const value = opts.valCalculator(dataX); // poop
+            console.log(value)
+            const yCoord = chart.scales.y.getPixelForValue(value);
+            // const dataY = chart.scales.y.getValueForPixel(y) as number;
+            const formattedX = dataX.toFormat("MM/dd/yyyy");
+            const formattedY = value.toLocaleString('en-US', {maximumFractionDigits:2});
+
+            ctx.save()
+
+            ctx.beginPath()
+            ctx.lineWidth = opts.width
+            ctx.strokeStyle = opts.color
+            ctx.setLineDash(opts.dash)
+            ctx.moveTo(x, bottom)
+            ctx.lineTo(x, top)
+            ctx.moveTo(left, yCoord)
+            ctx.lineTo(right, yCoord)
+            ctx.stroke()
+            ctx.restore()
+
+            ctx.save()
+            ctx.font = 'bold 24 sans-serif'        
+            ctx.fillStyle = 'black'
+            ctx.textAlign = 'center'
+            ctx.fillText(`${formattedX}, ${formattedY}`, 350, 350)
+            ctx.restore()
+        }
+    }
+
+    const valueCalculator = getValueCalculator(projections.result, currentAge,
+        rate/100, pmtMonthly, principal, pmtMonthlyBarista)
+
 
     const coastDateStr = projections.result.coastFireDate ?
         projections.result.coastFireDate.toLocaleString() : ''
@@ -523,9 +547,10 @@ function App(props: any) {
                                     },
                                     // we'll need to provide our own typings like so:
                                     // https://www.chartjs.org/docs/latest/developers/plugins.html#typescript-typings
-                                    // corsair: {
-                                    //     color: 'black',
-                                    // },
+                                    corsair: {
+                                        color: 'black',
+                                        valCalculator: valueCalculator, 
+                                    },
                                 },
                                 scales: {
                                     x: {
@@ -544,10 +569,10 @@ function App(props: any) {
                                         }
                                     }
                                 },
-                                hover: {
-                                    mode: 'index',
-                                    intersect: false,
-                                }
+                                // hover: {
+                                //     mode: 'index',
+                                //     intersect: false,
+                                // }
                             }}
                             plugins={[plugin]} // plugin is a terrible name
                             data={data} />
