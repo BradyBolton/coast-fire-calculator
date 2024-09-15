@@ -183,6 +183,30 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
     const daysTilCoast = ((result.coastFireAge ?? currentAge) - currentAge) * 365 // 0 if no coast fire
     const coastFireDate = today.plus({ days: daysTilCoast }) // if no coast fire possible, it will default to today
 
+    // closure to calculate the Y-value (returned by this function for later use)
+    let calcValue = (date: DateTime): number => {
+        let yearsElapsed = date.diff(today, 'years').years
+        let res = 0;
+        let p = principal;
+
+        if (date > coastFireDate) {
+            // post-coast-fire numbers require a different starting point
+            if (result.isPossible && result.coastFireNumber && result.coastFireDate) {
+                p = result.coastFireNumber;
+                yearsElapsed = date.diff(result.coastFireDate, 'years').years 
+            }
+            res = futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, p);
+        } else if (date === coastFireDate && result.coastFireNumber) {
+            res = result.coastFireNumber;
+        } else {
+            res = futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, yearsElapsed, p);
+        }
+
+        return res;
+    }
+
+
+
     let data: CoastFireData = {
         preCoastData: [],
         postCoastData: [],
@@ -238,7 +262,9 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
             const dataPoint = {
                 x: dateStr,
                 // note: do not use result.coastFireDate because there would be a gap in the graph
-                y: futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, data.preCoastData[data.preCoastData.length - 1].y)
+                // that small gap is the difference between result.coastFireNumber and the actual y-val of the last point in preCoastData
+                // y: futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, data.preCoastData[data.preCoastData.length - 1].y)
+                y: futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, result.coastFireNumber)
             }
             data.postCoastData.push(dataPoint)
         }

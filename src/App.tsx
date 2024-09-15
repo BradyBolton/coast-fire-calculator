@@ -93,24 +93,40 @@ const plugin: ChartJSPlugin<"line", CorsairPluginOptions> = {
       chart.draw()
     },
     beforeDatasetsDraw: (chart: any, args, opts) => {
-      const {ctx} = chart
-      const {top, bottom, left, right} = chart.chartArea
-      const {x, y, draw} = chart.corsair
-      if (!draw) return
+        const {ctx} = chart
+        const {top, bottom, left, right} = chart.chartArea
+        const {x, y, draw} = chart.corsair
 
-      ctx.save()
+        if (!draw) return
 
-      ctx.beginPath()
-      ctx.lineWidth = opts.width
-      ctx.strokeStyle = opts.color
-      ctx.setLineDash(opts.dash)
-      ctx.moveTo(x, bottom)
-      ctx.lineTo(x, top)
-      ctx.moveTo(left, y)
-      ctx.lineTo(right, y)
-      ctx.stroke()
+        // get values relative to chart axes
+        // x axis is in millisecond epoch
+        const dataX = new Date(chart.scales.x.getValueForPixel(x));
+        const dataY = chart.scales.y.getValueForPixel(y) as number;
+        const formattedX = dataX.toLocaleDateString("en-US")
+        const formattedY = dataY.toLocaleString('en-US', {maximumFractionDigits:2});
 
-      ctx.restore()
+        ctx.save()
+
+        ctx.beginPath()
+        ctx.lineWidth = opts.width
+        ctx.strokeStyle = opts.color
+        ctx.setLineDash(opts.dash)
+        ctx.moveTo(x, bottom)
+        ctx.lineTo(x, top)
+        ctx.moveTo(left, y)
+        ctx.lineTo(right, y)
+        ctx.stroke()
+        ctx.restore()
+
+        ctx.save()
+        ctx.font = 'bold 12 sans-serif'        
+        ctx.fillStyle = 'grey'
+        ctx.textAlign = 'center'
+        ctx.fillText(`${formattedX}, ${formattedY}`, 350, 350)
+
+        // ctx.restore()
+
     }
   }
 
@@ -533,7 +549,7 @@ function App(props: any) {
                                     intersect: false,
                                 }
                             }}
-                            plugins={[plugin]}
+                            plugins={[plugin]} // plugin is a terrible name
                             data={data} />
                         </div>
                     </Stack>
