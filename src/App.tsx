@@ -299,7 +299,9 @@ function App(props: any) {
         event: React.MouseEvent<HTMLElement>,
         newMode: "coast" | "barista",
     ) => {
-        setCalcMode(newMode);
+        if (newMode !== null) {
+            setCalcMode(newMode);
+        }
     };
 
     // TODO: show a stacked area chart of pricipal, contributions, and interest
