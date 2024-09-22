@@ -100,7 +100,7 @@ function App(props: any) {
     const pmtBaristaParam: number = parseFloat(currentUrl.searchParams.get('pmtb') ?? "0")
 
     let calcModeParam: string = currentUrl.searchParams.get('mode') ?? 'coast'
-    calcModeParam = (calcModeParam == 'coast' || calcModeParam == 'barista') ? calcModeParam : 'coast'
+    calcModeParam = (calcModeParam === 'coast' || calcModeParam === 'barista') ? calcModeParam : 'coast'
 
     // setup local state (coast fire parameters)
     const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
