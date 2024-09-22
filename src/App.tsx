@@ -99,6 +99,9 @@ function App(props: any) {
     const principalParam: number = parseFloat(currentUrl.searchParams.get('p') ?? "-1")
     const pmtBaristaParam: number = parseFloat(currentUrl.searchParams.get('pmtb') ?? "0")
 
+    let calcModeParam: string = currentUrl.searchParams.get('mode') ?? 'coast'
+    calcModeParam = (calcModeParam == 'coast' || calcModeParam == 'barista') ? calcModeParam : 'coast'
+
     // setup local state (coast fire parameters)
     const [currentAge, setCurrentAge] = useState(currentAgeParam > -1 ? currentAgeParam : 35);
     const [retireAge, setRetireAge] = useState(retireAgeParam > -1 ? retireAgeParam : 67);
@@ -109,7 +112,7 @@ function App(props: any) {
     const [pmtMonthlyBarista, setPmtMonthlyBarista] = useState(pmtBaristaParam);
 
     const [copiedUrl, setCopiedUrl] = useState(false);
-    const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
+    const [calcMode, setCalcMode] = useState<"coast" | "barista">(calcModeParam as 'coast' | 'barista'); // toggle between coast or barista fire calculations
     const [tipDialogText, setTipDialogText] = useState<string | ReactNode>("");
     const [openTipDialog, setOpenTipDialog] = useState(false); // tip dialog
 
@@ -266,7 +269,8 @@ function App(props: any) {
         `&pmt=${pmtMonthly}` +
         `&fn=${fireNumber}` +
         `&p=${principal}` +
-        `&pmtb=${pmtMonthlyBarista}`
+        `&pmtb=${pmtMonthlyBarista}` +
+        `&mode=${calcMode}`
 
     const onShareClick = () => {
         navigator.clipboard.writeText(generatedUrl);
