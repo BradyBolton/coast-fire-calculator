@@ -15,10 +15,19 @@ html {
     p b {
         color: $primary-color
     }
+}
 
-    /* TODO: come up with a better sizing strategy for graphs (mobile vs. desktop) */
-    div#graph {
-        height: 400px;
+.range-content {
+    display: flex;
+    padding-left: 2rem;
+    gap: 1rem;
+
+    input {
+        text-align: right;
+    }
+
+    .range-input {
+        margin-left: 2rem;
     }
 }
 
@@ -31,5 +40,62 @@ html {
 @media (max-width: 700px) {
     html {
         font-size: 12px
+    }
+
+    div#main-container {
+        margin: 1rem 2%;
+    }
+}
+
+@media (min-width: 1080px) {
+    div#main-container {
+        margin: 1rem;
+        display: grid;
+        grid-template-columns: 6fr 5fr;
+
+        div#controls-container {
+            grid-column-start: 1;
+            grid-column-end: 1;
+            min-width: 650px;
+        }
+
+        div#graph-container {
+            margin: 1rem;
+            grid-column-start: 2;
+            grid-column-end: 2;
+            min-width: 330px;
+
+            div#fixed {
+                display: flex;
+                flex-direction: column;
+                min-height: 90%;
+
+                div#graph {
+                    flex-grow: 1;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 1080px) {
+    div#main-container {
+        margin: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        div#graph-container {
+            div#fixed {
+                display: flex;
+                flex-direction: column;
+                min-height: 500px;
+
+                div#graph {
+                    margin-top: 1rem;
+                    flex-grow: 1;
+                }
+            }
+        }
     }
 }

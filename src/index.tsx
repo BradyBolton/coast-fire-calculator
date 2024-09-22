@@ -91,7 +91,10 @@ const AppWrapper: FC = () => {
     const faSunProp = faSun as IconProp;
     const faMoonProp = faMoon as IconProp;
 
-    const [mode, setMode] = useState<PaletteMode>('light');
+    // default dark/light mode based on client time to avoid violating eyeballs
+    const now = new Date();
+    const isDarkOutside = (now.getHours() < 8) || (now.getHours() > 7) // conservative cut-offs
+    const [mode, setMode] = useState<PaletteMode>(isDarkOutside ? 'dark' : 'light');
 
     // Update the theme only if the mode changes
     // @ts-ignore
