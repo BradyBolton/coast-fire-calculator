@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/coast-fire-calculator/static/css/main.c83c213c.css",
-    "main.js": "/coast-fire-calculator/static/js/main.69ab1a1c.js",
+    "main.js": "/coast-fire-calculator/static/js/main.a6187df7.js",
     "index.html": "/coast-fire-calculator/index.html",
     "main.c83c213c.css.map": "/coast-fire-calculator/static/css/main.c83c213c.css.map",
-    "main.69ab1a1c.js.map": "/coast-fire-calculator/static/js/main.69ab1a1c.js.map"
+    "main.a6187df7.js.map": "/coast-fire-calculator/static/js/main.a6187df7.js.map"
   },
   "entrypoints": [
     "static/css/main.c83c213c.css",
-    "static/js/main.69ab1a1c.js"
+    "static/js/main.a6187df7.js"
   ]
 }
