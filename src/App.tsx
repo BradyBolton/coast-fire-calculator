@@ -7,11 +7,10 @@ import { generateDataSets, CoastFireDatum, getValueCalculator } from "./models/c
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
-import { getRelativePosition } from 'chart.js/helpers';
 import {
     Chart as ChartJS,
     Legend,
@@ -60,6 +59,7 @@ interface CorsairPluginOptions {
     width: number;
     color: string;
     dash: number[];
+    currentAge: number;
     valCalculator?: (date: DateTime) => number;
 }
 
@@ -75,9 +75,11 @@ ChartJS.register(
 );
 
 declare module 'chart.js' {
+  // eslint-disable-next-line
   interface PluginOptionsByType<TType extends ChartType> {
     corsair?: {
       color?: string;
+      currentAge?: number;
       valCalculator?: (date: DateTime) => number;
     }
   }
@@ -161,24 +163,23 @@ function App(props: any) {
         //beforeDatasetsDraw: (chart: any, args, opts) => {
         afterDatasetsDraw: (chart: any, args, opts) => {
             const {ctx} = chart
-            const {top, bottom, left, right} = chart.chartArea
-            const {x, y, draw} = chart.corsair
+            const {width, top, bottom, left, right} = chart.chartArea
+            const {x, draw} = chart.corsair
 
-            if (!draw) return
+            if (!draw || opts.valCalculator === undefined) return
 
-            // get values relative to chart axes
-            // x axis is in millisecond epoch
-            const dataX = DateTime.fromMillis(chart.scales.x.getValueForPixel(x));
-            if (opts.valCalculator === undefined) {
-                return
-            }
+            const cursorDate = DateTime.fromMillis(chart.scales.x.getValueForPixel(x));
 
-            const value = opts.valCalculator(dataX); // poop
-            console.log(value)
-            const yCoord = chart.scales.y.getPixelForValue(value);
-            // const dataY = chart.scales.y.getValueForPixel(y) as number;
-            const formattedX = dataX.toFormat("MM/dd/yyyy");
-            const formattedY = value.toLocaleString('en-US', {maximumFractionDigits:2});
+            const growthWindow = cursorDate.diff(DateTime.now(), ['days'])
+
+
+            const cursorValue = opts.valCalculator(cursorDate);
+
+            const y = chart.scales.y.getPixelForValue(cursorValue);
+
+            const formattedX = cursorDate.toFormat("MM/dd/yyyy");
+            const formattedY = cursorValue.toLocaleString('en', {minimumFractionDigits: 2, maximumFractionDigits:2});
+            const cursorAge = (opts.currentAge + growthWindow.days / 365).toLocaleString('en', {minimumFractionDigits: 2, maximumFractionDigits:2});
 
             ctx.save()
 
@@ -188,22 +189,25 @@ function App(props: any) {
             ctx.setLineDash(opts.dash)
             ctx.moveTo(x, bottom)
             ctx.lineTo(x, top)
-            ctx.moveTo(left, yCoord)
-            ctx.lineTo(right, yCoord)
+            ctx.moveTo(left, y)
+            ctx.lineTo(right, y)
             ctx.stroke()
             ctx.restore()
 
             ctx.save()
-            ctx.font = 'bold 24 sans-serif'        
-            ctx.fillStyle = 'black'
+            const fontSize = width < 350 ? width/20 : 18;
+            ctx.font = `bold ${fontSize}px sans-serif`
+            ctx.fillStyle = opts.color
             ctx.textAlign = 'center'
-            ctx.fillText(`${formattedX}, ${formattedY}`, 350, 350)
+            ctx.fillText(`$${formattedY}`, (width/2) + left, top + 25)
+            ctx.fillText(`@${formattedX}`, (width/2) + left, top + 25 + fontSize + 10)
+            ctx.fillText(`(age ${cursorAge})`, (width/2) + left, top + 25 + 2 * (fontSize + 10))
             ctx.restore()
         }
     }
 
     const valueCalculator = getValueCalculator(projections.result, currentAge,
-        rate/100, pmtMonthly, principal, pmtMonthlyBarista)
+        rate/100, pmtMonthly, principal, baristaPmtMonthly)
 
 
     const coastDateStr = projections.result.coastFireDate ?
@@ -513,23 +517,6 @@ function App(props: any) {
                             <Line
                                 ref={chartRef}
                                 options={{
-                                // TODO: rip this out, but this is a good starting point for a potential plugin to
-                                // draw a vertical line and some text/info about the intersecting point
-                                onClick: (e) => {
-                                    if (chartRef != null && chartRef.current) {
-                                        // coordinates of click relative to canvas
-                                        const chart = chartRef.current as any; // as any??
-                                        const { x, y } = getRelativePosition(e, chart);
-                                        // can also use const x = e.native.offsetX, y = e.native.offsetY;
-
-                                        // get values relative to chart axes
-                                        // x axis is in millisecond epoch
-                                        const dataX = new Date(chart.scales.x.getValueForPixel(x))
-                                        const dataY = chart.scales.y.getValueForPixel(y);
-
-                                        console.log(`dataX: ${dataX}, dataY: ${dataY}`)
-                                    }
-                                },
                                 animation: false,
                                 responsive: true,
                                 maintainAspectRatio: false,
@@ -548,7 +535,8 @@ function App(props: any) {
                                     // we'll need to provide our own typings like so:
                                     // https://www.chartjs.org/docs/latest/developers/plugins.html#typescript-typings
                                     corsair: {
-                                        color: 'black',
+                                        color: props.theme === 'light' ? '#212121' : 'white',
+                                        currentAge: currentAge,
                                         valCalculator: valueCalculator, 
                                     },
                                 },

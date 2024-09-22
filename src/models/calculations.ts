@@ -182,21 +182,20 @@ export const getValueCalculator = (result: CoastFireResult, currentAge: number,
 
     // closure to calculate the Y-value (returned by this function for later use)
     return (date: DateTime): number => {
-        // console.log(`result.isPossible: ${result.isPossible}, result.coastFireNumber: ${result.coastFireNumber}`)
         let yearsElapsed = date.diff(today, 'years').years
         let res = 0;
         let p = principal;
-        console.log(`years till coast ${daysTilCoast/365}, coastFireAge: ${result.coastFireAge}, ${pmtMonthly}, ${p} ${rate}`)
         const coastFireNumber = futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, daysTilCoast/365, p);
-        console.log(`coastFireNumber ${coastFireNumber}`)
 
         if (date > coastFireDate) {
             // post-coast-fire numbers require a different starting point
             if (result.isPossible) {
                 p = coastFireNumber;
                 yearsElapsed = date.diff(coastFireDate, 'years').years 
+                res = futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, p);
+            } else {
+                res = futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, yearsElapsed, p);
             }
-            res = futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, p);
         } else if (date === coastFireDate) {
             res = coastFireNumber;
         } else {
