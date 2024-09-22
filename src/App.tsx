@@ -7,7 +7,7 @@ import { generateDataSets, CoastFireDatum, getValueCalculator } from "./models/c
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, ReactNode } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
@@ -25,10 +25,12 @@ import {
 } from "chart.js";
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline';
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Alert,
     Box,
     Button,
-    Container,
     Dialog,
     DialogActions,
     DialogContent,
@@ -36,6 +38,7 @@ import {
     DialogTitle,
     Divider,
     Grid,
+    IconButton,
     Link,
     List,
     ListItem,
@@ -50,8 +53,8 @@ import {
 } from '@mui/material'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { faClipboard, faAngleDown, faCircleInfo, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+
 import { DateTime } from 'luxon';
 
 // copied example plugin
@@ -107,7 +110,7 @@ function App(props: any) {
 
     const [copiedUrl, setCopiedUrl] = useState(false);
     const [calcMode, setCalcMode] = useState<"coast" | "barista">(pmtMonthlyBarista !== 0 ? "barista" : "coast"); // toggle between coast or barista fire calculations
-    const [tipDialogText, setTipDialogText] = useState("");
+    const [tipDialogText, setTipDialogText] = useState<string | ReactNode>("");
     const [openTipDialog, setOpenTipDialog] = useState(false); // tip dialog
 
     // refs
@@ -250,9 +253,11 @@ function App(props: any) {
         </Alert>
     }
 
-    const faPropIcon = faGithub as IconProp;
+    // const faPropIcon = faGithub as IconProp;
     const faClipboardPropIcon = faClipboard as IconProp;
-    // const faExpandPropIcon = faChevronUp as IconProp;
+    const faAngleDownPropIcon = faAngleDown as IconProp;
+    const faCircleInfoPropIcon = faCircleInfo as IconProp;
+    const faCircleQuestionProp = faCircleQuestion as IconProp;
 
     const generatedUrl = `https://bradybolton.github.io/coast-fire-calculator/?` +
         `ca=${currentAge}` +
@@ -301,22 +306,27 @@ function App(props: any) {
     return (
         <>
             <ScopedCssBaseline>
-                <Container maxWidth="md">
-                    <Stack spacing={2} sx={{ m: 2 }}>
+                <div id="main-container">
+                    <div id="controls-container">
                         <Paper sx={{ p: 2 }} elevation={2}>
                             <Stack spacing={1}>
-                                <Box>
-                                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
+                                <Stack spacing={{ xs: 1, sm: 2 }} direction={{ sm: "row" }} justifyContent="center" alignItems="center">
+                                    <Stack direction="row" justifyContent="center" alignItems="center">
                                         <h2>Coast FIRE Calculator</h2>
-                                        <Link sx={{
-                                            color: props.theme === 'light' ? 'black' : 'white',
-                                        }} href="https://github.com/BradyBolton/coast-fire-calculator">
-                                            <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
-                                        </Link>
+                                        {/*
+                                            <Link sx={{
+                                                color: props.theme === 'light' ? 'black' : 'white',
+                                            }} href="https://github.com/BradyBolton/coast-fire-calculator">
+                                                <FontAwesomeIcon id="gh-icon" icon={faPropIcon} size="xl" />
+                                            </Link>
+                                        */}
+                                        <IconButton size="small" onClick={() => {
+                                            setTipDialogText(<Typography variant="subtitle1">{topMessage}</Typography>);
+                                            setOpenTipDialog(true);
+                                        }}>
+                                            <FontAwesomeIcon icon={faCircleQuestionProp} size="sm" />
+                                        </IconButton>
                                     </Stack>
-                                </Box>
-                                <Typography alignSelf="center" variant="subtitle1">{topMessage}</Typography>
-                                <Box alignSelf="center">
                                     <Button
                                         sx={{
                                             width: "max-content",
@@ -331,46 +341,38 @@ function App(props: any) {
                                     >
                                         Share as URL
                                     </Button>
-                                </Box>
+                                </Stack>
                                 <Divider light />
-                                <Box alignSelf="center">
-                                    <Grid container direction="row" alignItems="center">
-                                        <Typography variant="label" >
+                                <Box sx={{ display: 'flex', justifyContent: "space-around" }}>
+                                    <Box>
+                                        <Typography variant="label" sx={{ mr: 1 }} >
                                             FIRE Type:
                                         </Typography>
-                                        <Grid item sx={{ ml: 2 }}>
-                                            <ToggleButtonGroup
-                                                color="primary"
-                                                value={calcMode}
-                                                exclusive
-                                                onChange={handleCalculatorMode}
-                                                size="small"
-                                            >
-                                                <ToggleButton value="coast">
-                                                    Coast FIRE
-                                                </ToggleButton>
-                                                <ToggleButton value="barista">
-                                                    Barista FIRE
-                                                </ToggleButton>
-                                            </ToggleButtonGroup>
-
-                                        </Grid>
-                                    </Grid>
-                                </Box>
-
-                                <Divider light />
-
-                                <Box alignSelf="center">
-                                    <Grid container direction="row" alignItems="center">
-                                        <Typography variant="label" >
+                                        <ToggleButtonGroup
+                                            color="primary"
+                                            value={calcMode}
+                                            exclusive
+                                            onChange={handleCalculatorMode}
+                                            size="small"
+                                        >
+                                            <ToggleButton value="coast">
+                                                Coast FIRE
+                                            </ToggleButton>
+                                            <ToggleButton value="barista">
+                                                Barista FIRE
+                                            </ToggleButton>
+                                        </ToggleButtonGroup>
+                                    </Box>
+                                    <Box sx={{ display: 'flex' }} flexDirection="row" alignItems="center">
+                                        <Typography variant="label" sx={{ mr: 1 }}>
                                             Current Age:
                                         </Typography>
-                                        <Grid item sx={{ ml: 2, width: '6rem' }}>
+                                        <Box sx={{ width: '5rem' }}>
                                             <TextField
                                                 id="current-age"
                                                 size="small"
                                                 inputProps={{
-                                                    type: "number",
+                                                    type: "tel",
                                                     inputMode: 'numeric',
                                                     pattern: '[0-9]*'
                                                 }}
@@ -392,8 +394,8 @@ function App(props: any) {
                                                     fontSize: '1rem'
                                                 }}
                                             />
-                                        </Grid>
-                                    </Grid>
+                                        </Box>
+                                    </Box> {/* end of current age input box */}
 
                                 </Box>
                                 <Divider light />
@@ -438,26 +440,38 @@ function App(props: any) {
                                     tipDialogText={"FIRE Number is the total value of investments you will need to retire comfortably. Your FIRE number should be large enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim to save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."}
                                 />
                                 <Grid item alignSelf="center">
-                                    <Alert severity="info" variant="outlined" sx={{ pl: 2, pr: 2, pb: 0, pt: 0 }}>
-                                        <Typography>Make sure to base your FIRE number off of your desired withdrawal rate!</Typography>
-                                        <List disablePadding>
-                                            <ListItem disablePadding>
-                                                <Typography>
-                                                    4% rule: <b>${(fireNumber * 0.04).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
-                                                </Typography>
-                                            </ListItem>
-                                            <ListItem disablePadding>
-                                                <Typography>
-                                                    3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
-                                                </Typography>
-                                            </ListItem>
-                                            <ListItem disablePadding>
-                                                <Typography>
-                                                    2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
-                                                </Typography>
-                                            </ListItem>
-                                        </List>
-                                    </Alert>
+                                    <Accordion variant="outlined" defaultExpanded>
+                                        <AccordionSummary
+                                            expandIcon={<FontAwesomeIcon icon={faAngleDownPropIcon} />}
+                                            aria-controls="panel1-content"
+                                            id="panel1-header"
+                                        >
+                                            <FontAwesomeIcon icon={faCircleInfoPropIcon} />
+                                            <Typography sx={{ "ml": 1 }} >
+                                                Withdrawal Info</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
+                                            <Typography>Make sure to base your FIRE number off of your desired withdrawal rate!</Typography>
+                                            <List disablePadding>
+                                                <ListItem disablePadding>
+                                                    <Typography>
+                                                        4% rule: <b>${(fireNumber * 0.04).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.04 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                    </Typography>
+                                                </ListItem>
+                                                <ListItem disablePadding>
+                                                    <Typography>
+                                                        3% rule: <b>${(fireNumber * 0.03).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.03 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                    </Typography>
+                                                </ListItem>
+                                                <ListItem disablePadding>
+                                                    <Typography>
+                                                        2% rule: <b>${(fireNumber * 0.02).toLocaleString()}/yr</b> at <b>${(fireNumber * 0.02 / 12).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mo</b>
+                                                    </Typography>
+                                                </ListItem>
+                                            </List>
+
+                                        </AccordionDetails>
+                                    </Accordion>
                                 </Grid>
                                 <Divider light />
                                 <Range
@@ -503,73 +517,77 @@ function App(props: any) {
                                     setState={setRate}
                                     openTipDialog={setOpenTipDialog}
                                     setTipDialogText={setTipDialogText}
-                                    tipDialogText={`APR is the expected real rate of return on your investments. In other words, what is the growth of your investments (in ${new Date().getFullYear()} dollars) after accounting for taxes and inflation? Some people use 7% as a rule of thumb, but it is always better to exercise caution when choosing a projected growth rate. Many will argue that 7% is too optimistic. Others will say that 7% is too conservative.`}
+                                    tipDialogText={`APR is the expected real rate of return on your investments. In other words, what is the growth rate of your investments (in ${new Date().getFullYear()} dollars) after accounting for taxes and inflation? Some use 7%. E.g. they subtract an assumed 4% inflation from a historic average (S&P nominal growth historically averaged 11.88% from 1957-2021), rounded down to the ballpark of 7%. Exercising caution is good. Some argue that 7% is too optimistic (fears of demographic shifts, widespread population contractions, etc.) and argue for 4-5% real return (or less). Others argue that 7% is too conservative.`}
                                 />
                             </Stack>
                         </Paper>
 
-                        <Box sx={{ pl: 3, pr: 3 }}>
-                            {summaryMessage}
-                        </Box>
+                    </div>
+                    <div id="graph-container">
+                        <div id="fixed">
+                            <Box sx={{ pl: 3, pr: 3 }}>
+                                {summaryMessage}
 
+                            </Box>
 
-                        <div id="graph">
-                            <Line
-                                ref={chartRef}
-                                options={{
-                                animation: false,
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        position: "top",
-                                        labels: {
+                            <div id="graph">
+                                <Line 
+                                    ref={chartRef}
+                                    options={{
+                                    animation: false,
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            position: "top",
+                                            labels: {
+                                                color: props.theme === 'light' ? '#212121' : 'white'
+                                            }
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: "Coast FIRE Projections",
                                             color: props.theme === 'light' ? '#212121' : 'white'
-                                        }
+                                        },
+                                        // we'll need to provide our own typings like so:
+                                        // https://www.chartjs.org/docs/latest/developers/plugins.html#typescript-typings
+                                        corsair: {
+                                            color: props.theme === 'light' ? '#212121' : 'white',
+                                            currentAge: currentAge,
+                                            valCalculator: valueCalculator, 
+                                        },
                                     },
-                                    title: {
-                                        display: true,
-                                        text: "Coast FIRE Projections",
-                                        color: props.theme === 'light' ? '#212121' : 'white'
-                                    },
-                                    // we'll need to provide our own typings like so:
-                                    // https://www.chartjs.org/docs/latest/developers/plugins.html#typescript-typings
-                                    corsair: {
-                                        color: props.theme === 'light' ? '#212121' : 'white',
-                                        currentAge: currentAge,
-                                        valCalculator: valueCalculator, 
-                                    },
-                                },
-                                scales: {
-                                    x: {
-                                        type: 'time',
-                                        min: projections.xMin.toISO(),
-                                        max: projections.xMax.toISO(),
-                                        ticks: {
-                                            color: props.theme === 'light' ? '#212121' : 'white'
-                                        }
-                                    },
-                                    y: {
-                                        min: projections.yMin,
-                                        max: projections.yMax,
-                                        ticks: {
-                                            color: props.theme === 'light' ? '#212121' : 'white'
+                                    scales: {
+                                        x: {
+                                            type: 'time',
+                                            min: projections.xMin.toISO(),
+                                            max: projections.xMax.toISO(),
+                                            ticks: {
+                                                color: props.theme === 'light' ? '#212121' : 'white'
+                                            }
+                                        },
+                                        y: {
+                                            min: projections.yMin,
+                                            max: projections.yMax,
+                                            ticks: {
+                                                color: props.theme === 'light' ? '#212121' : 'white'
+                                            }
                                         }
                                     }
-                                },
-                                // hover: {
-                                //     mode: 'index',
-                                //     intersect: false,
-                                // }
-                            }}
-                            plugins={[plugin]} // plugin is a terrible name
-                            data={data} />
+                                }} 
+                                plugins={[plugin]} // plugin is a terrible name
+                                data={data} />
+                            </div>
                         </div>
-                    </Stack>
-                </Container>
+
+
+                    </div>
+
+                </div>
                 <Dialog
                     open={openTipDialog}
                     onClose={handleClose}
+                    maxWidth="md"
                 >
                     <DialogTitle>
                         {"Explanation"}
