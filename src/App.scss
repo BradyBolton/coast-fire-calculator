@@ -9,11 +9,11 @@ html {
     }
 
     #gh-icon:hover {
-        color: $primary-color
+        color: $primary-color;
     }
 
     p b {
-        color: $primary-color
+        color: $primary-color;
     }
 }
 
@@ -71,6 +71,10 @@ html {
                 min-height: 90%;
 
                 div#graph {
+                    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+                    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+                    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+                    user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
                     flex-grow: 1;
                 }
             }
