@@ -10,14 +10,14 @@ interface CoastFireResult {
     finalAmount: number | undefined;
 }
 
-interface CoastFireDatum {
+export interface CoastFireDatum {
     x: string, // '2016-12-25'
     y: number  // value (usd)
 }
 
 // CoastFireData represents the generateDataSets return structure containing all
 // the data needed to draw the graph
-interface CoastFireData {
+export interface CoastFireData {
     preCoastData: CoastFireDatum[] // today -> coast fire date, inclusive
     postCoastData: CoastFireDatum[] // coast fire date -> retire date, inclusive
     result: CoastFireResult
@@ -25,6 +25,7 @@ interface CoastFireData {
     xMax: DateTime,
     yMin: number,
     yMax: number,
+    calcValue: (date: DateTime) => number,
 }
 
 // futureValue carries out a simple compound interest formula
@@ -171,11 +172,46 @@ const getDatesFormatted = (startDate: DateTime, stopDate: DateTime, numDates: nu
     return result;
 }
 
+// function to generate such a closure
+export const getValueCalculator = (result: CoastFireResult, currentAge: number,
+    rate: number, pmtMonthly: number, principal: number = 0, pmtMonthlyBarista: number = 0): ((date: DateTime) => number) => {
+
+    const today = DateTime.now()
+    const daysTilCoast = ((result.coastFireAge ?? currentAge) - currentAge) * 365 // 0 if no coast fire
+    const coastFireDate = today.plus({ days: daysTilCoast }) // if no coast fire possible, it will default to today
+
+    // closure to calculate the Y-value (returned by this function for later use)
+    return (date: DateTime): number => {
+        let yearsElapsed = date.diff(today, 'years').years
+        let res = 0;
+        let p = principal;
+        const coastFireNumber = futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, daysTilCoast/365, p);
+
+        if (date > coastFireDate) {
+            // post-coast-fire numbers require a different starting point
+            if (result.isPossible) {
+                p = coastFireNumber;
+                yearsElapsed = date.diff(coastFireDate, 'years').years 
+                res = futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, p);
+            } else {
+                res = futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, yearsElapsed, p);
+            }
+        } else if (date === coastFireDate) {
+            res = coastFireNumber;
+        } else {
+            res = futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, yearsElapsed, p);
+        }
+
+        return res;
+    }
+}
+
 // Return the value for the outer data field used to paint the line chart
 const generateDataSets = (fireNumber: number, currentAge: number, retirementAge: number,
     rate: number, pmtMonthly: number, principal: number = 0, pmtMonthlyBarista: number = 0): CoastFireData => {
 
     const result = calculateCoastFire(fireNumber, currentAge, retirementAge, rate, pmtMonthly, principal, pmtMonthlyBarista)
+    const valueCalculator = getValueCalculator(result, currentAge, rate, pmtMonthly, principal, pmtMonthlyBarista)
 
     const today = DateTime.now()
     const daysTilFire = ((retirementAge - currentAge) * 365)
@@ -191,6 +227,7 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
         xMax: fireDate,
         yMin: principal,
         yMax: Math.floor(fireNumber * 1.1),
+        calcValue: valueCalculator,
     }
 
     /* At this point, 3 scenarios are possible
@@ -208,10 +245,9 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
         preCoastDates = getDatesFormatted(today, fireDate, 10)
 
         for (const [dateStr, date] of Object.entries(preCoastDates)) {
-            const yearsElapsed = date.diff(today, 'years').years
             const dataPoint = {
                 x: dateStr,
-                y: futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, yearsElapsed, principal)
+                y: valueCalculator(date)
             }
             data.preCoastData.push(dataPoint)
         }
@@ -226,19 +262,19 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
         postCoastDates = getDatesFormatted(coastFireDate, fireDate, 10)
 
         for (const [dateStr, date] of Object.entries(preCoastDates)) {
-            const yearsElapsed = date.diff(today, 'years').years
             const dataPoint = {
                 x: dateStr,
-                y: futureValueSeries(pmtMonthlyToDaily(pmtMonthly), rate, 365, yearsElapsed, principal)
+                y: valueCalculator(date)
             }
             data.preCoastData.push(dataPoint)
         }
         for (const [dateStr, date] of Object.entries(postCoastDates)) {
-            const yearsElapsed = date.diff(coastFireDate, 'years').years
             const dataPoint = {
                 x: dateStr,
                 // note: do not use result.coastFireDate because there would be a gap in the graph
-                y: futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, data.preCoastData[data.preCoastData.length - 1].y)
+                // that small gap is the difference between result.coastFireNumber and the actual y-val of the last point in preCoastData
+                // y: futureValueSeries(pmtMonthlyToDaily(pmtMonthlyBarista), rate, 365, yearsElapsed, data.preCoastData[data.preCoastData.length - 1].y)
+                y: valueCalculator(date)
             }
             data.postCoastData.push(dataPoint)
         }

@@ -6,7 +6,6 @@ import {
     Typography,
     useMediaQuery,
     useTheme,
-    Theme,
 } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
