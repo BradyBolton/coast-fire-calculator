@@ -584,7 +584,6 @@ function App(props: any) {
                     "FIRE Number is the total value of investments you will need to retire comfortably. Your FIRE number should be large enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim to save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."
                   }
                 />
-                {/* <Grid item alignSelf="center"> */}
                 <Grid alignSelf="center">
                   <Accordion variant="outlined" defaultExpanded>
                     <AccordionSummary
