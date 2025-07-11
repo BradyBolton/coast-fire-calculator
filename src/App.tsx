@@ -87,7 +87,6 @@ ChartJS.register(
 );
 
 declare module "chart.js" {
-  // eslint-disable-next-line
   interface PluginOptionsByType<TType extends ChartType> {
     corsair?: {
       color?: string;
@@ -197,6 +196,7 @@ function App(props: any) {
       color: "#FF4949",
       dash: [3, 3]
     },
+    // @ts-expect-error
     afterInit: (chart: any, args, opts) => {
       chart.corsair = {
         x: 0,
@@ -211,6 +211,7 @@ function App(props: any) {
       chart.draw();
     },
     //beforeDatasetsDraw: (chart: any, args, opts) => {
+    // @ts-expect-error
     afterDatasetsDraw: (chart: any, args, opts) => {
       const { ctx } = chart;
       const { width, top, bottom, left, right } = chart.chartArea;
@@ -412,6 +413,7 @@ function App(props: any) {
   );
 
   const handleCalculatorMode = (
+    // @ts-expect-error
     event: React.MouseEvent<HTMLElement>,
     newMode: "coast" | "barista"
   ) => {
@@ -521,6 +523,7 @@ function App(props: any) {
                             setCurrentAge(newCurrentAge);
                           }
                         }}
+                        // @ts-expect-error
                         onBlur={(e) => {
                           if (!currentAge) {
                             setCurrentAge(35); // TODO: make this a default value constant

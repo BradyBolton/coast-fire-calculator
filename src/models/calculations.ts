@@ -164,7 +164,7 @@ const getDatesFormatted = (startDate: DateTime, stopDate: DateTime, numDates: nu
     let dates = getDates(startDate, stopDate, numDates)
 
     let result = dates.reduce(function (map: Record<string, DateTime>, obj: DateTime) {
-        const formattedDate: string = obj.toISO()
+        const formattedDate: string = obj.toISO() ?? ''
         map[formattedDate] = obj
         return map;
     }, {});

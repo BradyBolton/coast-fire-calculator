@@ -52,6 +52,7 @@ function calcMinInputWidth(maxValue: number, step: number,
 function Range(props: IRangeProps) {
     const faCircleQuestionProp = faCircleQuestion as IconProp;
 
+    // @ts-expect-error
     const handleSliderChange = (event: Event, value: number | number[]) => {
         props.setState(value as number)
     };
