@@ -2,20 +2,21 @@
 
 > :point_right: **Go [here](https://bradybolton.github.io/coast-fire-calculator/) to play with the actual calculator**
 
-I wanted a simplistic calculator to do two things:
-* Tell me: "for how long do I have to save $X per month so that I can retire at X age?"
-* Put a slider on (almost) every parameter so I play with the graph
+I wanted a graph-focused FIRE calculator:
+* Show me FIRE, coast-FIRE, barista-FIRE, lean-FIRE, and even "die with zero" scenarios
+* Slap a slider on (almost) every input
 
-Even though the app is called `coast-fire-calculator` it can actually calculate regular FIRE as well. The app converges onto a coast FIRE number and date based on:
+The app was originally called `coast-fire-calculator`, but after playing with the tool I've found the path to FIRE to be extremely flexible.
 
-* FIRE number
-* current age
-* retirement age
-* APR
-* monthly contributions
-* initial deposit (principal)
+### How it works
 
-As the situation becomes less attainable, the coast FIRE number approaches your FIRE number. Beyond that, FIRE is not possible. Using the inputs above, you might see something like this:
+The X axis is time. The Y axis is your net-worth. The graph goes up from left to right, hopefully. (It doesn't always have to be!)
+
+Graph could have a pink line, a blue line, or both. They represent 2 periods in your life:
+* Pink: you're saving money (saving $X in "Contributions (monthly)")
+* Blue: you're saving $X monthly in "Barista FIRE Contributions (monthly)"
+    - could be zero, something small, or negative (you're withdrawing money)
+* Beyond: your retirement
 
 <img src="./docs/graph_example.png" width="720" height="475">
 
@@ -32,7 +33,7 @@ Depending on your situation, either of the following could be true:
 * Your retirement goal is unrealistic and you will fall short of that goal
     * Just a red line that never hits your FIRE number
 
-If you like this but want something more polished I would check out [this guy](https://walletburst.com/tools/). There is a lot of nuance to the discussion of coast FIRE, and I think [Die with Zero](https://www.diewithzerobook.com/welcome) expresses the most common counter-argument to extreme FIRE. A coast FIRE strategy can be a decent balance between pragmatic nest-egg building and spending on yourself 'in the now'. You can turn the "boring middle" into an "exciting middle".
+Also check out [this resource](https://walletburst.com/tools/). You might even want to "retire" with $0 (or very little)! See ["Die with Zero"](https://www.diewithzerobook.com/welcome). I think the coast FIRE strategy is a pragmatic balance that lets you turn the "boring middle" into an "exciting middle" sooner.
 
 ## To run
 
@@ -40,10 +41,10 @@ Run this by:
 
 ```
 npm i
-npm run start
+npm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Then open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 
 Run basic tests to verify coast fire calculations:
 
@@ -113,7 +114,9 @@ After some searching, I think [this](https://projectionlab.com/) project kind of
 - [ ] Red to green financial retirement spectrum (with info for cursor hover)
 - [ ] Fix icon sizing
 - [X] Support dark mode
-- [X] fixed ~~Bug when you prefill an alredy coast fire scenario but then empty out APR~~
+- [X] Fixed ~~Bug when you prefill an alredy coast fire scenario but then empty out APR~~
+- [X] Migrate from CRA to Vite
+- [ ] Migrate from jest to vitest
 
 ## Other notes
 

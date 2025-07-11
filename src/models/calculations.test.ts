@@ -1,3 +1,5 @@
+/* TODO: migrate to vitest
+
 import {
     calculateCoastFire,
     futureValue,
@@ -170,3 +172,5 @@ it('use dates within a single day to calculate a future value series', () => {
     }
     expect(result.length).toEqual(10)
 })
+
+*/
