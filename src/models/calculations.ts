@@ -279,6 +279,11 @@ const generateDataSets = (fireNumber: number, currentAge: number, retirementAge:
             data.postCoastData.push(dataPoint)
         }
 
+        // accounts for die with zero scenarios
+        const finalPreCoastValue = data.preCoastData[data.preCoastData.length - 1].y
+        const finalPostCoastValue = data.postCoastData[data.postCoastData.length - 1].y
+        data.yMax = Math.floor(Math.max(finalPreCoastValue, finalPostCoastValue) * 1.1)
+
     } else if (result.alreadyCoastFire) {
 
         // case 3: only draw post-coast graph
