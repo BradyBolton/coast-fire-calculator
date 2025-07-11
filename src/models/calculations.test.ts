@@ -1,5 +1,3 @@
-/* TODO: migrate to vitest
-
 import {
     calculateCoastFire,
     futureValue,
@@ -10,6 +8,8 @@ import {
 } from './calculations';
 
 import { DateTime } from "luxon";
+
+import { it, expect, fail } from "vitest"
 
 const epsilon = 0.01
 
@@ -48,15 +48,13 @@ it('calculate coast fire date successfully', () => {
     }
 
     expect(result.isPossible).toBeTruthy();
+    expect(result.coastFireNumber).toBeDefined();
     if (result.coastFireNumber !== undefined) {
         expect(Math.abs(result.coastFireNumber - expected.coastFireNumber)).toBeLessThan(epsilon);
-    } else {
-        fail('Coast fire number was undefined but got isPossible: true')
     }
+    expect(result.coastFireAge).toBeDefined();
     if (result.coastFireAge !== undefined) {
         expect(Math.abs(result.coastFireAge - expected.coastFireAge)).toBeLessThan(epsilon);
-    } else {
-        fail('Coast fire age was undefined but got isPossible: true')
     }
 });
 
@@ -172,5 +170,3 @@ it('use dates within a single day to calculate a future value series', () => {
     }
     expect(result.length).toEqual(10)
 })
-
-*/
