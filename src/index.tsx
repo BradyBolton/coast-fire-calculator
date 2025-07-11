@@ -5,17 +5,20 @@ import "./index.css";
 import App from "./App";
 
 // import libraries
-import React, { FC, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import ReactDOM from "react-dom/client";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { pink, grey } from '@mui/material/colors';
-import { PaletteMode, Fab } from '@mui/material';
+import { Fab } from '@mui/material';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
 
+// types
+import type { FC }  from "react";
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import type { PaletteMode } from '@mui/material';
 
 const root = ReactDOM.createRoot(
     document.getElementById("root") as HTMLElement

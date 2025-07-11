@@ -9,11 +9,12 @@ import {
 } from '@mui/material'
 import { NumericFormat } from 'react-number-format'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 
 
-import React, { ReactNode } from 'react'
+import React from 'react'
+import type { ReactNode } from 'react'
 
 type RangeFormat = "money" | "percentage" | "none"
 
@@ -51,6 +52,7 @@ function calcMinInputWidth(maxValue: number, step: number,
 function Range(props: IRangeProps) {
     const faCircleQuestionProp = faCircleQuestion as IconProp;
 
+    // @ts-expect-error
     const handleSliderChange = (event: Event, value: number | number[]) => {
         props.setState(value as number)
     };

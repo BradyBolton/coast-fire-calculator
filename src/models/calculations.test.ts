@@ -9,6 +9,8 @@ import {
 
 import { DateTime } from "luxon";
 
+import { it, expect, fail } from "vitest"
+
 const epsilon = 0.01
 
 // simple growth of $1000 over 10 years at %7 APR compounded daily
@@ -46,15 +48,13 @@ it('calculate coast fire date successfully', () => {
     }
 
     expect(result.isPossible).toBeTruthy();
+    expect(result.coastFireNumber).toBeDefined();
     if (result.coastFireNumber !== undefined) {
         expect(Math.abs(result.coastFireNumber - expected.coastFireNumber)).toBeLessThan(epsilon);
-    } else {
-        fail('Coast fire number was undefined but got isPossible: true')
     }
+    expect(result.coastFireAge).toBeDefined();
     if (result.coastFireAge !== undefined) {
         expect(Math.abs(result.coastFireAge - expected.coastFireAge)).toBeLessThan(epsilon);
-    } else {
-        fail('Coast fire age was undefined but got isPossible: true')
     }
 });
 

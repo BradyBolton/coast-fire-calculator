@@ -5,13 +5,14 @@ import "./App.scss";
 import { Range } from "./components/range";
 import {
   generateDataSets,
-  CoastFireDatum,
   getValueCalculator
 } from "./models/calculations";
+import type { CoastFireDatum } from "./models/calculations";
 
 // import hooks
 import "chartjs-adapter-moment";
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef,  } from "react";
+import type { ReactNode } from "react";
 
 // import components
 import { Line } from "react-chartjs-2";
@@ -24,9 +25,8 @@ import {
   TimeScale,
   Title,
   Tooltip,
-  Plugin as ChartJSPlugin,
-  ChartType
 } from "chart.js";
+import type { Plugin as ChartJSPlugin, ChartType } from "chart.js";
 import ScopedCssBaseline from "@mui/material/ScopedCssBaseline";
 import {
   Accordion,
@@ -56,7 +56,7 @@ import {
   useTheme
 } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
   faClipboard,
   faAngleDown,
@@ -87,7 +87,6 @@ ChartJS.register(
 );
 
 declare module "chart.js" {
-  // eslint-disable-next-line
   interface PluginOptionsByType<TType extends ChartType> {
     corsair?: {
       color?: string;
@@ -197,6 +196,7 @@ function App(props: any) {
       color: "#FF4949",
       dash: [3, 3]
     },
+    // @ts-expect-error
     afterInit: (chart: any, args, opts) => {
       chart.corsair = {
         x: 0,
@@ -211,6 +211,7 @@ function App(props: any) {
       chart.draw();
     },
     //beforeDatasetsDraw: (chart: any, args, opts) => {
+    // @ts-expect-error
     afterDatasetsDraw: (chart: any, args, opts) => {
       const { ctx } = chart;
       const { width, top, bottom, left, right } = chart.chartArea;
@@ -412,6 +413,7 @@ function App(props: any) {
   );
 
   const handleCalculatorMode = (
+    // @ts-expect-error
     event: React.MouseEvent<HTMLElement>,
     newMode: "coast" | "barista"
   ) => {
@@ -521,6 +523,7 @@ function App(props: any) {
                             setCurrentAge(newCurrentAge);
                           }
                         }}
+                        // @ts-expect-error
                         onBlur={(e) => {
                           if (!currentAge) {
                             setCurrentAge(35); // TODO: make this a default value constant
@@ -581,7 +584,7 @@ function App(props: any) {
                     "FIRE Number is the total value of investments you will need to retire comfortably. Your FIRE number should be large enough for you to comfortably withdraw money from during retirement. If you're following the 4% rule, that means you can withdraw 4% from your total savings each year. Using this rule, if you need $60k a year for retirement, you should aim to save $1.5m by the time you retire: 60,000 x (1/0.04) = 1,500,000."
                   }
                 />
-                <Grid item alignSelf="center">
+                <Grid alignSelf="center">
                   <Accordion variant="outlined" defaultExpanded>
                     <AccordionSummary
                       expandIcon={
@@ -741,8 +744,8 @@ function App(props: any) {
                     scales: {
                       x: {
                         type: "time",
-                        min: projections.xMin.toISO(),
-                        max: projections.xMax.toISO(),
+                        min: projections.xMin.toISO() ?? 0,
+                        max: projections.xMax.toISO() ?? 0,
                         ticks: {
                           color: props.theme === "light" ? "#212121" : "white"
                         }
