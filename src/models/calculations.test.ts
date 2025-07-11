@@ -9,7 +9,7 @@ import {
 
 import { DateTime } from "luxon";
 
-import { it, expect, fail } from "vitest"
+import { it, expect } from "vitest"
 
 const epsilon = 0.01
 
